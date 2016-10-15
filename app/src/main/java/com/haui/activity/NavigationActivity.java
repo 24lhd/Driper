@@ -99,15 +99,8 @@ public class NavigationActivity extends FragmentActivity implements NavigationVi
         } else if (id == R.id.mn_xe_tim_nguoi) {
              Snackbar.make(getCurrentFocus(), "mn_nguoi_tim_xe", Snackbar.LENGTH_LONG)
                      .setAction("Action", null).show();
-        } else if (id == R.id.mn_tai_xe) {
-             Snackbar.make(getCurrentFocus(), "mn_tai_xe", Snackbar.LENGTH_LONG)
-                     .setAction("Action", null).show();
-        } else if (id == R.id.mn_yeu_cau) {
-             Snackbar.make(getCurrentFocus(), "mn_yeu_cau", Snackbar.LENGTH_LONG)
-                     .setAction("Action", null).show();
-        } else if (id == R.id.mn_map) {
-            setMap();
-        } else if (id == R.id.mn_cai_dat) {
+             setMap();
+        }else if (id == R.id.mn_cai_dat) {
              Snackbar.make(getCurrentFocus(), "mn_cai_dat", Snackbar.LENGTH_LONG)
                      .setAction("Action", null).show();
         }else if (id == R.id.mn_login) {

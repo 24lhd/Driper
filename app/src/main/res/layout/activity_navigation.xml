@@ -11,8 +11,10 @@
         android:id="@+id/vf"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-        <include android:id="@+id/include1" layout="@layout/activity_maps" />
-        <include android:id="@+id/map" layout="@layout/app_bar_navigation" />
+        <include layout="@layout/activity_maps" />
+        <include layout="@layout/login_fragment" />
+        <include layout="@layout/sigin_fragment" />
+        <include layout="@layout/app_bar_navigation" />
     </ViewFlipper>
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"

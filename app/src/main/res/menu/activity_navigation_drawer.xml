@@ -19,19 +19,6 @@
             android:icon="@drawable/police"
             android:title="Xe tìm người" />
         <item
-            android:id="@+id/mn_tai_xe"
-            android:icon="@drawable/ic_driver"
-            android:title="Tài xế" />
-        <item
-            android:id="@+id/mn_yeu_cau"
-            android:icon="@drawable/quantum_ic_bigtop_updates_white_24"
-            android:title="Yêu cầu" />
-        <item
-            android:id="@+id/mn_map"
-            android:icon="@drawable/ic_dialog_map"
-            android:title="Bản đồ" />
-
-        <item
             android:id="@+id/mn_cai_dat"
             android:icon="@drawable/ic_menu_manage"
             android:title="Cài đặt" />
