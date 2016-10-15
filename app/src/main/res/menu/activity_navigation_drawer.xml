@@ -1,35 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="all">
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/mn_user"
+            android:icon="@drawable/ic_student"
+            android:title="Cá nhân" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:id="@+id/mn_history"
+            android:icon="@drawable/ic_history"
+            android:title="Hóa đơn cũ" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:id="@+id/mn_nguoi_tim_xe"
+            android:icon="@drawable/places_ic_search"
+            android:title="Người tìm xe" />
         <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
-    </group>
+            android:id="@+id/mn_xe_tim_nguoi"
+            android:icon="@drawable/police"
+            android:title="Xe tìm người" />
+        <item
+            android:id="@+id/mn_tai_xe"
+            android:icon="@drawable/ic_driver"
+            android:title="Tài xế" />
+        <item
+            android:id="@+id/mn_yeu_cau"
+            android:icon="@drawable/quantum_ic_bigtop_updates_white_24"
+            android:title="Yêu cầu" />
+        <item
+            android:id="@+id/mn_map"
+            android:icon="@drawable/ic_dialog_map"
+            android:title="Bản đồ" />
 
-    <item android:title="Communicate">
+        <item
+            android:id="@+id/mn_cai_dat"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Cài đặt" />
+        <item
+            android:id="@+id/mn_login"
+            android:icon="@drawable/login"
+            android:title="Đăng nhập" />
+    </group>
+    <item android:title="Khác" >
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/mn_share"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="Ứng dụng liên quan" />
             <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:id="@+id/mn_dev"
+                android:icon="@drawable/code"
+                android:title="Phát triển" />
         </menu>
     </item>
 
