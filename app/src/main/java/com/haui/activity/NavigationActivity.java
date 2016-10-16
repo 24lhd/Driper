@@ -35,14 +35,17 @@ public class NavigationActivity extends FragmentActivity implements NavigationVi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        reQuestPermistion();
+        checkLogin();
+    }
+
+    private void reQuestPermistion() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,android.Manifest.permission.CALL_PHONE)) {
             } else {
                 ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.CALL_PHONE},0);
             }
         }
-        checkLogin();
-
     }
 
     private void checkLogin() {
@@ -83,7 +86,7 @@ public class NavigationActivity extends FragmentActivity implements NavigationVi
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         ViewFlipper vf = (ViewFlipper)findViewById(R.id.vf);
-//        vf.setDisplayedChild(1);
+        vf.setDisplayedChild(1);
         FloatingActionButton fab = (FloatingActionButton) vf.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
