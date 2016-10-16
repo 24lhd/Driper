@@ -28,7 +28,7 @@
     <android.support.v7.widget.AppCompatImageButton
         android:layout_width="match_parent"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:src="@drawable/ic_student"
+        android:src="@drawable/add_im"
         android:scaleType="center"
         android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_height="150dp" />

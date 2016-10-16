@@ -99,17 +99,49 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-        wrappingViewPager.setEnabled(false);
         tabLayout = (TabLayout) findViewById(R.id.login_sigin_tablayout);
         if (tabLayout != null) {
             tabLayout.setTabMode(TabLayout.MODE_FIXED);
             tabLayout.setTabTextColors(Color.WHITE,getResources().getColor(R.color.colorPrimary));
-            tabLayout.setSelectedTabIndicatorHeight(12);
+            tabLayout.setSelectedTabIndicatorHeight(10);
             tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorPrimary));
             tabLayout.setupWithViewPager(wrappingViewPager);
-            tabLayout.getTabAt(0).setIcon(R.drawable.ic_tab_login);
-            tabLayout.getTabAt(1).setIcon(R.drawable.ic_tab_register);
-            tabLayout.getTabAt(2).setIcon(R.drawable.ic_tab_reset);
+            tabLayout.getTabAt(0).setIcon(R.drawable.tab_login_1);
+            tabLayout.getTabAt(1).setIcon(R.drawable.tab_register_0);
+            tabLayout.getTabAt(2).setIcon(R.drawable.tab_register_0);
+            tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    switch (tab.getPosition()){
+                        case 0:
+                            tabLayout.getTabAt(0).setIcon(R.drawable.tab_login_1);
+                            tabLayout.getTabAt(1).setIcon(R.drawable.tab_register_0);
+                            tabLayout.getTabAt(2).setIcon(R.drawable.tab_register_0);
+                            break;
+                        case 1:
+                            tabLayout.getTabAt(0).setIcon(R.drawable.tab_login_0);
+                            tabLayout.getTabAt(1).setIcon(R.drawable.tab_register_1);
+                            tabLayout.getTabAt(2).setIcon(R.drawable.tab_register_0);
+                            break;
+                        case 2:
+                            tabLayout.getTabAt(0).setIcon(R.drawable.tab_login_0);
+                            tabLayout.getTabAt(1).setIcon(R.drawable.tab_register_0);
+                            tabLayout.getTabAt(2).setIcon(R.drawable.tab_register_1);
+                            break;
+
+                    }
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
         }
     }
     /**

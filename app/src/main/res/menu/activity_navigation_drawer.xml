@@ -19,13 +19,21 @@
             android:icon="@drawable/police"
             android:title="Xe tìm người" />
         <item
-            android:id="@+id/mn_cai_dat"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Cài đặt" />
+            android:id="@+id/mn_error"
+            android:icon="@drawable/ic_error"
+            android:title="Báo cáo sự cố" />
         <item
-            android:id="@+id/mn_login"
-            android:icon="@drawable/login"
-            android:title="Đăng nhập" />
+            android:id="@+id/mn_help"
+            android:icon="@drawable/ic_help"
+            android:title="Trợ giúp" />
+        <item
+        android:id="@+id/mn_logout"
+        android:icon="@drawable/ic_logout"
+        android:title="Đăng xuất" />
+        <item
+            android:id="@+id/mn_exit"
+            android:icon="@drawable/ic_exit"
+            android:title="Thoát" />
     </group>
     <item android:title="Khác" >
         <menu>
