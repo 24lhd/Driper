@@ -12,13 +12,13 @@
         android:padding="@dimen/padding_login"
         android:background="@drawable/login_animation"
         android:layout_height="wrap_content">
-
         <EditText
             android:layout_width="match_parent"
             android:background="@color/bg_app"
             android:hint="@string/hint_std"
             android:layout_marginBottom="@dimen/margin_5dp"
             android:singleLine="true"
+            android:inputType="number"
             android:textColorHint="@color/md_green_500"
             android:textSize="@dimen/text_size_20dp"
             android:textColor="@color/md_green_500"

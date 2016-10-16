@@ -3,6 +3,7 @@ package com.haui.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -20,6 +22,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.haui.fragment.LoginFragment;
 import com.haui.fragment.ResetPassFragment;
 import com.haui.fragment.SiginFragment;
+import com.haui.log.Log;
+
 import xyz.santeri.wvp.WrappingFragmentPagerAdapter;
 import xyz.santeri.wvp.WrappingViewPager;
 
@@ -75,6 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                     default:
                         return resetPassFragment;
                 }
+
             }
             @Override
             public int getCount() {
@@ -94,13 +99,17 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
-
+        wrappingViewPager.setEnabled(false);
         tabLayout = (TabLayout) findViewById(R.id.login_sigin_tablayout);
         if (tabLayout != null) {
+            tabLayout.setTabMode(TabLayout.MODE_FIXED);
+            tabLayout.setTabTextColors(Color.WHITE,getResources().getColor(R.color.colorPrimary));
+            tabLayout.setSelectedTabIndicatorHeight(12);
+            tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorPrimary));
             tabLayout.setupWithViewPager(wrappingViewPager);
-//            tabLayout.getTabAt(0).setIcon(R.drawable.ic_tab_login);
-//            tabLayout.getTabAt(1).setIcon(R.drawable.ic_tab_register);
-//            tabLayout.getTabAt(2).setIcon(R.drawable.ic_tab_reset);
+            tabLayout.getTabAt(0).setIcon(R.drawable.ic_tab_login);
+            tabLayout.getTabAt(1).setIcon(R.drawable.ic_tab_register);
+            tabLayout.getTabAt(2).setIcon(R.drawable.ic_tab_reset);
         }
     }
     /**
@@ -135,8 +144,8 @@ public class LoginActivity extends AppCompatActivity {
      *  pass: mật khẩu
      *
      * */
+
     public void register(final String id, final String pass) {
-//            Toast.makeText(this,"Không có kết nối internet",Toast.LENGTH_LONG).show();
             mAuth.createUserWithEmailAndPassword(id+"@haui.com",pass ).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
@@ -147,8 +156,8 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this, "Đăng ký thành công",
                                         Toast.LENGTH_SHORT).show();
                                 Intent returnIntent = new Intent();
-                                returnIntent.putExtra("id",id);
-                                returnIntent.putExtra("pass",pass);
+                                returnIntent.putExtra(Log.LOG_ID,id);
+                                returnIntent.putExtra(Log.LOG_PASS,pass);
                                 setResult(Activity.RESULT_OK,returnIntent);
                                 finish();
                             }

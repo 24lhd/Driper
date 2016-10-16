@@ -1,6 +1,8 @@
 package com.haui.activity;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,15 +24,54 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.haui.log.Log;
 
 public class NavigationActivity extends FragmentActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback {
+    private com.haui.log.Log log;
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        checkLogin();
+
+
+    }
+
+    private void checkLogin() {
+        log=new Log(this);
+        if (log.getID().isEmpty()){
+            startLogin();
+        }else if (login(log.getID(),log.getPass())){
+            creatView();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0) {
+            if(resultCode == Activity.RESULT_OK){
+                String id=data.getStringExtra(Log.LOG_ID);
+                String pass=data.getStringExtra(Log.LOG_PASS);
+                log.putID(id);
+                log.putPass(pass);
+                checkLogin();
+            }else if (resultCode==Activity.RESULT_CANCELED){
+                finish();
+            }
+        }
+    }
+    private boolean login(String id, String pass) {
+
+        return false;
+    }
+
+    public void startLogin() {
+        Intent intent=new Intent(this,LoginActivity.class);
+        startActivityForResult(intent,0);
+    }
+
+    private void creatView() {
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        setMap();
         ViewFlipper vf = (ViewFlipper)findViewById(R.id.vf);
         vf.setDisplayedChild(1);
         FloatingActionButton fab = (FloatingActionButton) vf.findViewById(R.id.fab);
@@ -50,6 +91,7 @@ public class NavigationActivity extends FragmentActivity implements NavigationVi
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

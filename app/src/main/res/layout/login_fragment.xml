@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:id="@+id/et_id_login"
             android:background="@color/bg_app"
+            android:inputType="number"
             android:singleLine="true"
             android:hint="@string/hint_id"
             android:layout_marginBottom="@dimen/margin_5dp"

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/WrappingFragment/WrappingFragment.iml" filepath="$PROJECT_DIR$/WrappingFragment/WrappingFragment.iml" />
       <module fileurl="file://$PROJECT_DIR$/XeOmCongNghiep.iml" filepath="$PROJECT_DIR$/XeOmCongNghiep.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
