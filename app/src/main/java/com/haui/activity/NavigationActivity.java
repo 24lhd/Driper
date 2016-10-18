@@ -2,7 +2,7 @@ package com.haui.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -26,19 +26,27 @@ import android.widget.ViewFlipper;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.haui.log.Log;
 import com.haui.map.MapManager;
+import com.haui.object.User;
 
 public class NavigationActivity extends FragmentActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback {
     private com.haui.log.Log log;
+    private DatabaseReference database;
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        log=new Log(this);
+        database = FirebaseDatabase.getInstance().getReference();
         reQuestPermistion();
         checkLogin();
     }
-
     private void reQuestPermistion() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)!= PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,android.Manifest.permission.CALL_PHONE)) {
@@ -47,46 +55,64 @@ public class NavigationActivity extends FragmentActivity implements NavigationVi
             }
         }
     }
-
     private void checkLogin() {
-//        log=new Log(this);
-        creatView();
-
-//        if (log.getID().isEmpty()){
-//            startLogin();
-//        }else if (login(log.getID(),log.getPass())){
-//           creatView();
-//        }
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == 0) {
-            if(resultCode == Activity.RESULT_OK){
-                String id=data.getStringExtra(Log.LOG_ID);
-                String pass=data.getStringExtra(Log.LOG_PASS);
-                log.putID(id);
-                log.putPass(pass);
-                checkLogin();
-            }else if (resultCode==Activity.RESULT_CANCELED){
-                finish();
+        Intent intent=getIntent();
+        try {
+            if (intent!=null){
+                login(intent.getStringExtra(Log.LOG_ID),intent.getStringExtra(Log.LOG_PASS));
+            }else if (log.getID().isEmpty()){
+                    startLogin();
+            }else{
+                    login(log.getID(),log.getPass());
             }
-        }
-    }
-    private boolean login(String id, String pass) {
+        }catch (NullPointerException e){
 
-        return false;
+        }
+
+    }
+    public void signOut() {
+        log.remove();
+        startLogin();
+        finish();
     }
 
     public void startLogin() {
         Intent intent=new Intent(this,LoginActivity.class);
-        startActivityForResult(intent,0);
+        startActivity(intent);
+        finish();
     }
+    private void login(final String id, final String pass) {
+        final ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setMessage("Đang đăng nhập...");
+        dialog.setCancelable(false);
 
+        ValueEventListener postListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                try {
+                     if (user.getPassWord().equals(pass)){
+                         dialog.dismiss();
+                         creatView();
+                    }else {
+                         startLogin();
+                     }
+                }catch (NullPointerException e){
+                    checkLogin();
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        };
+        dialog.show();
+        database.child("users").child(id).getRef().addValueEventListener(postListener);
+    }
     private void creatView() {
         setContentView(R.layout.activity_navigation);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         ViewFlipper vf = (ViewFlipper)findViewById(R.id.vf);
-        vf.setDisplayedChild(1);
+        vf.setDisplayedChild(0);
         FloatingActionButton fab = (FloatingActionButton) vf.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,8 +121,6 @@ public class NavigationActivity extends FragmentActivity implements NavigationVi
                         .setAction("Action", null).show();
             }
         });
-//        (AppCompatActivity) setSupportActionBar(toolbar);
-//
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
@@ -114,13 +138,11 @@ public class NavigationActivity extends FragmentActivity implements NavigationVi
             super.onBackPressed();
         }
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.navigation, menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -151,23 +173,20 @@ public class NavigationActivity extends FragmentActivity implements NavigationVi
                             .setAction("Action", null).show();
                 }
             });
-        } else if (id == R.id.mn_xe_tim_nguoi) {
+        }else if (id == R.id.mn_xe_tim_nguoi) {
              Snackbar.make(getCurrentFocus(), "mn_nguoi_tim_xe", Snackbar.LENGTH_LONG)
                      .setAction("Action", null).show();
              setMap();
         }else if (id == R.id.mn_error) {
              Snackbar.make(getCurrentFocus(), "mn_cai_dat", Snackbar.LENGTH_LONG)
                      .setAction("Action", null).show();
-        }
-         else if (id == R.id.mn_help) {
+        }else if (id == R.id.mn_help) {
              Snackbar.make(getCurrentFocus(), "mn_cai_dat", Snackbar.LENGTH_LONG)
                      .setAction("Action", null).show();
          }else if (id == R.id.mn_logout) {
-             Snackbar.make(getCurrentFocus(), "mn_login", Snackbar.LENGTH_LONG)
-                     .setAction("Action", null).show();
+             signOut();
         }else if (id == R.id.mn_exit) {
-             Snackbar.make(getCurrentFocus(), "mn_dev", Snackbar.LENGTH_LONG)
-                     .setAction("Action", null).show();
+           finish();
          }else if (id == R.id.mn_dev) {
              Snackbar.make(getCurrentFocus(), "mn_dev", Snackbar.LENGTH_LONG)
                      .setAction("Action", null).show();

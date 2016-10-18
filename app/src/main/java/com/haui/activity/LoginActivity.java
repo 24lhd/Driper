@@ -1,28 +1,36 @@
 package com.haui.activity;
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatCheckBox;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.haui.fragment.LoginFragment;
 import com.haui.fragment.ResetPassFragment;
 import com.haui.fragment.SiginFragment;
 import com.haui.log.Log;
+import com.haui.object.Location;
+import com.haui.object.SinhVien;
+import com.haui.object.User;
+import com.haui.task.ParserSinhVien;
 
 import xyz.santeri.wvp.WrappingFragmentPagerAdapter;
 import xyz.santeri.wvp.WrappingViewPager;
@@ -41,8 +49,8 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Firebase
      */
-    private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    private Log log;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -52,17 +60,18 @@ public class LoginActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.login_sigin_layout);
         creatTabLoginSigin();
-        creatFirebase();
-
     }
-
+    public void writeNewUser( String maSV,String pass, String tenSV, String tenLopDL,
+                             String soDT, String bienSoXe, String tenViTri, Location location) {
+        User user = new User(maSV,pass,tenSV,tenLopDL,soDT,bienSoXe,tenViTri,location);
+        database.child("users").child(maSV).setValue(user);
+    }
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-//        this.overridePendingTransition(R.anim.left_end, R.anim.right_end);
     }
-
     private void creatTabLoginSigin() {
+        log=new Log(this);
         wrappingViewPager= (WrappingViewPager) findViewById(R.id.login_sigin_viewPager);
         loginFragment=new LoginFragment();
         siginFragment=new SiginFragment();
@@ -74,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                     case 0:
                         return loginFragment;
                     case 1:
-                        return  siginFragment;
+                        return siginFragment;
                     case 2:
                     default:
                         return resetPassFragment;
@@ -106,9 +115,10 @@ public class LoginActivity extends AppCompatActivity {
             tabLayout.setSelectedTabIndicatorHeight(10);
             tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorPrimary));
             tabLayout.setupWithViewPager(wrappingViewPager);
+            wrappingViewPager.setCurrentItem(0);
             tabLayout.getTabAt(0).setIcon(R.drawable.tab_login_1);
             tabLayout.getTabAt(1).setIcon(R.drawable.tab_register_0);
-            tabLayout.getTabAt(2).setIcon(R.drawable.tab_register_0);
+            tabLayout.getTabAt(2).setIcon(R.drawable.tab_refresh_0);
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
@@ -116,17 +126,17 @@ public class LoginActivity extends AppCompatActivity {
                         case 0:
                             tabLayout.getTabAt(0).setIcon(R.drawable.tab_login_1);
                             tabLayout.getTabAt(1).setIcon(R.drawable.tab_register_0);
-                            tabLayout.getTabAt(2).setIcon(R.drawable.tab_register_0);
+                            tabLayout.getTabAt(2).setIcon(R.drawable.tab_refresh_0);
                             break;
                         case 1:
                             tabLayout.getTabAt(0).setIcon(R.drawable.tab_login_0);
                             tabLayout.getTabAt(1).setIcon(R.drawable.tab_register_1);
-                            tabLayout.getTabAt(2).setIcon(R.drawable.tab_register_0);
+                            tabLayout.getTabAt(2).setIcon(R.drawable.tab_refresh_0);
                             break;
                         case 2:
                             tabLayout.getTabAt(0).setIcon(R.drawable.tab_login_0);
                             tabLayout.getTabAt(1).setIcon(R.drawable.tab_register_0);
-                            tabLayout.getTabAt(2).setIcon(R.drawable.tab_register_1);
+                            tabLayout.getTabAt(2).setIcon(R.drawable.tab_refresh_1);
                             break;
 
                     }
@@ -144,117 +154,75 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
     }
-    /**
-     * khởi tạo FB
-     */
-    public void creatFirebase() {
-        mAuth = FirebaseAuth.getInstance();
-        mAuth.signOut();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+
+    public void register(final String id, final String pass, final String soDT, final AppCompatButton btRegister, final ProgressBar progressBar) {
+        Handler handler=new Handler(){
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    android.util.Log.e("faker","user != null");
-                } else {
-                    android.util.Log.e("faker","else");
+            public void handleMessage(Message msg) {
+                if (msg.what==0){
+                    SinhVien sinhVien= (SinhVien) msg.obj;
+                    if (sinhVien!=null){
+                        writeNewUser(sinhVien.getMaSV(),pass,sinhVien.getTenSV(),sinhVien.getLopDL(),soDT,"","",new Location(12,123));
+                        Toast.makeText(LoginActivity.this, "Đăng ký thành công",Toast.LENGTH_SHORT).show();
+//                        Snackbar.make(wrappingViewPager,"Đăng ký thành công",Snackbar.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        btRegister.setVisibility(View.VISIBLE);
+                        loginFragment.setData(id,pass);
+                        wrappingViewPager.setCurrentItem(0);
+                    }else{
+//                        Snackbar.make(wrappingViewPager,"Mã sinh viên không đúng",Snackbar.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Mã sinh viên không đúng",Toast.LENGTH_SHORT).show();
+                        progressBar.setVisibility(View.GONE);
+                        btRegister.setVisibility(View.VISIBLE);
+                    }
                 }
             }
         };
-    }
-    /**
-     *
-     * Đăng xuất
-     *
-     * */
-    public void signOut() {
-        mAuth.signOut();
-    }
-    /**
-     * đăng ký tài khoản với :
-     *  id: mã sinh viên
-     *  pass: mật khẩu
-     *
-     * */
-
-    public void register(final String id, final String pass) {
-            mAuth.createUserWithEmailAndPassword(id+"@haui.com",pass ).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (!task.isSuccessful()) {
-                                Toast.makeText(LoginActivity.this, "Đăng ký không thành công",
-                                        Toast.LENGTH_SHORT).show();
-                            } else {
-                                Toast.makeText(LoginActivity.this, "Đăng ký thành công",
-                                        Toast.LENGTH_SHORT).show();
-                                Intent returnIntent = new Intent();
-                                returnIntent.putExtra(Log.LOG_ID,id);
-                                returnIntent.putExtra(Log.LOG_PASS,pass);
-                                setResult(Activity.RESULT_OK,returnIntent);
-                                finish();
-                            }
-                        }
-                    });
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mAuthListener != null) {
-            mAuth.removeAuthStateListener(mAuthListener);
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-            mAuth.addAuthStateListener(mAuthListener);
+        ParserSinhVien parserSinhVien=new ParserSinhVien(handler);
+        parserSinhVien.execute(id);
     }
     /**
      * đăng nhập
      * */
-    public void login(final String id, final String pass) {
-        mAuth.signInWithEmailAndPassword(id+"@haui.com", pass)
-                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (!task.isSuccessful()) {
-                            Toast.makeText(LoginActivity.this, "Sai mã sinh viên hoặc mật khẩu",
-                                    Toast.LENGTH_SHORT).show();
-                        }else{
-                            Toast.makeText(LoginActivity.this, "Đăng nhập thành công",
-                                    Toast.LENGTH_SHORT).show();
-                            Intent returnIntent = new Intent();
-                            returnIntent.putExtra("id",id);
-                            returnIntent.putExtra("pass",pass);
-                            setResult(Activity.RESULT_OK,returnIntent);
-                            finish();
-                        }
-                    }
-                });
-    }
-    /**
-     * kiểm tra dăng nhập
-     *
-     * true là đã đăng nhập
-     * false là không
-     * */
-
-    /**
-     * cập nhật mật khẩu với đối số là mật khẩu cũ
-     * */
-    public void updatePass(final String pass) {
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+    public  void login(final String id, final String pass, final AppCompatButton processButton, final ProgressBar progressBar, final AppCompatCheckBox animatedSwitch) {
+        ValueEventListener postListener = new ValueEventListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    user.updatePassword(pass);
-                    signOut();
-                } else {
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                User user = dataSnapshot.getValue(User.class);
+                try {
+                    if (user.getPassWord().equals(pass)){
+                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                        if (animatedSwitch.isChecked()){
+                            log.putID(id);
+                            log.putPass(pass);
+                        }else{
+                            log.remove();
+                        }
+                        processButton.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        Intent returnIntent = new Intent(LoginActivity.this,NavigationActivity.class);
+                        returnIntent.putExtra(Log.LOG_ID,id);
+                        returnIntent.putExtra(Log.LOG_PASS,pass);
+                        startActivity(returnIntent);
+                        finish();
+                    }else{  processButton.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(LoginActivity.this, "Sai mã sinh viên hoặc mật khẩu", Toast.LENGTH_SHORT).show();
+
+                    }
+                }catch (NullPointerException e){
+                    processButton.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                    Toast.makeText(LoginActivity.this, "Sai mã sinh viên hoặc mật khẩu", Toast.LENGTH_SHORT).show();
 
                 }
             }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
         };
+        database.child("users").child(id).getRef().addValueEventListener(postListener);
+
     }
+
 }

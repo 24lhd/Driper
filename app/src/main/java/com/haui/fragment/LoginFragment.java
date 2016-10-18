@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.haui.activity.LoginActivity;
 import com.haui.activity.R;
+import com.haui.log.Log;
 
 
 /**
@@ -32,27 +33,36 @@ public class LoginFragment extends Fragment {
     private TextView tvState;
     private LoginActivity tabActivity;
     private boolean isState;
+    private Log log;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.login_fragment,container,false);
-         tabActivity= (LoginActivity) getActivity();
+        initView(view);
+        return view;
+    }
+
+    private void initView(View view) {
+        log=new Log(getActivity());
+        tabActivity= (LoginActivity) getActivity();
         etId= (EditText) view.findViewById(R.id.et_id_login);
         progressBar= (ProgressBar) view.findViewById(R.id.pg_ligin);
         etPass= (EditText) view.findViewById(R.id.et_pass_login);
         tvState= (TextView) view.findViewById(R.id.state_login);
         animatedSwitch= (AppCompatCheckBox) view.findViewById(R.id.pin_state_login);
         animatedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                isState=animatedSwitch.isChecked();
-                if (isState){
-                    tvState.setText(R.string.save_state_login);
-                }else{
-                    tvState.setText(R.string.un_save_state_login);
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    isState=animatedSwitch.isChecked();
+                    if (isState){
+                        tvState.setText(R.string.save_state_login);
+                    }else{
+                        tvState.setText(R.string.un_save_state_login);
+                    }
+
                 }
-            }
-        });
+            });
+
         tvState= (TextView) view.findViewById(R.id.state_login);
         processButton= (AppCompatButton) view.findViewById(R.id.bt_login);
         processButton.setOnClickListener(new View.OnClickListener() {
@@ -61,15 +71,18 @@ public class LoginFragment extends Fragment {
                 String id=etId.getText().toString();
                 String pass=etPass.getText().toString();
                 if (!id.isEmpty()||!pass.isEmpty()){
-                    tabActivity.login(id,pass);
                     processButton.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
+                    tabActivity.login(id,pass,processButton,progressBar,animatedSwitch);
                 }else {
                     Toast.makeText(getContext(), "Không được để trống",Toast.LENGTH_SHORT).show();
                 }
             }
         });
-        return view;
+    }
+    public void setData(String s, String s1) {
+        etId.setText(s);
+        etPass.setText(s1);
     }
 
 }

@@ -23,7 +23,8 @@ public class SiginFragment extends Fragment implements View.OnClickListener{
     private EditText etId;
     private EditText etPass;
     private EditText etPassAgian;
-    private AppCompatButton processButton;
+    private EditText etSoDT;
+    private AppCompatButton btRigister;
     private LoginActivity tabActivity;
     private ProgressBar progressBar;
     @Nullable
@@ -35,25 +36,29 @@ public class SiginFragment extends Fragment implements View.OnClickListener{
         etPass= (EditText) view.findViewById(R.id.et_pass_register);
         etId= (EditText) view.findViewById(R.id.et_id_register);
         etPassAgian= (EditText) view.findViewById(R.id.et_pass_again_register);
-        processButton= (AppCompatButton) view.findViewById(R.id.bt_register);
-        processButton.setOnClickListener(this);
+        etSoDT= (EditText) view.findViewById(R.id.et_sdt);
+        btRigister= (AppCompatButton) view.findViewById(R.id.bt_register);
+        btRigister.setOnClickListener(this);
         return view;
     }
     @Override
     public void onClick(View view) {
-        String id,pass,passAgain;
-        if(view.getId()==processButton.getId()){
+        String id,pass,passAgain,soDT;
+        if(view.getId()==btRigister.getId()){
             id=etId.getText().toString();
             pass=etPass.getText().toString();
             passAgain=etPassAgian.getText().toString();
+            soDT=etSoDT.getText().toString();
             if (id.isEmpty()){
                 Toast.makeText(getContext(),"Không được để trống mã sinh viên",Toast.LENGTH_LONG).show();
             }else if(!pass.equals(passAgain)){
                 Toast.makeText(getContext(),"Mật khẩu không giống nhau",Toast.LENGTH_LONG).show();
+            }else if(soDT.length()<10){
+                Toast.makeText(getContext(),"Số điện thoại không đúng",Toast.LENGTH_LONG).show();
             }else {
-                processButton.setVisibility(View.GONE);
+                btRigister.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
-                tabActivity.register(id,pass);
+                tabActivity.register(id,pass,soDT,btRigister,progressBar);
             }
         }
     }

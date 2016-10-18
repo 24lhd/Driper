@@ -30,7 +30,7 @@ public class ResetPassFragment extends Fragment {
         processButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tabActivity.signOut();
+//                tabActivity.signOut();
             }
         });
         return view;
