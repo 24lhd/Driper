@@ -35,7 +35,7 @@ public class Log {
         return s;
     }
     public void remove() {
-        editor.clear();
+        putPass("");
         editor.commit();
     }
 }

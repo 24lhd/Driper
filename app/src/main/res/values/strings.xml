@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">XeOmCongNghiep</string>
+    <string name="app_name">Driper</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_navigation">NavigationActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -17,8 +17,6 @@
     <string name="chu_y_2">* Vì lí do bảo mật nên bạn phải gửi một bức ảnh chụp có ảnh thẻ sinh viên của mình để xác nhận thông tin là đúng. Mật khẩu sẽ được gửi đến bạn khi đã được xác nhận.</string>
     <string name="chu_y_3">* Trong trường hợp không gửi được bạn có thể liên hệ tới địa chỉ : caubelamchuyen@gmail.com</string>
     <string name="hint_std">Số điện thoại của bạn</string>
-    <string name="app_name_tablet">Bottom Navigation (Tablet)</string>
-    <string name="app_pr">com.faker.classbook.providers.CustomBadgeProvider</string>
     <string name="hint_sms">Nhập tin nhắn vào đây</string>
     <string name="chu_y_4">* Hãy sử dụng mã sinh viên là mã sinh viên của bạn.</string>
     <string name="hint_sdt">Số điện thoại</string>

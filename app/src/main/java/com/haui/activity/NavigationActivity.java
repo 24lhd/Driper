@@ -44,7 +44,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         OnMapReadyCallback,ValueEventListener {
     private com.haui.log.Log log;
     private DatabaseReference database;
-    private String idSV;
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +52,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         log=new Log(this);
         database = FirebaseDatabase.getInstance().getReference();
         reQuestPermistion();
-        creatView();
-        checkLogin();
+        checkLogin(log.getID(),log.getPass());
     }
     private void reQuestPermistion() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)!= PackageManager.PERMISSION_GRANTED) {
@@ -64,12 +62,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             }
         }
     }
-    private void checkLogin() {
-           if (log.getID().isEmpty()){
-              startLogin();
+    private void checkLogin(String id, String pass) {
+            if (pass.isEmpty()){
+                startLogin();
             }else{
-               login(log.getID(),log.getPass());
+                login(id,pass);
             }
+
     }
     public void signOut() {
         log.remove();
@@ -83,7 +82,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode==2){
             if (resultCode==RESULT_OK){
-                creatData();
+                log.putID(data.getStringExtra(Log.LOG_ID));
+                android.util.Log.e("id",log.getID());
+                checkLogin(log.getID(),data.getStringExtra(Log.LOG_PASS));
             }else{
                 log.remove();
                 setViewNullData();
@@ -97,7 +98,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
     private void login(final String id, final String pass) {
         final ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setMessage("Đang đăng nhập...");
+        dialog.setMessage("Đang khởi tạo dữ liệu...");
         dialog.setCancelable(false);
         dialog.show();
         final ValueEventListener postListener = new ValueEventListener() {
@@ -108,9 +109,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         User user = dataSnapshot.getValue(User.class);
                         if (user.getPassWord().equals(pass)){
                             dialog.dismiss();
-                            idSV=id;
                             creatData();
-                            database.child("users").child(id).getRef().removeEventListener(this);
+                            database.child("users").child(log.getID()).getRef().removeEventListener(this);
+                            creatView();
                             break;
                         }
                     }catch (NullPointerException e){
@@ -137,7 +138,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private void creatView() {
          toolbar = (Toolbar) findViewById(R.id.toolbar);
          viewFlipper = (ViewFlipper)findViewById(vf);
-        toolbar.setTitle("acn");
+        toolbar.setTitle("Driper");
         setSupportActionBar(toolbar);
          drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
          toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -186,10 +187,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                             try {
                                 User user = dataSnapshot.getValue(User.class);
                                 fragment.setTextInfor(user.getTenSV(),user.getMaSV(),user.getTenLopDL(),user.getSoDT(),user.getTenViTri(),user.getBienSoXe());
-                                database.child("users").child(idSV).getRef().removeEventListener(this);
-                                break;
+                                return;
                             }catch (NullPointerException e){
                                 android.util.Log.e("faker","null");
+                                startLogin();
+                                return;
                             }
                         }
                     }
@@ -197,7 +199,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 };
-                database.child("users").child(idSV).getRef().addValueEventListener(postListener);
+                database.child("users").child(log.getID()).getRef().addValueEventListener(postListener);
                 ft.replace(R.id.fragment, fragment).commit();
                 break;
 
