@@ -6,14 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:openDrawer="start">
-
-    <ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/vf"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-        <include layout="@layout/frame_layout" />
-        <include layout="@layout/activity_maps"/>
-    </ViewFlipper>
+    <include layout="@layout/app_bar_layout"></include>
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:layout_width="wrap_content"
@@ -22,5 +15,4 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/nav_header_navigation"
         app:menu="@menu/activity_navigation_drawer" />
-
 </android.support.v4.widget.DrawerLayout>

@@ -13,31 +13,26 @@ public class User {
     public String tenSV;
     public String tenLopDL;
     public String soDT;
-    public String bienSoXe;
-    public String tenViTri;
-    public Location location;
+    public String imgProfile;
 
-    public User() {
-
-    }
-
-    public User(String maSV, String passWord, String tenSV, String tenLopDL, String soDT, String bienSoXe, String tenViTri, Location location) {
-        this.maSV = maSV;
-        this.passWord = passWord;
-        this.tenSV = tenSV;
-        this.tenLopDL = tenLopDL;
-        this.soDT = soDT;
-        this.bienSoXe = bienSoXe;
-        this.tenViTri = tenViTri;
-        this.location = location;
-    }
-
-    public String getPassWord() {
-        return passWord;
+    @Override
+    public String toString() {
+        return "User{" +
+                "maSV='" + maSV + '\'' +
+                ", passWord='" + passWord + '\'' +
+                ", tenSV='" + tenSV + '\'' +
+                ", tenLopDL='" + tenLopDL + '\'' +
+                ", soDT='" + soDT + '\'' +
+                ", imgProfile='" + imgProfile + '\'' +
+                '}';
     }
 
     public String getMaSV() {
         return maSV;
+    }
+
+    public String getPassWord() {
+        return passWord;
     }
 
     public String getTenSV() {
@@ -52,29 +47,79 @@ public class User {
         return soDT;
     }
 
-    public String getBienSoXe() {
-        return bienSoXe;
+    public String getImgProfile() {
+        return imgProfile;
     }
 
-    public String getTenViTri() {
-        return tenViTri;
+    public User(String maSV, String passWord, String tenSV, String tenLopDL, String soDT, String imgProfile) {
+
+        this.maSV = maSV;
+        this.passWord = passWord;
+        this.tenSV = tenSV;
+        this.tenLopDL = tenLopDL;
+        this.soDT = soDT;
+        this.imgProfile = imgProfile;
     }
 
-    public Location getLocation() {
-        return location;
+    public User() {
+
+
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "maSV='" + maSV + '\'' +
-                ", passWord='" + passWord + '\'' +
-                ", tenSV='" + tenSV + '\'' +
-                ", tenLopDL='" + tenLopDL + '\'' +
-                ", soDT='" + soDT + '\'' +
-                ", bienSoXe='" + bienSoXe + '\'' +
-                ", tenViTri='" + tenViTri + '\'' +
-                ", location=" + location +
-                '}';
-    }
+//    public User(String maSV, String passWord, String tenSV, String tenLopDL, String soDT, String bienSoXe, String tenViTri, Location location) {
+//        this.maSV = maSV;
+//        this.passWord = passWord;
+//        this.tenSV = tenSV;
+//        this.tenLopDL = tenLopDL;
+//        this.soDT = soDT;
+//        this.bienSoXe = bienSoXe;
+//        this.tenViTri = tenViTri;
+//        this.location = location;
+//    }
+//
+//    public String getPassWord() {
+//        return passWord;
+//    }
+//
+//    public String getMaSV() {
+//        return maSV;
+//    }
+//
+//    public String getTenSV() {
+//        return tenSV;
+//    }
+//
+//    public String getTenLopDL() {
+//        return tenLopDL;
+//    }
+//
+//    public String getSoDT() {
+//        return soDT;
+//    }
+//
+//    public String getBienSoXe() {
+//        return bienSoXe;
+//    }
+//
+//    public String getTenViTri() {
+//        return tenViTri;
+//    }
+//
+//    public Location getLocation() {
+//        return location;
+//    }
+
+//    @Override
+//    public String toString() {
+//        return "User{" +
+//                "maSV='" + maSV + '\'' +
+//                ", passWord='" + passWord + '\'' +
+//                ", tenSV='" + tenSV + '\'' +
+//                ", tenLopDL='" + tenLopDL + '\'' +
+//                ", soDT='" + soDT + '\'' +
+//                ", bienSoXe='" + bienSoXe + '\'' +
+//                ", tenViTri='" + tenViTri + '\'' +
+//                ", location=" + location +
+//                '}';
+//    }
 }

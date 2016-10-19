@@ -146,6 +146,27 @@
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:textAppearance="@style/TextAppearance.Widget.AppCompat.ExpandedMenu.Item"
+                            android:text="@string/infor_pass" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:layout_marginLeft="10dp"
+                            android:id="@+id/tv_infor_pass"
+                            android:inputType="textPassword"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                            android:text="********" />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_margin="10dp"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textAppearance="@style/TextAppearance.Widget.AppCompat.ExpandedMenu.Item"
                             android:text="@string/infor_bxs" />
                         <TextView
                             android:layout_width="wrap_content"
@@ -176,27 +197,7 @@
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                              />
                     </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:orientation="horizontal"
-                        android:layout_margin="10dp"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:textAppearance="@style/TextAppearance.Widget.AppCompat.ExpandedMenu.Item"
-                            android:text="@string/infor_pass" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:layout_marginLeft="10dp"
-                            android:id="@+id/tv_infor_pass"
-                            android:inputType="textPassword"
-                            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-                            android:text="********" />
-                    </LinearLayout>
+
                 </LinearLayout>
             </android.support.v7.widget.CardView>
             <android.support.v7.widget.CardView

@@ -28,7 +28,6 @@ import com.haui.fragment.LoginFragment;
 import com.haui.fragment.ResetPassFragment;
 import com.haui.fragment.SiginFragment;
 import com.haui.log.Log;
-import com.haui.object.Location;
 import com.haui.object.SinhVien;
 import com.haui.object.User;
 import com.haui.task.ParserSinhVien;
@@ -64,8 +63,8 @@ public class LoginActivity extends AppCompatActivity {
         creatTabLoginSigin();
     }
     public void writeNewUser( String maSV,String pass, String tenSV, String tenLopDL,
-                             String soDT, String bienSoXe, String tenViTri, Location location) {
-        User user = new User(maSV,pass,tenSV,tenLopDL,soDT,bienSoXe,tenViTri,location);
+                             String soDT ,String img) {
+        User user = new User(maSV,pass,tenSV,tenLopDL,soDT,img);
         database.child("users").child(maSV).setValue(user);
     }
     @Override
@@ -164,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
                 if (msg.what==0){
                     SinhVien sinhVien= (SinhVien) msg.obj;
                     if (sinhVien!=null){
-                        writeNewUser(sinhVien.getMaSV(),pass,sinhVien.getTenSV(),sinhVien.getLopDL(),soDT,"","",new Location(12,123));
+                        writeNewUser(sinhVien.getMaSV(),pass,sinhVien.getTenSV(),sinhVien.getLopDL(),soDT,"");
                         Toast.makeText(LoginActivity.this, "Đăng ký thành công",Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         btRegister.setVisibility(View.VISIBLE);

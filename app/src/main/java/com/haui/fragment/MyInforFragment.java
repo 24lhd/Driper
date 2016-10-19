@@ -32,14 +32,13 @@ public class MyInforFragment extends Fragment{
 //        Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(imageView);
     }
 
-    public void setTextInfor(String tv_infor_ten, String tv_infor_masv, String tv_infor_lop, String tv_infor_sdt, String tv_infor_vitri, String tv_infor_bxs) {
+    public void setTextInfor(String tv_infor_ten, String tv_infor_masv, String tv_infor_lop, String tv_infor_sdt,String img) {
         ((TextView) view.findViewById(R.id.tv_infor_ten)).setText(tv_infor_ten);
         ((TextView) view.findViewById(R.id.tv_infor_masv)).setText(tv_infor_masv);
         ((TextView) view.findViewById(R.id.tv_infor_lop)).setText(tv_infor_lop);
         ((TextView) view.findViewById(R.id.tv_infor_sdt)).setText(tv_infor_sdt);
-        ((TextView) view.findViewById(R.id.tv_infor_vitri)).setText(tv_infor_vitri);
-        ((TextView) view.findViewById(R.id.tv_infor_bxs)).setText(tv_infor_bxs);
         collapsingToolbar.setTitle(tv_infor_ten);
     }
+
 
 }

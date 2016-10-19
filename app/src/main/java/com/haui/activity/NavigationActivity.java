@@ -37,14 +37,11 @@ import com.haui.map.MapManager;
 import com.haui.object.User;
 
 import static android.support.design.widget.Snackbar.make;
-import static com.haui.activity.R.id.vf;
-
 public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback {
     private com.haui.log.Log log;
     private DatabaseReference database;
     private String passWord;
     private String maSV;
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,13 +76,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
     }
     public void signOut() {
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
         log.remove();
        startLogin();
     }
     public void startLogin() {
-        Intent intent=new Intent(this,LoginActivity.class);
+        Intent intent=new Intent(NavigationActivity.this,LoginActivity.class);
         startActivityForResult(intent,2);
     }
     @Override
@@ -100,8 +95,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
     }
     private void creatData() {
-
-        navigationView.setCheckedItem(R.id.map);
+        navigationView.setCheckedItem(R.id.mn_nguoi_tim_xe);
         setMap();
     }
     private void login(final String extra, final String stringExtra) {
@@ -123,10 +117,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                     dialog.dismiss();
                                     creatData();
                                 }else {
+                                    dialog.dismiss();
                                     startLogin();
                                 }
                             }catch (NullPointerException e){
-                                android.util.Log.e("faker","login");
+                                dialog.dismiss();
+                                startLogin();
+                                android.util.Log.e("faker","login1");
                             }
                         }
                         @Override
@@ -137,23 +134,22 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }catch (NullPointerException e){}
     }
     private  NavigationView navigationView;
-    private  ViewFlipper viewFlipper;
-    private  DrawerLayout drawer;
     private  Toolbar toolbar;
-    private ActionBarDrawerToggle toggle;
     private void creatView() {
          toolbar = (Toolbar) findViewById(R.id.toolbarMain);
-         viewFlipper = (ViewFlipper)findViewById(vf);
+        ViewFlipper  viewFlipper = (ViewFlipper)findViewById(R.id.viewFliper);
         toolbar.setTitle("Driper");
+        viewFlipper.setDisplayedChild(0);
         setSupportActionBar(toolbar);
-         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+          drawer.setDrawerListener(toggle);
         toggle.syncState();
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
     private void setViewNullData() {
+        ViewFlipper  viewFlipper = (ViewFlipper)findViewById(R.id.viewFliper);
         viewFlipper.setDisplayedChild(0);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         Fragment fragment=new NullDataFragment();
@@ -174,24 +170,22 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         switch (item.getItemId()) {
             case R.id.mn_nguoi_tim_xe:
-                toolbar.setTitle("Thông tin cá nhân");
-                setSupportActionBar(toolbar);
+                toolbar.setTitle("Tìm xe");
                 setMap();
                 break;
             case R.id.mn_xe_tim_nguoi:
+                toolbar.setTitle("Tìm người");
                 setMap();
                 break;
             case R.id.mn_user:
+                ViewFlipper  viewFlipper = (ViewFlipper)findViewById(R.id.viewFliper);
                 viewFlipper.setDisplayedChild(0);
                 toolbar.setTitle("Thông tin cá nhân");
-                setSupportActionBar(toolbar);
                 fragmen=new MyInforFragment();
-                 final ProgressDialog dialog = new ProgressDialog(this);
-                dialog.setMessage("Đang khởi tạo dữ liệu...");
-                dialog.setCancelable(false);
-                dialog.show();
                 database.child("users").child(maSV).addListenerForSingleValueEvent(
                         new ValueEventListener() {
                             @Override
@@ -199,10 +193,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                 User user = dataSnapshot.getValue(User.class);
                                 try {
                                     if (user.getPassWord().equals(passWord)){
-                                        fragmen.setTextInfor(user.getTenSV(),user.getMaSV(),user.getTenLopDL(),user.getSoDT(),user.getTenViTri(),user.getBienSoXe());
-                                        dialog.dismiss();
+                                        fragmen.setTextInfor(user.getTenSV(),user.getMaSV(),user.getTenLopDL(),user.getSoDT(),user.getImgProfile());
+                                    }else {
+                                      startLogin();
                                     }
                                 }catch (NullPointerException e){
+                                 startLogin();
                                     android.util.Log.e("faker","MyInforFragment");
                                 }
                             }
@@ -250,6 +246,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .setAction("Action", null).show();
     }
     private void setMap() {
+        ViewFlipper  viewFlipper = (ViewFlipper)findViewById(R.id.viewFliper);
         viewFlipper.setDisplayedChild(1);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
