@@ -3,14 +3,6 @@
 
     <group android:checkableBehavior="all">
         <item
-            android:id="@+id/mn_user"
-            android:icon="@drawable/ic_student"
-            android:title="Cá nhân" />
-        <item
-            android:id="@+id/mn_history"
-            android:icon="@drawable/ic_history"
-            android:title="Hóa đơn cũ" />
-        <item
             android:id="@+id/mn_nguoi_tim_xe"
             android:icon="@drawable/places_ic_search"
             android:title="Người tìm xe" />
@@ -18,6 +10,14 @@
             android:id="@+id/mn_xe_tim_nguoi"
             android:icon="@drawable/police"
             android:title="Xe tìm người" />
+        <item
+            android:id="@+id/mn_user"
+            android:icon="@drawable/ic_student"
+            android:title="Cá nhân" />
+        <item
+            android:id="@+id/mn_yeucau"
+            android:icon="@drawable/ic_history"
+            android:title="Yêu cầu" />
         <item
             android:id="@+id/mn_error"
             android:icon="@drawable/ic_error"
@@ -38,13 +38,14 @@
     <item android:title="Khác" >
         <menu>
             <item
+                android:id="@+id/mn_dev"
+                android:icon="@drawable/code"
+                android:title="Các ứng dụng khác" />
+            <item
                 android:id="@+id/mn_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="Ứng dụng liên quan" />
-            <item
-                android:id="@+id/mn_dev"
-                android:icon="@drawable/code"
-                android:title="Phát triển" />
+
         </menu>
     </item>
 

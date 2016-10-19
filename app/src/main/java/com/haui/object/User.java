@@ -35,4 +35,32 @@ public class User {
     public String getPassWord() {
         return passWord;
     }
+
+    public String getMaSV() {
+        return maSV;
+    }
+
+    public String getTenSV() {
+        return tenSV;
+    }
+
+    public String getTenLopDL() {
+        return tenLopDL;
+    }
+
+    public String getSoDT() {
+        return soDT;
+    }
+
+    public String getBienSoXe() {
+        return bienSoXe;
+    }
+
+    public String getTenViTri() {
+        return tenViTri;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
 }
