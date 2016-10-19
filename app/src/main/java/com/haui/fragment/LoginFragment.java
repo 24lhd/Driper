@@ -49,7 +49,7 @@ public class LoginFragment extends Fragment {
         progressBar= (ProgressBar) view.findViewById(R.id.pg_ligin);
         etPass= (EditText) view.findViewById(R.id.et_pass_login);
         tvState= (TextView) view.findViewById(R.id.state_login);
-        goneTextView();
+        tvNoti.setVisibility(View.GONE);
         animatedSwitch= (AppCompatCheckBox) view.findViewById(R.id.pin_state_login);
         animatedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -60,10 +60,8 @@ public class LoginFragment extends Fragment {
                     }else{
                         tvState.setText(R.string.un_save_state_login);
                     }
-
                 }
             });
-
         tvState= (TextView) view.findViewById(R.id.state_login);
         processButton= (AppCompatButton) view.findViewById(R.id.bt_login);
         processButton.setOnClickListener(new View.OnClickListener() {
@@ -74,7 +72,7 @@ public class LoginFragment extends Fragment {
                 if (!id.isEmpty()||!pass.isEmpty()){
                     processButton.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
-                    tabActivity.login(id,pass,processButton,progressBar,animatedSwitch);
+                    tabActivity.login(id,pass,processButton,progressBar,animatedSwitch,tvNoti);
                 }else {
                     setTextNoti("* Không được để trống");
                 }
@@ -82,9 +80,7 @@ public class LoginFragment extends Fragment {
         });
     }
 
-    public void goneTextView() {
-        tvNoti.setVisibility(View.GONE);
-    }
+
 
     public void setData(String s, String s1) {
         etId.setText(s);

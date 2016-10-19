@@ -20,7 +20,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -40,10 +39,12 @@ import com.haui.object.User;
 import static android.support.design.widget.Snackbar.make;
 import static com.haui.activity.R.id.vf;
 
-public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
-        OnMapReadyCallback,ValueEventListener {
+public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,OnMapReadyCallback {
     private com.haui.log.Log log;
     private DatabaseReference database;
+    private String passWord;
+    private String maSV;
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         log=new Log(this);
         database = FirebaseDatabase.getInstance().getReference();
         reQuestPermistion();
-        checkLogin(log.getID(),log.getPass());
+        creatView();
+        checkLogin(log.getID(), log.getPass());
     }
     private void reQuestPermistion() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS)!= PackageManager.PERMISSION_GRANTED) {
@@ -62,15 +64,23 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             }
         }
     }
-    private void checkLogin(String id, String pass) {
-            if (pass.isEmpty()){
+    private void checkLogin(String extra, String stringExtra) {
+        try {
+            if (stringExtra.isEmpty()||extra.isEmpty()){
                 startLogin();
             }else{
-                login(id,pass);
+                login(extra,stringExtra);
             }
+        }catch (NullPointerException e){
+            android.util.Log.e("faker","checkLogin");
+            startLogin();
+        }
+
 
     }
     public void signOut() {
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
         log.remove();
        startLogin();
     }
@@ -82,9 +92,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode==2){
             if (resultCode==RESULT_OK){
-                log.putID(data.getStringExtra(Log.LOG_ID));
-                android.util.Log.e("id",log.getID());
-                checkLogin(log.getID(),data.getStringExtra(Log.LOG_PASS));
+                checkLogin(data.getStringExtra(Log.LOG_ID),data.getStringExtra(Log.LOG_PASS));
             }else{
                 log.remove();
                 setViewNullData();
@@ -92,51 +100,49 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
     }
     private void creatData() {
-        navigationView.setNavigationItemSelectedListener(this);
+
         navigationView.setCheckedItem(R.id.map);
         setMap();
     }
-    private void login(final String id, final String pass) {
-        final ProgressDialog dialog = new ProgressDialog(this);
+    private void login(final String extra, final String stringExtra) {
+         final ProgressDialog dialog = new ProgressDialog(this);
         dialog.setMessage("Đang khởi tạo dữ liệu...");
         dialog.setCancelable(false);
         dialog.show();
-        final ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                while (true){
-                    try {
-                        User user = dataSnapshot.getValue(User.class);
-                        if (user.getPassWord().equals(pass)){
-                            dialog.dismiss();
-                            creatData();
-                            database.child("users").child(log.getID()).getRef().removeEventListener(this);
-                            creatView();
-                            break;
+        try {
+            database.child("users").child(extra).addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            User user = dataSnapshot.getValue(User.class);
+                            try {
+                                if (user.getPassWord().equals(stringExtra)){
+                                    android.util.Log.e("faker",user.toString());
+                                    passWord=stringExtra;
+                                    maSV = extra;
+                                    dialog.dismiss();
+                                    creatData();
+                                }else {
+                                    startLogin();
+                                }
+                            }catch (NullPointerException e){
+                                android.util.Log.e("faker","login");
+                            }
                         }
-                    }catch (NullPointerException e){
-                        dialog.dismiss();
-                        Toast.makeText(NavigationActivity.this, "Sai mã sinh viên hoặc mật khẩu", Toast.LENGTH_SHORT).show();
-                        startLogin();
-                        break;
-                    }
-                }
-
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        database.child("users").child(id).getRef().addValueEventListener(postListener);
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            android.util.Log.e("faker","onCancelled");
+                        }
+                    });
+        }catch (NullPointerException e){}
     }
-
     private  NavigationView navigationView;
     private  ViewFlipper viewFlipper;
     private  DrawerLayout drawer;
     private  Toolbar toolbar;
     private ActionBarDrawerToggle toggle;
     private void creatView() {
-         toolbar = (Toolbar) findViewById(R.id.toolbar);
+         toolbar = (Toolbar) findViewById(R.id.toolbarMain);
          viewFlipper = (ViewFlipper)findViewById(vf);
         toolbar.setTitle("Driper");
         setSupportActionBar(toolbar);
@@ -145,6 +151,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
     private void setViewNullData() {
         viewFlipper.setDisplayedChild(0);
@@ -153,6 +160,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         ft.replace(R.id.fragment, fragment).commit();
 
     }
+    private  MyInforFragment fragmen;
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -179,28 +187,31 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 viewFlipper.setDisplayedChild(0);
                 toolbar.setTitle("Thông tin cá nhân");
                 setSupportActionBar(toolbar);
-                final MyInforFragment fragment=new MyInforFragment();
-                ValueEventListener postListener = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        while (true){
-                            try {
+                fragmen=new MyInforFragment();
+                 final ProgressDialog dialog = new ProgressDialog(this);
+                dialog.setMessage("Đang khởi tạo dữ liệu...");
+                dialog.setCancelable(false);
+                dialog.show();
+                database.child("users").child(maSV).addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
                                 User user = dataSnapshot.getValue(User.class);
-                                fragment.setTextInfor(user.getTenSV(),user.getMaSV(),user.getTenLopDL(),user.getSoDT(),user.getTenViTri(),user.getBienSoXe());
-                                return;
-                            }catch (NullPointerException e){
-                                android.util.Log.e("faker","null");
-                                startLogin();
-                                return;
+                                try {
+                                    if (user.getPassWord().equals(passWord)){
+                                        fragmen.setTextInfor(user.getTenSV(),user.getMaSV(),user.getTenLopDL(),user.getSoDT(),user.getTenViTri(),user.getBienSoXe());
+                                        dialog.dismiss();
+                                    }
+                                }catch (NullPointerException e){
+                                    android.util.Log.e("faker","MyInforFragment");
+                                }
                             }
-                        }
-                    }
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
-                };
-                database.child("users").child(log.getID()).getRef().addValueEventListener(postListener);
-                ft.replace(R.id.fragment, fragment).commit();
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                                android.util.Log.e("faker","onCancelled");
+                            }
+                        });
+                ft.replace(R.id.fragment, fragmen).commit();
                 break;
 
             case R.id.mn_yeucau:
@@ -228,7 +239,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 //                ft.replace(R.id.fragment, fragment).commit();
                 break;
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -249,13 +259,4 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
        new MapManager(googleMap,this);
     }
 
-    @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
-
-    }
-
-    @Override
-    public void onCancelled(DatabaseError databaseError) {
-
-    }
 }

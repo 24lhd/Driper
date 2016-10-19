@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -141,10 +142,8 @@ public class LoginActivity extends AppCompatActivity {
                             tabLayout.getTabAt(1).setIcon(R.drawable.tab_register_0);
                             tabLayout.getTabAt(2).setIcon(R.drawable.tab_refresh_1);
                             break;
-
                     }
                 }
-
                 @Override
                 public void onTabUnselected(TabLayout.Tab tab) {
 
@@ -167,13 +166,11 @@ public class LoginActivity extends AppCompatActivity {
                     if (sinhVien!=null){
                         writeNewUser(sinhVien.getMaSV(),pass,sinhVien.getTenSV(),sinhVien.getLopDL(),soDT,"","",new Location(12,123));
                         Toast.makeText(LoginActivity.this, "Đăng ký thành công",Toast.LENGTH_SHORT).show();
-//                        Snackbar.make(wrappingViewPager,"Đăng ký thành công",Snackbar.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         btRegister.setVisibility(View.VISIBLE);
                         loginFragment.setData(id,pass);
                         wrappingViewPager.setCurrentItem(0);
                     }else{
-//                        Snackbar.make(wrappingViewPager,"Mã sinh viên không đúng",Snackbar.LENGTH_SHORT).show();
                         Toast.makeText(LoginActivity.this, "Mã sinh viên không đúng",Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         btRegister.setVisibility(View.VISIBLE);
@@ -187,43 +184,43 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * đăng nhập
      * */
-    public  void login(final String id, final String pass, final AppCompatButton processButton, final ProgressBar progressBar, final AppCompatCheckBox animatedSwitch) {
-        loginFragment.goneTextView();
-        ValueEventListener postListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                User user = dataSnapshot.getValue(User.class);
-                try {
-                    if (user.getPassWord().equals(pass)){
-                        if (animatedSwitch.isChecked()){
-                            log.putID(id);
-                            log.putPass(pass);
-                        }else{
-                            log.remove();
+    public  void login(final String id, final String pass, final AppCompatButton processButton, final ProgressBar progressBar, final AppCompatCheckBox animatedSwitch, final TextView tvNoti) {
+        database.child("users").child(id).addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User user = dataSnapshot.getValue(User.class);
+                        try {
+                            if (user.getPassWord().equals(pass)){
+                                if (animatedSwitch.isChecked()){
+                                    log.putID(id);
+                                    log.putPass(pass);
+                                }else{
+                                    log.remove();
+                                }
+                                processButton.setVisibility(View.VISIBLE);
+                                progressBar.setVisibility(View.GONE);
+                                Intent returnIntent = new Intent(LoginActivity.this,NavigationActivity.class);
+                                returnIntent.putExtra(Log.LOG_PASS,pass);
+                                returnIntent.putExtra(Log.LOG_ID,id);
+                                setResult(RESULT_OK,returnIntent);
+                                finish();
+                            }else{
+                                processButton.setVisibility(View.VISIBLE);
+                                progressBar.setVisibility(View.GONE);
+                                loginFragment.setTextNoti("* Sai mã sinh viên hoặc mật khẩu");
+                            }
+                        }catch (NullPointerException e){
+                            processButton.setVisibility(View.VISIBLE);
+                            progressBar.setVisibility(View.GONE);
+                            loginFragment.setTextNoti("* Sai mã sinh viên hoặc mật khẩu");
                         }
-                        processButton.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        Intent returnIntent = new Intent(LoginActivity.this,NavigationActivity.class);
-                        returnIntent.putExtra(Log.LOG_ID,id);
-                        returnIntent.putExtra(Log.LOG_PASS,pass);
-                        setResult(RESULT_OK,returnIntent);
-                        finish();
-                    }else{
-                        processButton.setVisibility(View.VISIBLE);
-                        progressBar.setVisibility(View.GONE);
-                        loginFragment.setTextNoti("* Sai mã sinh viên hoặc mật khẩu");
                     }
-                }catch (NullPointerException e){
-                    processButton.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.GONE);
-                    loginFragment.setTextNoti("* Sai mã sinh viên hoặc mật khẩu");
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        };
-        database.child("users").child(id).getRef().addValueEventListener(postListener);
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        android.util.Log.e("faker","onCancelled");
+                    }
+                });
 
     }
 

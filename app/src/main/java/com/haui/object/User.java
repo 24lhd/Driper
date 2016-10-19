@@ -63,4 +63,18 @@ public class User {
     public Location getLocation() {
         return location;
     }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "maSV='" + maSV + '\'' +
+                ", passWord='" + passWord + '\'' +
+                ", tenSV='" + tenSV + '\'' +
+                ", tenLopDL='" + tenLopDL + '\'' +
+                ", soDT='" + soDT + '\'' +
+                ", bienSoXe='" + bienSoXe + '\'' +
+                ", tenViTri='" + tenViTri + '\'' +
+                ", location=" + location +
+                '}';
+    }
 }

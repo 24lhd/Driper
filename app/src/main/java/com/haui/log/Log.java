@@ -1,13 +1,10 @@
 package com.haui.log;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import static android.content.Context.MODE_PRIVATE;
-
 /**
  * Created by Faker on 8/28/2016.
  */
-
 public class Log {
     public static final String LOG_NAME="log";
     public static final String LOG_ID="id";
@@ -35,7 +32,7 @@ public class Log {
         return s;
     }
     public void remove() {
-        putPass("");
+        editor.clear();
         editor.commit();
     }
 }
