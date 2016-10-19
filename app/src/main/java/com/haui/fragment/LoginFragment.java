@@ -13,8 +13,6 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.haui.activity.LoginActivity;
 import com.haui.activity.R;
 import com.haui.log.Log;
@@ -32,6 +30,7 @@ public class LoginFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView tvState;
     private LoginActivity tabActivity;
+    private TextView tvNoti;
     private boolean isState;
     private Log log;
     @Nullable
@@ -45,10 +44,12 @@ public class LoginFragment extends Fragment {
     private void initView(View view) {
         log=new Log(getActivity());
         tabActivity= (LoginActivity) getActivity();
+        tvNoti= (TextView) view.findViewById(R.id.tv_noti_login);
         etId= (EditText) view.findViewById(R.id.et_id_login);
         progressBar= (ProgressBar) view.findViewById(R.id.pg_ligin);
         etPass= (EditText) view.findViewById(R.id.et_pass_login);
         tvState= (TextView) view.findViewById(R.id.state_login);
+        goneTextView();
         animatedSwitch= (AppCompatCheckBox) view.findViewById(R.id.pin_state_login);
         animatedSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
@@ -75,14 +76,23 @@ public class LoginFragment extends Fragment {
                     progressBar.setVisibility(View.VISIBLE);
                     tabActivity.login(id,pass,processButton,progressBar,animatedSwitch);
                 }else {
-                    Toast.makeText(getContext(), "Không được để trống",Toast.LENGTH_SHORT).show();
+                    setTextNoti("* Không được để trống");
                 }
             }
         });
     }
+
+    public void goneTextView() {
+        tvNoti.setVisibility(View.GONE);
+    }
+
     public void setData(String s, String s1) {
         etId.setText(s);
         etPass.setText(s1);
     }
 
+    public void setTextNoti(String textNoti) {
+        tvNoti.setVisibility(View.VISIBLE);
+        tvNoti.setText(textNoti);
+    }
 }

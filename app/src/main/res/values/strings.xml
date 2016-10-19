@@ -22,4 +22,12 @@
     <string name="hint_sms">Nhập tin nhắn vào đây</string>
     <string name="chu_y_4">* Hãy sử dụng mã sinh viên là mã sinh viên của bạn.</string>
     <string name="hint_sdt">Số điện thoại</string>
+    <string name="tv_login">Bạn chưa đăng nhập vào hệ thống \n Cick để đăng nhập</string>
+    <string name="infor_ten">Tên sinh viên: </string>
+    <string name="infor_masv">Mã sinh viên: </string>
+    <string name="infor_lop">Lớp độc lập: </string>
+    <string name="infor_sdt">Số điện thoại: </string>
+    <string name="infor_bxs">Biển số xe: </string>
+    <string name="infor_vitri">Vị trí hiện tại: </string>
+    <string name="infor_pass">Mật khẩu:</string>
 </resources>

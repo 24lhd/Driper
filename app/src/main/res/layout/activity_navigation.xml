@@ -4,13 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    app:insetForeground="#4000"
     android:layout_height="match_parent"
     tools:openDrawer="start">
     <ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/vf"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
+        <include layout="@layout/layout_null_data" />
         <include layout="@layout/activity_maps" />
         <include layout="@layout/login_fragment" />
         <include layout="@layout/sigin_fragment" />

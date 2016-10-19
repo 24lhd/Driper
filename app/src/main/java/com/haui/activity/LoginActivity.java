@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
     /**
      * Firebase
      */
-    private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    private DatabaseReference database;
     private Log log;
 
     @Override
@@ -58,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        database = FirebaseDatabase.getInstance().getReference();
         setContentView(R.layout.login_sigin_layout);
         creatTabLoginSigin();
     }
@@ -68,7 +69,9 @@ public class LoginActivity extends AppCompatActivity {
     }
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        Intent returnIntent = new Intent(LoginActivity.this,NavigationActivity.class);
+        setResult(RESULT_CANCELED,returnIntent);
+        finish();
     }
     private void creatTabLoginSigin() {
         log=new Log(this);
@@ -185,13 +188,13 @@ public class LoginActivity extends AppCompatActivity {
      * đăng nhập
      * */
     public  void login(final String id, final String pass, final AppCompatButton processButton, final ProgressBar progressBar, final AppCompatCheckBox animatedSwitch) {
+        loginFragment.goneTextView();
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 User user = dataSnapshot.getValue(User.class);
                 try {
                     if (user.getPassWord().equals(pass)){
-                        Toast.makeText(LoginActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                         if (animatedSwitch.isChecked()){
                             log.putID(id);
                             log.putPass(pass);
@@ -203,18 +206,17 @@ public class LoginActivity extends AppCompatActivity {
                         Intent returnIntent = new Intent(LoginActivity.this,NavigationActivity.class);
                         returnIntent.putExtra(Log.LOG_ID,id);
                         returnIntent.putExtra(Log.LOG_PASS,pass);
-                        startActivity(returnIntent);
+                        setResult(RESULT_OK,returnIntent);
                         finish();
-                    }else{  processButton.setVisibility(View.VISIBLE);
+                    }else{
+                        processButton.setVisibility(View.VISIBLE);
                         progressBar.setVisibility(View.GONE);
-                        Toast.makeText(LoginActivity.this, "Sai mã sinh viên hoặc mật khẩu", Toast.LENGTH_SHORT).show();
-
+                        loginFragment.setTextNoti("* Sai mã sinh viên hoặc mật khẩu");
                     }
                 }catch (NullPointerException e){
                     processButton.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(LoginActivity.this, "Sai mã sinh viên hoặc mật khẩu", Toast.LENGTH_SHORT).show();
-
+                    loginFragment.setTextNoti("* Sai mã sinh viên hoặc mật khẩu");
                 }
             }
             @Override
@@ -224,5 +226,6 @@ public class LoginActivity extends AppCompatActivity {
         database.child("users").child(id).getRef().addValueEventListener(postListener);
 
     }
+
 
 }
