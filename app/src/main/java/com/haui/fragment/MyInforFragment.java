@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.haui.activity.R;
 
@@ -31,14 +32,18 @@ public class MyInforFragment extends Fragment{
         final ImageView imageView = (ImageView) view.findViewById(R.id.backdrop);
 //        Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(imageView);
     }
-
-    public void setTextInfor(String tv_infor_ten, String tv_infor_masv, String tv_infor_lop, String tv_infor_sdt,String img) {
+    public void setTextInfor(final String tv_infor_ten, String tv_infor_masv, String tv_infor_lop, final String tv_infor_sdt, String img) {
         ((TextView) view.findViewById(R.id.tv_infor_ten)).setText(tv_infor_ten);
+
         ((TextView) view.findViewById(R.id.tv_infor_masv)).setText(tv_infor_masv);
         ((TextView) view.findViewById(R.id.tv_infor_lop)).setText(tv_infor_lop);
         ((TextView) view.findViewById(R.id.tv_infor_sdt)).setText(tv_infor_sdt);
+        ((TextView) view.findViewById(R.id.tv_infor_sdt)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(),tv_infor_sdt,Toast.LENGTH_SHORT).show();
+            }
+        });
         collapsingToolbar.setTitle(tv_infor_ten);
     }
-
-
 }

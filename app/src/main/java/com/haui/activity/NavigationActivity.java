@@ -49,6 +49,17 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         setContentView(R.layout.activity_navigation);
         log=new Log(this);
         database = FirebaseDatabase.getInstance().getReference();
+        database.child("users").child("0941260041").child("soDT").setValue("09860524832", new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    android.util.Log.e("faker","loi");
+                    System.out.println("Data could not be saved " + databaseError.getMessage());
+                } else {
+                    android.util.Log.e("faker","thanh cong");
+                }
+            }
+        });
         reQuestPermistion();
         creatView();
         checkLogin(log.getID(), log.getPass());
