@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.haui.activity.LoginActivity;
 import com.haui.activity.R;
@@ -27,6 +27,7 @@ public class SiginFragment extends Fragment implements View.OnClickListener{
     private AppCompatButton btRigister;
     private LoginActivity tabActivity;
     private ProgressBar progressBar;
+    private TextView tvError;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -38,9 +39,17 @@ public class SiginFragment extends Fragment implements View.OnClickListener{
         etPassAgian= (EditText) view.findViewById(R.id.et_pass_again_register);
         etSoDT= (EditText) view.findViewById(R.id.et_sdt);
         btRigister= (AppCompatButton) view.findViewById(R.id.bt_register);
+        tvError= (TextView) view.findViewById(R.id.signin_error);
+        tvError.setVisibility(View.GONE);
         btRigister.setOnClickListener(this);
         return view;
     }
+
+    public void textError(String s) {
+        tvError.setVisibility(View.VISIBLE);
+        tvError.setText("Error: "+s);
+    }
+
     @Override
     public void onClick(View view) {
         String id,pass,passAgain,soDT;
@@ -50,11 +59,17 @@ public class SiginFragment extends Fragment implements View.OnClickListener{
             passAgain=etPassAgian.getText().toString();
             soDT=etSoDT.getText().toString();
             if (id.isEmpty()){
-                Toast.makeText(getContext(),"Không được để trống mã sinh viên",Toast.LENGTH_LONG).show();
+                textError("Không được để trống mã sinh viên");
+//                Toast.makeText(getContext(),"Không được để trống mã sinh viên",Toast.LENGTH_LONG).show();
             }else if(!pass.equals(passAgain)){
-                Toast.makeText(getContext(),"Mật khẩu không giống nhau",Toast.LENGTH_LONG).show();
+                textError("Mật khẩu không giống nhau");
+//                Toast.makeText(getContext(),"Mật khẩu không giống nhau",Toast.LENGTH_LONG).show();
             }else if(soDT.length()<10){
-                Toast.makeText(getContext(),"Số điện thoại không đúng",Toast.LENGTH_LONG).show();
+                textError("Số điện thoại không đúng");
+//                Toast.makeText(getContext(),"Số điện thoại không đúng",Toast.LENGTH_LONG).show();
+            }else if(pass.length()<8){
+                textError("Mật khẩu phải lớn hơn 8 ký tự");
+//                Toast.makeText(getContext(),"Số điện thoại không đúng",Toast.LENGTH_LONG).show();
             }else {
                 btRigister.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);

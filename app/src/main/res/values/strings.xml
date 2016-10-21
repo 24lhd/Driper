@@ -20,7 +20,7 @@
     <string name="hint_sms">Nhập tin nhắn vào đây</string>
     <string name="chu_y_4">* Hãy sử dụng mã sinh viên là mã sinh viên của bạn.</string>
     <string name="hint_sdt">Số điện thoại</string>
-    <string name="tv_login">Bạn chưa đăng nhập vào hệ thống \n Cick để đăng nhập</string>
+    <string name="tv_login">Không thể kết nối internet \n Cick để tải lại...</string>
     <string name="infor_ten">Tên sinh viên: </string>
     <string name="infor_masv">Mã sinh viên: </string>
     <string name="infor_lop">Lớp độc lập: </string>
@@ -28,4 +28,18 @@
     <string name="infor_bxs">Biển số xe: </string>
     <string name="infor_vitri">Vị trí hiện tại: </string>
     <string name="infor_pass">Mật khẩu:</string>
+    <string name="hint_pass_curent">Mật khẩu hiện tại</string>
+    <string name="hint_pass_new_1">Mật khẩu mới</string>
+    <string name="hint_pass_new_2">Nhập lại</string>
+    <string name="bt_update_pass">Đổi mật khẩu</string>
+    <string name="hint_sdt_curent">Số điện thoại</string>
+    <string name="hint_edit_infor_sdt">Số điện thoại</string>
+    <string name="hint_edit_infor_bsx">Biển số xe</string>
+    <string name="bt_edit_infor_update">Cập nhật</string>
+    <string name="request_find_bike_start">Điểm đi</string>
+    <string name="request_find_bike_end">Điểm đến</string>
+    <string name="request_find_bike_money">Số tiền</string>
+    <string name="request_find_bike_text">Thông điệp hoặc khẩu hiệu</string>
+    <string name="bt_request_find_bike_text">Đăng yêu cầu tìm xe</string>
+    <string name="bt_request_find_person_text">Đăng yêu cầu tìm người</string>
 </resources>

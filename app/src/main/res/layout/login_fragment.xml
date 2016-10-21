@@ -94,11 +94,14 @@
             android:layout_centerInParent="true"
             android:layout_height="wrap_content" />
         <android.support.v7.widget.AppCompatButton
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:visibility="visible"
             android:background="@color/md_blue_500"
             android:id="@+id/bt_login"
             android:text="Đăng Nhập"
+            android:layout_margin="@dimen/margin_5dp"
+            android:padding="@dimen/padding_login"
+            android:paddingBottom="@dimen/margin_5dp"
             android:minWidth="250dp"
             android:layout_gravity="center"
             android:textColor="@color/md_white_1000"

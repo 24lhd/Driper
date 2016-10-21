@@ -17,7 +17,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -164,13 +163,15 @@ public class LoginActivity extends AppCompatActivity {
                     SinhVien sinhVien= (SinhVien) msg.obj;
                     if (sinhVien!=null){
                         writeNewUser(sinhVien.getMaSV(),pass,sinhVien.getTenSV(),sinhVien.getLopDL(),soDT,"");
-                        Toast.makeText(LoginActivity.this, "Đăng ký thành công",Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(LoginActivity.this, "Đăng ký thành công",Toast.LENGTH_SHORT).show();
+                        siginFragment.textError("Đăng ký thành công");
                         progressBar.setVisibility(View.GONE);
                         btRegister.setVisibility(View.VISIBLE);
                         loginFragment.setData(id,pass);
                         wrappingViewPager.setCurrentItem(0);
                     }else{
-                        Toast.makeText(LoginActivity.this, "Mã sinh viên không đúng",Toast.LENGTH_SHORT).show();
+                        siginFragment.textError("Mã sinh viên không đúng");
+//                        Toast.makeText(LoginActivity.this, "Mã sinh viên không đúng",Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         btRegister.setVisibility(View.VISIBLE);
                     }

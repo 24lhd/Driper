@@ -16,7 +16,7 @@ import com.haui.activity.R;
  */
 
 public class NullDataFragment extends Fragment {
-
+    private TextView textView;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -25,11 +25,16 @@ public class NullDataFragment extends Fragment {
         return view;
     }
     private void initView(View view) {
-        ((TextView)view.findViewById(R.id.tv_not_login)).setOnClickListener(new View.OnClickListener() {
+        textView=((TextView)view.findViewById(R.id.tv_not_login));
+        textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((NavigationActivity) getActivity()).startLogin();
             }
         });
+    }
+
+    public TextView getTextView() {
+        return textView;
     }
 }

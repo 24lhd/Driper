@@ -6,6 +6,27 @@
     android:layout_marginLeft="@dimen/margin_17dp"
     android:layout_marginRight="@dimen/margin_17dp"
     android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/margin_5dp"
+        android:text="@string/chu_y"
+        android:layout_gravity="left"
+        android:layout_marginLeft="@dimen/text_size_10dp"
+        android:layout_marginRight="@dimen/text_size_10dp"
+        android:textColor="@color/md_red_500"
+        android:textSize="@dimen/text_size_10dp"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/margin_5dp"
+        android:text="@string/chu_y_4"
+        android:layout_gravity="left"
+        android:layout_marginLeft="@dimen/text_size_10dp"
+
+        android:layout_marginRight="@dimen/text_size_10dp"
+        android:textColor="@color/md_red_500"
+        android:textSize="@dimen/text_size_10dp"
+        android:layout_height="wrap_content" />
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_margin="@dimen/margin_5dp"
@@ -84,25 +105,13 @@
             android:textSize="@dimen/text_size_20dp"
             android:layout_height="wrap_content" />
     </android.support.design.widget.TextInputLayout>
-
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_marginTop="@dimen/margin_5dp"
-        android:text="@string/chu_y"
-        android:layout_gravity="left"
-        android:layout_marginLeft="@dimen/text_size_10dp"
-        android:layout_marginRight="@dimen/text_size_10dp"
-        android:textColor="@color/md_red_500"
-        android:textSize="@dimen/text_size_10dp"
-        android:layout_height="wrap_content" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_marginTop="@dimen/margin_5dp"
         android:text="@string/chu_y_4"
+        android:id="@+id/signin_error"
         android:layout_gravity="left"
         android:layout_marginLeft="@dimen/text_size_10dp"
-
         android:layout_marginRight="@dimen/text_size_10dp"
         android:textColor="@color/md_red_500"
         android:textSize="@dimen/text_size_10dp"
