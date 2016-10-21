@@ -60,17 +60,13 @@ public class SiginFragment extends Fragment implements View.OnClickListener{
             soDT=etSoDT.getText().toString();
             if (id.isEmpty()){
                 textError("Không được để trống mã sinh viên");
-//                Toast.makeText(getContext(),"Không được để trống mã sinh viên",Toast.LENGTH_LONG).show();
             }else if(!pass.equals(passAgain)){
                 textError("Mật khẩu không giống nhau");
-//                Toast.makeText(getContext(),"Mật khẩu không giống nhau",Toast.LENGTH_LONG).show();
             }else if(soDT.length()<10){
                 textError("Số điện thoại không đúng");
-//                Toast.makeText(getContext(),"Số điện thoại không đúng",Toast.LENGTH_LONG).show();
             }else if(pass.length()<8){
                 textError("Mật khẩu phải lớn hơn 8 ký tự");
-//                Toast.makeText(getContext(),"Số điện thoại không đúng",Toast.LENGTH_LONG).show();
-            }else {
+            }else{
                 btRigister.setVisibility(View.GONE);
                 progressBar.setVisibility(View.VISIBLE);
                 tabActivity.register(id,pass,soDT,btRigister,progressBar);

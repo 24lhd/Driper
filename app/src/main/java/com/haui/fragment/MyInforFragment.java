@@ -78,17 +78,18 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
         super.onActivityResult(requestCode, resultCode, data);
         android.util.Log.e("faker",""+requestCode);
     }
-
     public void setProImage(String proImage) {
         if (!proImage.isEmpty()){
             Glide.with(navigationActivity).load(proImage).fitCenter().into(imageView);
             progressBar.setVisibility(View.GONE);
             imageView.setVisibility(View.VISIBLE);
         }else {
-            progressBar.setVisibility(View.VISIBLE);
-            imageView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.GONE);
+            imageView.setImageResource(R.drawable.add_im);
         }
     }
+
+
 
     @Override
     public void onClick(View v) {

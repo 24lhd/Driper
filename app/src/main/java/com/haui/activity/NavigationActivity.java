@@ -380,19 +380,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                             });
                     ft.replace(R.id.fragment, myInforFragment).commit();
                     break;
-
                 case R.id.mn_yeucau:
-
                     break;
-
                 case R.id.mn_error:
-
                     break;
-
                 case R.id.mn_help:
-
                     break;
-
                 case R.id.mn_logout:
                     signOut();
                     break;
@@ -441,5 +434,4 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         dialognoti.dismiss();
        new MapManager(googleMap,this);
     }
-
 }

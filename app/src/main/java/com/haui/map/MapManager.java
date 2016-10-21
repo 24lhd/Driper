@@ -22,10 +22,11 @@ import com.google.android.gms.maps.model.Marker;
  * Created by Duong on 10/16/2016.
  */
 
-public class MapManager implements GoogleMap.OnMarkerClickListener,LocationListener{
+public class MapManager implements GoogleMap.OnMarkerClickListener, LocationListener {
     private GoogleMap googleMap;
     private Context context;
     private LocationManager locationManager;
+
     public MapManager(GoogleMap googleMap, Context context) {
         this.googleMap = googleMap;
         this.context = context;
@@ -35,12 +36,24 @@ public class MapManager implements GoogleMap.OnMarkerClickListener,LocationListe
 //        googleMap.addMarker(marker);
 //        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 //        googleMap.setOnMarkerClickListener(this);
-        UiSettings uiSettings=googleMap.getUiSettings();
+        UiSettings uiSettings = googleMap.getUiSettings();
         uiSettings.setZoomControlsEnabled(true);
         uiSettings.setMyLocationButtonEnabled(true);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            } else {
+                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 3);
+            }
+            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+            } else {
+                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 4);
+            }
+        }
         googleMap.setMyLocationEnabled(true);
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 400, 1000,this);
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 40, 100, this);
+
 
 
     }
@@ -59,19 +72,25 @@ public class MapManager implements GoogleMap.OnMarkerClickListener,LocationListe
 
         return false;
     }
+
     private void reQuestPermistion() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.GET_PERMISSIONS) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,android.Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.GET_PERMISSIONS) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
             } else {
-                ActivityCompat.requestPermissions((Activity) context,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
         }
     }
+
     @Override
     public void onLocationChanged(Location location) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
         googleMap.animateCamera(cameraUpdate);
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         locationManager.removeUpdates(this);
     }
 

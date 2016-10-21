@@ -39,7 +39,7 @@ import static com.haui.activity.R.string.reset_pass_text;
 /**
  * Created by Faker on 8/14/2016.
  */
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements ValueEventListener{
     private TabLayout tabLayout;
     private WrappingViewPager wrappingViewPager;
     private LoginFragment loginFragment;
@@ -154,32 +154,38 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
     }
-
+    private String msv;
+    private  Handler handler;
     public void register(final String id, final String pass, final String soDT, final AppCompatButton btRegister, final ProgressBar progressBar) {
-        Handler handler=new Handler(){
+        this.msv=id;
+        database.child("users").child(id).addListenerForSingleValueEvent(this);
+         handler=new Handler(){
             @Override
             public void handleMessage(Message msg) {
                 if (msg.what==0){
                     SinhVien sinhVien= (SinhVien) msg.obj;
                     if (sinhVien!=null){
                         writeNewUser(sinhVien.getMaSV(),pass,sinhVien.getTenSV(),sinhVien.getLopDL(),soDT,"");
-//                        Toast.makeText(LoginActivity.this, "Đăng ký thành công",Toast.LENGTH_SHORT).show();
-                        siginFragment.textError("Đăng ký thành công");
                         progressBar.setVisibility(View.GONE);
                         btRegister.setVisibility(View.VISIBLE);
                         loginFragment.setData(id,pass);
+                        loginFragment.setTextNoti("Đăng ký thành công!");
                         wrappingViewPager.setCurrentItem(0);
                     }else{
                         siginFragment.textError("Mã sinh viên không đúng");
-//                        Toast.makeText(LoginActivity.this, "Mã sinh viên không đúng",Toast.LENGTH_SHORT).show();
                         progressBar.setVisibility(View.GONE);
                         btRegister.setVisibility(View.VISIBLE);
                     }
                 }
+                if (msg.what==2){
+                    siginFragment.textError("Mã sinh viên này đã được đăng ký");
+                    progressBar.setVisibility(View.GONE);
+                    btRegister.setVisibility(View.VISIBLE);
+                }
             }
         };
-        ParserSinhVien parserSinhVien=new ParserSinhVien(handler);
-        parserSinhVien.execute(id);
+
+
     }
     /**
      * đăng nhập
@@ -225,4 +231,28 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        User user = dataSnapshot.getValue(User.class);
+        try {
+            if (user.getMaSV().equals(msv)){
+                Message message=new Message();
+                message.what=2;
+                handler.sendMessage(message);
+            }else {
+                ParserSinhVien parserSinhVien=new ParserSinhVien(handler);
+                parserSinhVien.execute(msv);
+            }
+            return;
+        } catch (NullPointerException e) {
+            ParserSinhVien parserSinhVien=new ParserSinhVien(handler);
+            parserSinhVien.execute(msv);
+            return;
+        }
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
+    }
 }
