@@ -6,13 +6,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -23,18 +22,25 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.haui.fragment.MyInforFragment;
 import com.haui.fragment.NullDataFragment;
 import com.haui.log.Log;
@@ -49,6 +55,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private String passWord;
     private String maSV;
     private int contenView;
+    private NullDataFragment nullDataFragment;
+    private MyInforFragment myInforFragment;
+    private NavigationView navigationView;
+    private Toolbar toolbar;
+    private ViewFlipper viewFlipper;
+    private ProgressDialog dialognoti;
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,25 +69,26 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         dialognoti.setMessage("Đang khởi tạo dữ liệu...");
         dialognoti.setCancelable(false);
         dialognoti.show();
-        setContentView(R.layout.activity_navigation);
-        log = new Log(this);
-        database = FirebaseDatabase.getInstance().getReference();
-        database.child("users").child("0941260041").child("soDT").setValue("09860524832", new DatabaseReference.CompletionListener() {
-            @Override
-            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if (databaseError != null) {
-                    android.util.Log.e("faker", "loi");
-                    System.out.println("Data could not be saved " + databaseError.getMessage());
-                } else {
-                    android.util.Log.e("faker", "thanh cong");
-                }
-            }
-        });
         reQuestPermistion();
         creatView();
         checkLogin(log.getID(), log.getPass());
     }
-
+    private void creatView() {
+        setContentView(R.layout.activity_navigation);
+        log = new Log(this);
+        database = FirebaseDatabase.getInstance().getReference();
+        mStorageRef = FirebaseStorage.getInstance().getReference();
+        toolbar = (Toolbar) findViewById(R.id.toolbarMain);
+        viewFlipper = (ViewFlipper) findViewById(R.id.viewFliper);
+        toolbar.setTitle("Driper");
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+    }
     private void reQuestPermistion() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CALL_PHONE)) {
@@ -97,7 +110,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
 
     }
-
+    private StorageReference mStorageRef;
     private void checkLogin(String extra, String stringExtra) {
         if (isOnline()) {
             try {
@@ -121,12 +134,123 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         startLogin();
     }
 
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        switch (contenView){
+            case R.id.mn_user:
+                getMenuInflater().inflate(R.menu.menu_select_image,menu);
+                break;
+
+        }
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (isOnline()){
+            if (requestCode == 1001) {
+                if (resultCode == RESULT_OK) {
+                    checkLogin(data.getStringExtra(Log.LOG_ID), data.getStringExtra(Log.LOG_PASS));
+                } else {
+                    log.remove();
+                    finish();
+                }
+            }else if (resultCode == RESULT_OK && requestCode == 1011) {
+                Uri file = data.getData();
+//                dialognoti.setTitle("Đang thay đổi");
+//                dialognoti.show();
+//                String[] filePathColumn = {MediaStore.Images.Media.DATA};
+//                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+//                cursor.moveToFirst();/
+//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                String picturePath = cursor.getString(columnIndex);
+//                cursor.close();
+//                Uri file = Uri.fromFile(new File("path/to/images/rivers.jpg"));
+                upAndGetUrlImageProfile(file);
+            } else if (resultCode == RESULT_OK && requestCode == 1010) {
+                Uri file = data.getData();
+//                dialognoti.setTitle("Đang thay đổi");
+//                dialognoti.show();
+//                android.util.Log.e("faker", selectedImage.toString());
+//                String[] filePathColumn = { MediaStore.Images.Media.DATA };
+//                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+//                cursor.moveToFirst();
+//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+//                String picturePath = cursor.getString(columnIndex);
+//                cursor.close();
+                upAndGetUrlImageProfile(file);
+            }
+        }else {
+            setViewOffLine();
+        }
+
+
+    }
+
+    private void upAndGetUrlImageProfile(Uri file) {
+        StorageReference riversRef = mStorageRef.child("images/"+"image_"+maSV);
+        dialognoti.setMessage("Đang thay đổi");
+        dialognoti.setCancelable(true);
+        dialognoti.show();
+        riversRef.putFile(file)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        upDateUser("imgProfile",downloadUrl.toString());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception exception) {
+                    }
+                });
+    }
+
+    private void upDateUser(String item, final String valuse) {
+        database.child("users").child(maSV).child(item).setValue(valuse, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                if (databaseError != null) {
+                    dialognoti.dismiss();
+                    Toast.makeText(NavigationActivity.this, "Lỗi hãy thử lại", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(NavigationActivity.this, "Đã thay đổi", Toast.LENGTH_SHORT).show();
+                    myInforFragment.setProImage(valuse);
+                    dialognoti.dismiss();
+                }
+            }
+        });
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        item.getItemId();
+        switch (item.getItemId()){
+            case R.id.mn_stroge:
+                myInforFragment.from_gallery();
+                return true;
+            case R.id.mn_camera:
+                myInforFragment.from_camera();
+                return true;
+            case R.id.mn_update:
+                myInforFragment.updateInfor();
+                return true;
+            case R.id.mn_update_pass:
+                myInforFragment.updatePass();
+                return true;
+            case R.id.mn_delete_user:
+                myInforFragment.deleteAcc();
+                return true;
+        }
+        return super.onContextItemSelected(item);
+    }
 
     public void startLogin() {
         reQuestPermistion();
         if (isOnline()) {
             Intent intent = new Intent(NavigationActivity.this, LoginActivity.class);
-            startActivityForResult(intent, 2);
+            startActivityForResult(intent, 1001);
         } else {
             final Snackbar snackbar = Snackbar.make(nullDataFragment.getTextView(), "Vui lòng bật kết nối internet!", Snackbar.LENGTH_SHORT);
             snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
@@ -148,38 +272,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (isOnline()){
-            if (requestCode == 2) {
-                if (resultCode == RESULT_OK) {
-                    checkLogin(data.getStringExtra(Log.LOG_ID), data.getStringExtra(Log.LOG_PASS));
-                } else {
-                    log.remove();
-                    finish();
-                }
-            }
-        }else {
-            setViewOffLine();
-        }
-
-
-        android.util.Log.e("faker1", "" + requestCode);
-        if (resultCode == RESULT_OK && requestCode == 222) {
-            Uri selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-            cursor.moveToFirst();
-            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-            String picturePath = cursor.getString(columnIndex);
-            cursor.close();
-            myInforFragment.setProImage(picturePath);
-            android.util.Log.e("faker", picturePath);
-            android.util.Log.e("faker", "day2");
-
-        }
-    }
-
     public boolean isOnline() {
         try {
             ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -194,7 +286,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         setMap();
     }
 
-    private ProgressDialog dialognoti;
+
 
     private void login(final String extra, final String stringExtra) {
         if (isOnline()) {
@@ -234,27 +326,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
 
     }
-
-    private NavigationView navigationView;
-    private Toolbar toolbar;
-    private ViewFlipper viewFlipper;
-    private void creatView() {
-
-        toolbar = (Toolbar) findViewById(R.id.toolbarMain);
-        viewFlipper = (ViewFlipper) findViewById(R.id.viewFliper);
-        toolbar.setTitle("Driper");
-        setSupportActionBar(toolbar);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-    }
-
-    private NullDataFragment nullDataFragment;
-    private MyInforFragment myInforFragment;
-
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -273,9 +344,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
         if (isOnline()) {
             contenView=item.getItemId();
+            viewFlipper.setDisplayedChild(0);
             switch (item.getItemId()) {
                 case R.id.mn_nguoi_tim_xe:
-
                     toolbar.setTitle("Tìm xe");
                     setMap();
                     break;
@@ -284,7 +355,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     setMap();
                     break;
                 case R.id.mn_user:
-                    viewFlipper.setDisplayedChild(0);
                     toolbar.setTitle("Thông tin cá nhân");
                     myInforFragment = new MyInforFragment();
                     database.child("users").child(maSV).addListenerForSingleValueEvent(
@@ -295,15 +365,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                     try {
                                         if (user.getPassWord().equals(passWord)) {
                                             myInforFragment.setTextInfor(user.getTenSV(), user.getMaSV(), user.getTenLopDL(), user.getSoDT(), user.getImgProfile());
+                                            myInforFragment.setProImage(user.getImgProfile());
                                         } else {
                                             startLogin();
                                         }
                                     } catch (NullPointerException e) {
                                         startLogin();
-                                        android.util.Log.e("faker", "MyInforFragment");
                                     }
                                 }
-
                                 @Override
                                 public void onCancelled(DatabaseError databaseError) {
                                     android.util.Log.e("faker", "onCancelled");

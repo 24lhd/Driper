@@ -45,7 +45,6 @@
                 android:id="@+id/mn_share"
                 android:icon="@drawable/ic_menu_share"
                 android:title="Ứng dụng liên quan" />
-
         </menu>
     </item>
 

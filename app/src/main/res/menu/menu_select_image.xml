@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/mn_camera"
-        android:title="Camera"
-        android:icon="@android:drawable/ic_menu_camera">Camera</item>
-    <item android:id="@+id/mn_stroge"
-        android:title="Stroge"
-        android:icon="@android:drawable/ic_menu_gallery">Camera</item>
+                   <item android:title="Thay dổi ảnh đại diện">
+                       <menu>
+                           <item android:id="@+id/mn_camera"
+                               android:title="Từ camera"></item>
+                           <item android:id="@+id/mn_stroge"
+                               android:title="Từ kho ảnh"></item>
+                       </menu>
+                   </item>
+                   <item android:title="Sửa thông tin"
+                       android:id="@+id/mn_update">
+                   </item>
+                    <item android:id="@+id/mn_update_pass"
+                            android:title="Thay đổi mật khẩu"></item>
+                   <item android:id="@+id/mn_delete_user"
+                       android:title="Xóa tài khoản"></item>
 </menu>
