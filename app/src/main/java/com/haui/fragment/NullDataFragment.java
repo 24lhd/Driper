@@ -29,7 +29,7 @@ public class NullDataFragment extends Fragment {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((NavigationActivity) getActivity()).startLogin();
+                ((NavigationActivity) getActivity()).checkLogin("","");
             }
         });
     }

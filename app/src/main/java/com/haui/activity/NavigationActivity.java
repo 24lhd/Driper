@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
@@ -25,7 +26,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import com.google.android.gms.maps.GoogleMap;
@@ -46,6 +46,7 @@ import com.haui.fragment.NullDataFragment;
 import com.haui.log.Log;
 import com.haui.map.MapManager;
 import com.haui.object.User;
+import com.roger.catloadinglibrary.CatLoadingView;
 
 import static android.support.design.widget.Snackbar.make;
 
@@ -60,22 +61,24 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private NavigationView navigationView;
     private Toolbar toolbar;
     private ViewFlipper viewFlipper;
-    private ProgressDialog dialognoti;
+    private CatLoadingView dialognoti;
+    private ProgressDialog progressDialog;
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dialognoti = new ProgressDialog(this, android.R.style.Theme_Material_Light_Dialog);
-        dialognoti.setMessage("Đang khởi tạo dữ liệu...");
+        dialognoti=new CatLoadingView();
         dialognoti.setCancelable(false);
-        dialognoti.show();
+        dialognoti.show(getSupportFragmentManager(),"");
+        progressDialog=new ProgressDialog(this);
         reQuestPermistion();
         creatView();
-        checkLogin(log.getID(), log.getPass());
+        checkLogin("","");
     }
     private void creatView() {
         setContentView(R.layout.activity_navigation);
         log = new Log(this);
+        ft = getSupportFragmentManager().beginTransaction();
         database = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         toolbar = (Toolbar) findViewById(R.id.toolbarMain);
@@ -111,19 +114,21 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
     }
     private StorageReference mStorageRef;
-    private void checkLogin(String extra, String stringExtra) {
+    public void checkLogin(String extra, String stringExtra) {
         if (isOnline()) {
             try {
-                if (stringExtra.isEmpty() || extra.isEmpty()) {
-                    startLogin();
-                } else {
+                if (!log.getID().isEmpty()||!log.getPass().isEmpty()) {
+                    login(log.getID(), log.getPass());
+                } else if (!stringExtra.isEmpty()||!extra.isEmpty()){
                     login(extra, stringExtra);
+                }else{
+                    startLogin();
                 }
             } catch (NullPointerException e) {
-                android.util.Log.e("faker", "checkLogin");
                 startLogin();
             }
         } else {
+            dialognoti.dismiss();
             setViewOffLine();
         }
 
@@ -157,6 +162,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 }
             }else if (resultCode == RESULT_OK && requestCode == 1011) {
                 Uri file = data.getData();
+
 //                dialognoti.setTitle("Đang thay đổi");
 //                dialognoti.show();
 //                String[] filePathColumn = {MediaStore.Images.Media.DATA};
@@ -186,12 +192,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
 
     }
-
     private void upAndGetUrlImageProfile(Uri file) {
+        progressDialog.setMessage("Updatting....");
+        progressDialog.setCancelable(true);
+        progressDialog.show();
         StorageReference riversRef = mStorageRef.child("images/"+"image_"+maSV);
-        dialognoti.setMessage("Đang thay đổi");
-        dialognoti.setCancelable(true);
-        dialognoti.show();
         riversRef.putFile(file)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
@@ -203,6 +208,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
+                        progressDialog.dismiss();
                     }
                 });
     }
@@ -212,12 +218,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    dialognoti.dismiss();
-                    Toast.makeText(NavigationActivity.this, "Lỗi hãy thử lại", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+
                 } else {
-                    Toast.makeText(NavigationActivity.this, "Đã thay đổi", Toast.LENGTH_SHORT).show();
                     myInforFragment.setProImage(valuse);
-                    dialognoti.dismiss();
+
+                    progressDialog.dismiss();
                 }
             }
         });
@@ -260,18 +266,21 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
                     if (!wifiManager.isWifiEnabled()) {
                         wifiManager.setWifiEnabled(true);
-                    } else {
-
+                    }else {
+                        Intent intent=new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
+                        startActivity(intent);
                     }
-
                     snackbar.dismiss();
+                    checkLogin(log.getID(), log.getPass());
                 }
             });
             snackbar.show();
         }
 
     }
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+    }
     public boolean isOnline() {
         try {
             ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -282,8 +291,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
 
     private void creatData() {
-        navigationView.setCheckedItem(R.id.mn_nguoi_tim_xe);
-        setMap();
+        if (isOnline()){
+            navigationView.setCheckedItem(R.id.mn_nguoi_tim_xe);
+            setMap();
+        }else {
+            setViewOffLine();
+        }
     }
 
 
@@ -301,7 +314,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                         android.util.Log.e("faker", user.toString());
                                         passWord = stringExtra;
                                         maSV = extra;
-
                                         creatData();
                                     } else {
                                         dialognoti.dismiss();
@@ -335,13 +347,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             super.onBackPressed();
         }
     }
-
+    private FragmentTransaction ft;
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
         if (isOnline()) {
             contenView=item.getItemId();
             viewFlipper.setDisplayedChild(0);
@@ -378,7 +388,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                     android.util.Log.e("faker", "onCancelled");
                                 }
                             });
-                    ft.replace(R.id.fragment, myInforFragment).commit();
+                    ft.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
                     break;
                 case R.id.mn_yeucau:
                     break;
@@ -407,10 +417,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
 
     private void setViewOffLine() {
-        ViewFlipper viewFlipper = (ViewFlipper) findViewById(R.id.viewFliper);
+         viewFlipper = (ViewFlipper) findViewById(R.id.viewFliper);
         viewFlipper.setDisplayedChild(0);
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         nullDataFragment = new NullDataFragment();
+        ft=getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment, nullDataFragment).commit();
     }
 
