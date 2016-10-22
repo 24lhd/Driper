@@ -35,6 +35,10 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
         initView();
         return view;
     }
+    public void showProgress() {
+        progressBar.setVisibility(View.VISIBLE);
+        imageView.setVisibility(View.GONE);
+    }
     private NavigationActivity navigationActivity;
     private CollapsingToolbarLayout collapsingToolbar;
     private void initView( ) {
@@ -45,10 +49,15 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
 //        Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(imageView);
         navigationActivity= (NavigationActivity) getActivity();
         navigationActivity.registerForContextMenu(floatingActionButton);
-        progressBar.setVisibility(View.VISIBLE);
-        imageView.setVisibility(View.GONE);
+        showProgress();
         floatingActionButton.setOnClickListener(this);
     }
+
+    public void hideProgress() {
+        progressBar.setVisibility(View.GONE);
+        imageView.setVisibility(View.VISIBLE);
+    }
+
     public void from_gallery() {
         Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         navigationActivity.startActivityForResult(intent, 1011);
@@ -70,6 +79,7 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
                 Toast.makeText(getContext(),tv_infor_sdt,Toast.LENGTH_SHORT).show();
             }
         });
+        hideProgress();
         collapsingToolbar.setTitle(tv_infor_ten);
     }
 
@@ -81,10 +91,9 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
     public void setProImage(String proImage) {
         if (!proImage.isEmpty()){
             Glide.with(navigationActivity).load(proImage).fitCenter().into(imageView);
-            progressBar.setVisibility(View.GONE);
-            imageView.setVisibility(View.VISIBLE);
+            hideProgress();
         }else {
-            progressBar.setVisibility(View.GONE);
+            showProgress();
             imageView.setImageResource(R.drawable.add_im);
         }
     }

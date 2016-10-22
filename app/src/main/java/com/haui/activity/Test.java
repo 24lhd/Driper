@@ -1,22 +1,41 @@
 package com.haui.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.widget.Button;
+import android.widget.EditText;
 
 /**
  * Created by Duong on 10/19/2016.
  */
 
-public class Test extends Activity {
+public class Test extends ActionBarActivity {
+    private EditText editText;
+    private Toolbar toolbar;
+    private Button bt;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.test);
+        editText= (EditText) findViewById(R.id.tv);
+        toolbar= (Toolbar) findViewById(R.id.test_tb);
+        toolbar.inflateMenu(R.menu.test);
+        toolbar.setNavigationIcon(android.R.drawable.ic_delete);
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.test,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     public void from_gallery() {
         Intent intent = new Intent(Intent.ACTION_PICK,
                 android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);

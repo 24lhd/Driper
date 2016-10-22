@@ -42,4 +42,5 @@
     <string name="request_find_bike_text">Thông điệp hoặc khẩu hiệu</string>
     <string name="bt_request_find_bike_text">Đăng yêu cầu tìm xe</string>
     <string name="bt_request_find_person_text">Đăng yêu cầu tìm người</string>
+    <string name="hint_search">Tìm kiếm vị trí</string>
 </resources>

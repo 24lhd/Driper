@@ -46,7 +46,6 @@ import com.haui.fragment.NullDataFragment;
 import com.haui.log.Log;
 import com.haui.map.MapManager;
 import com.haui.object.User;
-import com.roger.catloadinglibrary.CatLoadingView;
 
 import static android.support.design.widget.Snackbar.make;
 
@@ -61,20 +60,22 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private NavigationView navigationView;
     private Toolbar toolbar;
     private ViewFlipper viewFlipper;
-    private CatLoadingView dialognoti;
     private ProgressDialog progressDialog;
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dialognoti=new CatLoadingView();
-        dialognoti.setCancelable(false);
-        dialognoti.show(getSupportFragmentManager(),"");
         progressDialog=new ProgressDialog(this);
-        reQuestPermistion();
+        progressDialog.setMessage("Đang khởi tạo....");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+//        reQuestPermistion();
         creatView();
         checkLogin("","");
     }
+
+
+
     private void creatView() {
         setContentView(R.layout.activity_navigation);
         log = new Log(this);
@@ -124,11 +125,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 }else{
                     startLogin();
                 }
+
             } catch (NullPointerException e) {
+                android.util.Log.e("faker", "checkLogin");
                 startLogin();
             }
         } else {
-            dialognoti.dismiss();
+            progressDialog.dismiss();
             setViewOffLine();
         }
 
@@ -193,9 +196,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
     }
     private void upAndGetUrlImageProfile(Uri file) {
-        progressDialog.setMessage("Updatting....");
-        progressDialog.setCancelable(true);
-        progressDialog.show();
+
+//        progressDialog.show();
+        myInforFragment.showProgress();
         StorageReference riversRef = mStorageRef.child("images/"+"image_"+maSV);
         riversRef.putFile(file)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -208,7 +211,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
-                        progressDialog.dismiss();
+//                        progressDialog.dismiss();
+                        myInforFragment.hideProgress();
                     }
                 });
     }
@@ -218,12 +222,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError != null) {
-                    progressDialog.dismiss();
+//                    progressDialog.dismiss();
+                    myInforFragment.hideProgress();
 
                 } else {
                     myInforFragment.setProImage(valuse);
-
-                    progressDialog.dismiss();
+//                    progressDialog.dismiss();
                 }
             }
         });
@@ -316,11 +320,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                         maSV = extra;
                                         creatData();
                                     } else {
-                                        dialognoti.dismiss();
+                                        progressDialog.dismiss();
                                         startLogin();
                                     }
                                 } catch (NullPointerException e) {
-                                    dialognoti.dismiss();
+                                    progressDialog.dismiss();
                                     startLogin();
                                     android.util.Log.e("faker", "login1");
                                 }
@@ -334,7 +338,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             } catch (NullPointerException e) {
             }
         } else {
-            dialognoti.dismiss();
+            progressDialog.dismiss();
         }
 
     }
@@ -388,6 +392,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                     android.util.Log.e("faker", "onCancelled");
                                 }
                             });
+                    ft=getSupportFragmentManager().beginTransaction();
                     ft.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
                     break;
                 case R.id.mn_yeucau:
@@ -437,11 +442,15 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private void setMap() {
         viewFlipper.setDisplayedChild(1);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        toolbar= (Toolbar) findViewById(R.id.test_tb);
+        toolbar.inflateMenu(R.menu.test);
+        toolbar.setNavigationIcon(android.R.drawable.ic_delete);
         mapFragment.getMapAsync(this);
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        dialognoti.dismiss();
+        progressDialog.dismiss();
        new MapManager(googleMap,this);
     }
 }

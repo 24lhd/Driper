@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <!--v7 thì sử dụng   app:showAsAction="ifRoom" -->
+    <item
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom"
+        android:title="Menu"/>
+    <!-- <v7 thì sử dụng    android:showAsAction="ifRoom" -->
+    <!--<item-->
+        <!--android:icon="@drawable/ic_student"-->
+        <!--android:showAsAction="ifRoom"-->
+        <!--android:title="Menu"/>-->
+</menu>
