@@ -27,6 +27,7 @@ import com.haui.fragment.LoginFragment;
 import com.haui.fragment.ResetPassFragment;
 import com.haui.fragment.SiginFragment;
 import com.haui.log.Log;
+import com.haui.object.Location;
 import com.haui.object.SinhVien;
 import com.haui.object.User;
 import com.haui.task.ParserSinhVien;
@@ -63,7 +64,7 @@ public class LoginActivity extends AppCompatActivity implements ValueEventListen
     }
     public void writeNewUser( String maSV,String pass, String tenSV, String tenLopDL,
                              String soDT ,String img) {
-        User user = new User(maSV,pass,tenSV,tenLopDL,soDT,img);
+        User user = new User(maSV,pass,tenSV,tenLopDL,soDT,img,new Location("",""),"...");
         database.child("users").child(maSV).setValue(user);
     }
     @Override
@@ -235,11 +236,11 @@ public class LoginActivity extends AppCompatActivity implements ValueEventListen
     public void onDataChange(DataSnapshot dataSnapshot) {
         User user = dataSnapshot.getValue(User.class);
         try {
-            if (user.getMaSV().equals(msv)){
+            if (user.getMaSV().equals(msv)&&!user.getPassWord().isEmpty()){
                 Message message=new Message();
                 message.what=2;
                 handler.sendMessage(message);
-            }else {
+            }else{
                 ParserSinhVien parserSinhVien=new ParserSinhVien(handler);
                 parserSinhVien.execute(msv);
             }

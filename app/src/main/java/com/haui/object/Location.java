@@ -5,14 +5,23 @@ package com.haui.object;
  */
 
 public class Location  {
-    public double lat;
-    public double log;
-
-    public Location(double lat, double log) {
-        this.lat = lat;
-        this.log = log;
-    }
+    public String lat;
+    public String lng;
 
     public Location() {
+    }
+
+    public String getLat() {
+        return lat;
+    }
+
+    public String getLng() {
+        return lng;
+    }
+
+    public Location(String lat, String lng) {
+
+        this.lat = lat;
+        this.lng = lng;
     }
 }

@@ -17,7 +17,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,8 +25,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -61,6 +63,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private Toolbar toolbar;
     private ViewFlipper viewFlipper;
     private ProgressDialog progressDialog;
+    private ImageView imHeadNavigation;
+    private TextView tvTenHeadNavigation;
+    private TextView tvViTriHeadNavigation;
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,28 +96,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         drawer.setDrawerListener(toggle);
         toggle.syncState();
         navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View view=navigationView.getHeaderView(0);
+        imHeadNavigation= (ImageView) view.findViewById(R.id.im_hd_img_profile);
+        tvTenHeadNavigation= (TextView) view.findViewById(R.id.hd_tv_tensv);
+        tvViTriHeadNavigation= (TextView) view.findViewById(R.id.hd_tv_vitri);
         navigationView.setNavigationItemSelectedListener(this);
-    }
-    private void reQuestPermistion() {
-        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CALL_PHONE)) {
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CALL_PHONE}, 0);
-            }
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_WIFI_STATE)) {
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_WIFI_STATE}, 1);
-            }
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CHANGE_WIFI_STATE) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CHANGE_WIFI_STATE)) {
-            } else {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CHANGE_WIFI_STATE}, 2);
-            }
-        }
-
     }
     private StorageReference mStorageRef;
     public void checkLogin(String extra, String stringExtra) {
@@ -148,7 +136,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             case R.id.mn_user:
                 getMenuInflater().inflate(R.menu.menu_select_image,menu);
                 break;
-
         }
         super.onCreateContextMenu(menu, v, menuInfo);
     }
@@ -165,70 +152,47 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 }
             }else if (resultCode == RESULT_OK && requestCode == 1011) {
                 Uri file = data.getData();
-
-//                dialognoti.setTitle("Đang thay đổi");
-//                dialognoti.show();
-//                String[] filePathColumn = {MediaStore.Images.Media.DATA};
-//                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-//                cursor.moveToFirst();/
-//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//                String picturePath = cursor.getString(columnIndex);
-//                cursor.close();
-//                Uri file = Uri.fromFile(new File("path/to/images/rivers.jpg"));
                 upAndGetUrlImageProfile(file);
             } else if (resultCode == RESULT_OK && requestCode == 1010) {
                 Uri file = data.getData();
-//                dialognoti.setTitle("Đang thay đổi");
-//                dialognoti.show();
-//                android.util.Log.e("faker", selectedImage.toString());
-//                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-//                Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-//                cursor.moveToFirst();
-//                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-//                String picturePath = cursor.getString(columnIndex);
-//                cursor.close();
                 upAndGetUrlImageProfile(file);
             }
         }else {
             setViewOffLine();
         }
-
-
     }
     private void upAndGetUrlImageProfile(Uri file) {
-
-//        progressDialog.show();
         myInforFragment.showProgress();
         StorageReference riversRef = mStorageRef.child("images/"+"image_"+maSV);
         riversRef.putFile(file)
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        final Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                         Uri downloadUrl = taskSnapshot.getDownloadUrl();
                         upDateUser("imgProfile",downloadUrl.toString());
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception exception) {
-//                        progressDialog.dismiss();
                         myInforFragment.hideProgress();
                     }
                 });
     }
 
-    private void upDateUser(String item, final String valuse) {
+    public void upDateUser(final String item, final String valuse) {
         database.child("users").child(maSV).child(item).setValue(valuse, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                if (databaseError != null) {
-//                    progressDialog.dismiss();
-                    myInforFragment.hideProgress();
-
-                } else {
-                    myInforFragment.setProImage(valuse);
-//                    progressDialog.dismiss();
+                if (item.equals("imgProfile")){
+                    if (databaseError != null) {
+                        myInforFragment.hideProgress();
+                    } else {
+                        myInforFragment.setProImage(valuse);
+                        Glide.with(NavigationActivity.this).load(valuse).fitCenter().into(imHeadNavigation);
+                    }
                 }
+
             }
         });
     }
@@ -257,7 +221,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
 
     public void startLogin() {
-        reQuestPermistion();
         if (isOnline()) {
             Intent intent = new Intent(NavigationActivity.this, LoginActivity.class);
             startActivityForResult(intent, 1001);
@@ -315,7 +278,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                 User user = dataSnapshot.getValue(User.class);
                                 try {
                                     if (user.getPassWord().equals(stringExtra)) {
-                                        android.util.Log.e("faker", user.toString());
+                                       tvTenHeadNavigation.setText(user.getTenSV());
+                                        tvViTriHeadNavigation.setText(user.getViTri());
                                         passWord = stringExtra;
                                         maSV = extra;
                                         creatData();
@@ -326,7 +290,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                 } catch (NullPointerException e) {
                                     progressDialog.dismiss();
                                     startLogin();
-                                    android.util.Log.e("faker", "login1");
                                 }
                             }
 
@@ -378,7 +341,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                     User user = dataSnapshot.getValue(User.class);
                                     try {
                                         if (user.getPassWord().equals(passWord)) {
-                                            myInforFragment.setTextInfor(user.getTenSV(), user.getMaSV(), user.getTenLopDL(), user.getSoDT(), user.getImgProfile());
+                                            myInforFragment.setTextInfor(user.getTenSV(), user.getMaSV(), user.getTenLopDL(), user.getSoDT(), user.getViTri());
                                             myInforFragment.setProImage(user.getImgProfile());
                                         } else {
                                             startLogin();
@@ -443,6 +406,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         viewFlipper.setDisplayedChild(1);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         toolbar= (Toolbar) findViewById(R.id.test_tb);
+        toolbar.getMenu().clear();
         toolbar.inflateMenu(R.menu.test);
         toolbar.setNavigationIcon(android.R.drawable.ic_delete);
         mapFragment.getMapAsync(this);
@@ -451,6 +415,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     public void onMapReady(GoogleMap googleMap) {
         progressDialog.dismiss();
+//        navigationView.getMenu().clear();
+//        navigationView.inflateMenu(R.menu.menu_select_image);
        new MapManager(googleMap,this);
     }
 }

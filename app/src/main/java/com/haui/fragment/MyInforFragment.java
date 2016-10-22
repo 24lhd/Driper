@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.haui.activity.NavigationActivity;
@@ -68,17 +67,12 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
                 android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
         navigationActivity.startActivityForResult(cameraIntent, 1010);
     }
-    public void setTextInfor(final String tv_infor_ten, String tv_infor_masv, String tv_infor_lop, final String tv_infor_sdt, String img) {
+    public void setTextInfor(final String tv_infor_ten, String tv_infor_masv, String tv_infor_lop, final String tv_infor_sdt,String tenVitTri) {
         ((TextView) view.findViewById(R.id.tv_infor_ten)).setText(tv_infor_ten);
         ((TextView) view.findViewById(R.id.tv_infor_masv)).setText(tv_infor_masv);
         ((TextView) view.findViewById(R.id.tv_infor_lop)).setText(tv_infor_lop);
         ((TextView) view.findViewById(R.id.tv_infor_sdt)).setText(tv_infor_sdt);
-        ((TextView) view.findViewById(R.id.tv_infor_sdt)).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getContext(),tv_infor_sdt,Toast.LENGTH_SHORT).show();
-            }
-        });
+        ((TextView) view.findViewById(R.id.tv_infor_vitri)).setText(tenVitTri);
         hideProgress();
         collapsingToolbar.setTitle(tv_infor_ten);
     }
@@ -93,8 +87,8 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
             Glide.with(navigationActivity).load(proImage).fitCenter().into(imageView);
             hideProgress();
         }else {
-            showProgress();
             imageView.setImageResource(R.drawable.add_im);
+            hideProgress();
         }
     }
 

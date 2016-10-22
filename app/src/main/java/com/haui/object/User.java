@@ -14,6 +14,18 @@ public class User {
     public String tenLopDL;
     public String soDT;
     public String imgProfile;
+    public Location location;
+    public String viTri;
+    public User(String maSV, String passWord, String tenSV, String tenLopDL, String soDT, String imgProfile, Location location, String viTri) {
+        this.maSV = maSV;
+        this.passWord = passWord;
+        this.tenSV = tenSV;
+        this.tenLopDL = tenLopDL;
+        this.soDT = soDT;
+        this.imgProfile = imgProfile;
+        this.location = location;
+        this.viTri = viTri;
+    }
 
     @Override
     public String toString() {
@@ -24,6 +36,8 @@ public class User {
                 ", tenLopDL='" + tenLopDL + '\'' +
                 ", soDT='" + soDT + '\'' +
                 ", imgProfile='" + imgProfile + '\'' +
+                ", location=" + location +
+                ", viTri='" + viTri + '\'' +
                 '}';
     }
 
@@ -51,14 +65,12 @@ public class User {
         return imgProfile;
     }
 
-    public User(String maSV, String passWord, String tenSV, String tenLopDL, String soDT, String imgProfile) {
+    public Location getLocation() {
+        return location;
+    }
 
-        this.maSV = maSV;
-        this.passWord = passWord;
-        this.tenSV = tenSV;
-        this.tenLopDL = tenLopDL;
-        this.soDT = soDT;
-        this.imgProfile = imgProfile;
+    public String getViTri() {
+        return viTri;
     }
 
     public User() {
@@ -66,60 +78,4 @@ public class User {
 
     }
 
-//    public User(String maSV, String passWord, String tenSV, String tenLopDL, String soDT, String bienSoXe, String tenViTri, Location location) {
-//        this.maSV = maSV;
-//        this.passWord = passWord;
-//        this.tenSV = tenSV;
-//        this.tenLopDL = tenLopDL;
-//        this.soDT = soDT;
-//        this.bienSoXe = bienSoXe;
-//        this.tenViTri = tenViTri;
-//        this.location = location;
-//    }
-//
-//    public String getPassWord() {
-//        return passWord;
-//    }
-//
-//    public String getMaSV() {
-//        return maSV;
-//    }
-//
-//    public String getTenSV() {
-//        return tenSV;
-//    }
-//
-//    public String getTenLopDL() {
-//        return tenLopDL;
-//    }
-//
-//    public String getSoDT() {
-//        return soDT;
-//    }
-//
-//    public String getBienSoXe() {
-//        return bienSoXe;
-//    }
-//
-//    public String getTenViTri() {
-//        return tenViTri;
-//    }
-//
-//    public Location getLocation() {
-//        return location;
-//    }
-
-//    @Override
-//    public String toString() {
-//        return "User{" +
-//                "maSV='" + maSV + '\'' +
-//                ", passWord='" + passWord + '\'' +
-//                ", tenSV='" + tenSV + '\'' +
-//                ", tenLopDL='" + tenLopDL + '\'' +
-//                ", soDT='" + soDT + '\'' +
-//                ", bienSoXe='" + bienSoXe + '\'' +
-//                ", tenViTri='" + tenViTri + '\'' +
-//                ", location=" + location +
-//                '}';
-//    }
 }

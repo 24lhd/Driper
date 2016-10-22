@@ -1,16 +1,13 @@
 package com.haui.map;
 
-import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -21,6 +18,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.haui.activity.NavigationActivity;
+import com.haui.activity.R;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,11 +34,12 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, LocationList
     private GoogleMap googleMap;
     private Context context;
     private LocationManager locationManager;
+    private NavigationActivity navigationActivity;
     private Geocoder geocoder;//đối tượng quản lý vị trí địa lý vùng mình đang đứng
     public MapManager(GoogleMap googleMap, Context context) {
         this.googleMap = googleMap;
         this.context = context;
-//        reQuestPermistion();
+        navigationActivity= (NavigationActivity) context;
         geocoder = new Geocoder(context, Locale.getDefault());
         locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 400, 1000, this);
@@ -47,10 +48,6 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, LocationList
         uiSettings.setMapToolbarEnabled(true);
         googleMap.setMyLocationEnabled(true);
         googleMap.setOnMyLocationChangeListener(this);
-
-
-
-
     }
     private Marker drawMarker(double lat,double lng,int hue,String title,String snippet){
         //định nghĩa điểm ảnh
@@ -89,42 +86,11 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, LocationList
         }
 
     }
-    private void reQuestPermistion() {
-        ActivityCompat.requestPermissions((Activity) context,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},20);
-        ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 5);
-
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            // Check Permissions Now
-            ActivityCompat.requestPermissions((Activity) context,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                    12);
-        } else {
-        }
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.ACCESS_FINE_LOCATION)) {
-            } else {
-                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 4);
-            }
-        }
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context, android.Manifest.permission.ACCESS_COARSE_LOCATION)) {
-            } else {
-                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 3);
-            }
-        }
-
-
-    }
     @Override
     public void onLocationChanged(Location location) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 //        drawMarker(latLng.latitude,latLng.longitude, R.drawable.police,"duonghaui","im here");
 
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
-        googleMap.animateCamera(cameraUpdate);
-        locationManager.removeUpdates(this);
     }
 
     @Override
@@ -141,9 +107,27 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, LocationList
     public void onProviderDisabled(String provider) {
 
     }
-
+    private Marker mMarker;
     @Override
     public void onMyLocationChange(Location location) {
+        LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
+        if (mMarker==null){
+            mMarker=drawMarker(latLng.latitude,latLng.longitude,R.drawable.ic_my_location,"My Location",getNameByLocation(latLng.latitude,latLng.longitude));
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+            googleMap.animateCamera(cameraUpdate);
+            locationManager.removeUpdates(this);
+        }else {
+            mMarker.setPosition(latLng);
+            navigationActivity.upDateUser("viTri",getNameByLocation(latLng.latitude,latLng.longitude));
+            navigationActivity.upDateUser("location/lat",""+latLng.latitude);
+            navigationActivity.upDateUser("location/lng",""+latLng.longitude);
+        }
         Log.e("faker", getNameByLocation(location.getLatitude(),location.getLongitude()));
+        PolylineOptions options = new PolylineOptions();
+        options.color(Color.GREEN);;
+        options.width(10);
+        options.add(new LatLng(21.0579267,105.73167086));
+        options.add(new LatLng(21.04677555,105.74839711));
+        googleMap.addPolyline(options);
     }
 }
