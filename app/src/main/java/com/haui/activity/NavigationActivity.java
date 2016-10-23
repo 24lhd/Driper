@@ -330,11 +330,15 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             switch (item.getItemId()) {
                 case R.id.mn_nguoi_tim_xe:
                     toolbar.setTitle("Tìm xe");
-                    setMap();
+                    viewFlipper.setDisplayedChild(1);
+                    mapManager.setTimXe();
+//                    setMap();
                     break;
                 case R.id.mn_xe_tim_nguoi:
                     toolbar.setTitle("Tìm người");
-                    setMap();
+                    viewFlipper.setDisplayedChild(1);
+                    mapManager.setTimNguoi();
+//                    setMap();
                     break;
                 case R.id.mn_user:
                     toolbar.setTitle("Thông tin cá nhân");
@@ -420,7 +424,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         toolbar.setNavigationIcon(android.R.drawable.ic_delete);
         mapFragment.getMapAsync(this);
     }
-
+    private MapManager mapManager;
     @Override
     public void onMapReady(GoogleMap googleMap) {
         progressDialog.dismiss();
@@ -428,7 +432,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 //        navigationView.inflateMenu(R.menu.menu_select_image);
         Intent intent=new Intent(this, MyService.class);
         startService(intent);
-       new MapManager(googleMap,this);
+        mapManager= new MapManager(googleMap,this);
     }
 
 }

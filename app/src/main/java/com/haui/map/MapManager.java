@@ -1,17 +1,15 @@
 package com.haui.map;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Color;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -22,7 +20,6 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 import com.haui.activity.NavigationActivity;
 import com.haui.activity.R;
 
@@ -30,7 +27,8 @@ import com.haui.activity.R;
  * Created by Duong on 10/16/2016.
  */
 
-public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMyLocationChangeListener {
+public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.OnMyLocationChangeListener,LocationListener {
+    private  LocationManager locationManager;
     private GoogleMap googleMap;
 
     private Context context;
@@ -41,20 +39,20 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
         this.context = context;
         checkLocationIsEnable();
         navigationActivity= (NavigationActivity) context;
-//        geocoder = new Geocoder(context, Locale.getDefault());
         UiSettings uiSettings = googleMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(true);
         uiSettings.setMapToolbarEnabled(true);
         googleMap.setMyLocationEnabled(true);
-        googleMap.setOnMyLocationChangeListener(this);
-        LocalBroadcastManager.getInstance(navigationActivity).registerReceiver(mMessageReceiver,new IntentFilter("my.location"));
+        locationManager = (LocationManager) navigationActivity.getSystemService(Context.LOCATION_SERVICE);
+        initMap();
     }
-
+    private void initMap() {
+        googleMap.setOnMyLocationChangeListener(this);
+    }
     private void checkLocationIsEnable() {
         LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
         boolean gps_enabled = false;
         boolean network_enabled = false;
-
         try {
             gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
         } catch(Exception ex) {}
@@ -84,16 +82,6 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
             dialog.show();
         }
     }
-
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String lat = intent.getStringExtra("lat");
-            String lng = intent.getStringExtra("lng");
-            android.util.Log.e("faker lat",lat+" "+lng);
-
-        }
-    };
     private Marker drawMarker(double lat,double lng,int hue,String title,String snippet){
         //định nghĩa điểm ảnh
         // mỗi maker chỉ hiện thị một điểm ảnh
@@ -113,38 +101,69 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
         return false;
     }
 
-    private Marker mMarker;
+//    private Marker mMarker;
+    private Location mMarker;
     @Override
     public void onMyLocationChange(Location location) {
         LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
         if (mMarker==null){
-            mMarker=drawMarker(latLng.latitude,latLng.longitude,R.drawable.ic_my_location,"My Location","");
+            mMarker=location;
+//            mMarker=drawMarker(latLng.latitude,latLng.longitude,R.drawable.ic_my_location,"My Location","");
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
             googleMap.animateCamera(cameraUpdate);
         }else {
-            mMarker.setPosition(latLng);
-//            Message message=new Message();
-//            message.what=111;
-//            message.obj=latLng;
-//            handler.sendMessage(message);
+//            mMarker.setPosition(latLng);
         }
-        PolylineOptions options = new PolylineOptions();
-        options.color(Color.GREEN);;
-        options.width(10);
-        options.add(new LatLng(21.0579267,105.73167086));
-        options.add(new LatLng(21.04677555,105.74839711));
-        googleMap.addPolyline(options);
+//        PolylineOptions options = new PolylineOptions();
+//        options.color(Color.GREEN);;
+//        options.width(10);
+//        options.add(new LatLng(21.0579267,105.73167086));
+//        options.add(new LatLng(21.04677555,105.74839711));
+//        googleMap.addPolyline(options);
     }
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             if (msg.what==111){
                 LatLng latLng= (LatLng) msg.obj;
-//                navigationActivity.upDateUser("viTri",getNameByLocation(latLng.latitude,latLng.longitude));
-//                navigationActivity.upDateUser("location/lat",""+latLng.latitude);
-//                navigationActivity.upDateUser("location/lng",""+latLng.longitude);
             }
 
         }
     };
+
+    public void setTimNguoi() {
+//        googleMap.clear();
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 400, 1000, this);
+        initMap();
+    }
+
+    public void setTimXe() {
+//        googleMap.clear();
+//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 400, 1000, this);
+//        initMap();
+        mMarker=null;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+//        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+//        googleMap.animateCamera(cameraUpdate);
+//        locationManager.removeUpdates(this);
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 }
