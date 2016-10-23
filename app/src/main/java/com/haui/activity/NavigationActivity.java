@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -28,7 +29,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -53,7 +53,7 @@ import com.haui.service.MyService;
 
 import static android.support.design.widget.Snackbar.make;
 
-public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
+public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,View.OnClickListener {
     private com.haui.log.Log log;
     private DatabaseReference database;
     private String passWord;
@@ -85,7 +85,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private void creatView() {
         setContentView(R.layout.activity_navigation);
         log = new Log(this);
-        ft = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction = getSupportFragmentManager().beginTransaction();
         database = FirebaseDatabase.getInstance().getReference();
         mStorageRef = FirebaseStorage.getInstance().getReference();
         toolbar = (Toolbar) findViewById(R.id.toolbarMain);
@@ -246,18 +246,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         } else {
             setViewOffLine();
         }
-
-    }
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
     }
     public boolean isOnline() {
         try {
             ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
             return cm.getActiveNetworkInfo().isConnectedOrConnecting();
-        } catch (Exception e) {
-            return false;
-        }
+        } catch (Exception e) {return false;}
     }
 
     private void creatData() {
@@ -268,9 +262,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             setViewOffLine();
         }
     }
-
-
-
     private void login(final String extra, final String stringExtra) {
         if (isOnline()) {
             try {
@@ -318,8 +309,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             super.onBackPressed();
         }
     }
-    private FragmentTransaction ft;
+    private FragmentTransaction fragmentTransaction;
     private YeuCauFragment yeuCauFragment;
+    private FloatingActionButton floatingActionButton;
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -366,14 +358,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                     android.util.Log.e("faker", "onCancelled");
                                 }
                             });
-                    ft=getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
+                    fragmentTransaction=getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
                     break;
                 case R.id.mn_yeucau:
                     toolbar.setTitle("Yêu cầu của bạn");
                     yeuCauFragment=new YeuCauFragment();
-                    ft=getSupportFragmentManager().beginTransaction();
-                    ft.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
+                    fragmentTransaction=getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
                     break;
                 case R.id.mn_error:
                     break;
@@ -402,8 +394,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
          viewFlipper = (ViewFlipper) findViewById(R.id.viewFliper);
         viewFlipper.setDisplayedChild(0);
         nullDataFragment = new NullDataFragment();
-        ft=getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment, nullDataFragment).commit();
+        fragmentTransaction=getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment, nullDataFragment).commit();
     }
     private void callPhone(String s) {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -418,10 +410,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private void setMap() {
         viewFlipper.setDisplayedChild(1);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        toolbar= (Toolbar) findViewById(R.id.test_tb);
-        toolbar.getMenu().clear();
-        toolbar.inflateMenu(R.menu.test);
-        toolbar.setNavigationIcon(android.R.drawable.ic_delete);
+        floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location);
+        floatingActionButton.setOnClickListener(this);
+//        toolbar= (Toolbar) findViewById(R.id.test_tb);
+//        toolbar.getMenu().clear();
+//        toolbar.inflateMenu(R.menu.test);
+//        toolbar.setNavigationIcon(android.R.drawable.ic_delete);
         mapFragment.getMapAsync(this);
     }
     private MapManager mapManager;
@@ -435,4 +429,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         mapManager= new MapManager(googleMap,this);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.fab_map_my_location:
+                mapManager.moveToMyLocation();
+                break;
+        }
+    }
 }
