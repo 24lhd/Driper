@@ -3,8 +3,10 @@ package com.haui.activity;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -17,6 +19,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -48,6 +51,7 @@ import com.haui.fragment.NullDataFragment;
 import com.haui.log.Log;
 import com.haui.map.MapManager;
 import com.haui.object.User;
+import com.haui.service.MyService;
 
 import static android.support.design.widget.Snackbar.make;
 
@@ -101,6 +105,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         tvTenHeadNavigation= (TextView) view.findViewById(R.id.hd_tv_tensv);
         tvViTriHeadNavigation= (TextView) view.findViewById(R.id.hd_tv_vitri);
         navigationView.setNavigationItemSelectedListener(this);
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,new IntentFilter("my.location"));
+
     }
     private StorageReference mStorageRef;
     public void checkLogin(String extra, String stringExtra) {
@@ -417,6 +423,22 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         progressDialog.dismiss();
 //        navigationView.getMenu().clear();
 //        navigationView.inflateMenu(R.menu.menu_select_image);
+        Intent intent=new Intent(this, MyService.class);
+        startService(intent);
        new MapManager(googleMap,this);
+    }
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String lat = intent.getStringExtra("lat");
+            String lng = intent.getStringExtra("lng");
+            android.util.Log.e("faker lat",lat+" "+lng);
+        }
+    };
+    @Override
+    protected void onPause() {
+        // Unregister since the activity is not visible
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onPause();
     }
 }

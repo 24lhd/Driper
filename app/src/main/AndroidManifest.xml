@@ -29,7 +29,12 @@
         </activity>
         <activity android:name=".Test"
             android:theme="@style/AppTheme.NoActionBar">
-
         </activity>
+        <receiver android:name="com.haui.receiver.MyReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE"/>
+            </intent-filter>
+        </receiver>
+        <service android:name="com.haui.service.MyService"/>
     </application>
 </manifest>
