@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,6 +37,9 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
         this.googleMap = googleMap;
         this.context = context;
         checkLocationIsEnable();
+        initMapView();
+    }
+    private void initMapView() {
         navigationActivity= (NavigationActivity) context;
         UiSettings uiSettings = googleMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(true);
@@ -44,6 +48,7 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
         locationManager = (LocationManager) navigationActivity.getSystemService(Context.LOCATION_SERVICE);
         initMap();
     }
+
     private void initMap() {
         googleMap.setOnMyLocationChangeListener(this);
     }
@@ -138,5 +143,13 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
     }
     public void moveToMyLocation() {
         myLocation=null;
+    }
+    public void setMapVeTinh() {
+        Log.e("faker","setMapVeTinh");
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+    }
+    public void setMapGiaoThong() {
+        Log.e("faker","setMapGiaoThong");
+        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 }

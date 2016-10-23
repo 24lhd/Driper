@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group android:checkableBehavior="all">
         <item
-            android:id="@+id/mn_nguoi_tim_xe"
-            android:icon="@drawable/places_ic_search"
-            android:title="Người tìm xe" />
+            android:id="@+id/mn_home"
+            android:icon="@drawable/ic_account_balance_black_48dp"
+            android:title="Trang chủ" />
         <item
-            android:id="@+id/mn_xe_tim_nguoi"
-            android:icon="@drawable/police"
-            android:title="Xe tìm người" />
+            android:id="@+id/mn_map"
+            android:icon="@drawable/ic_map_black_48dp"
+            android:title="Bản đồ" />
         <item
             android:id="@+id/mn_user"
             android:icon="@drawable/ic_student"

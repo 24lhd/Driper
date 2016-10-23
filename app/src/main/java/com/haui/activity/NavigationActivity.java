@@ -325,11 +325,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     viewFlipper.setDisplayedChild(1);
                     mapManager.setTimXe();
 //                    setMap();
+                    drawer.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.mn_xe_tim_nguoi:
                     toolbar.setTitle("Tìm người");
                     viewFlipper.setDisplayedChild(1);
                     mapManager.setTimNguoi();
+                    drawer.closeDrawer(GravityCompat.START);
 //                    setMap();
                     break;
                 case R.id.mn_user:
@@ -360,12 +362,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                             });
                     fragmentTransaction=getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
+                    drawer.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.mn_yeucau:
                     toolbar.setTitle("Yêu cầu của bạn");
                     yeuCauFragment=new YeuCauFragment();
                     fragmentTransaction=getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
+                    drawer.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.mn_error:
                     break;
@@ -383,11 +387,34 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 case R.id.mn_dev:
 
                     break;
+                case R.id.mn_home:
+                    navigationView.getMenu().clear();
+                    navigationView.inflateMenu(R.menu.activity_navigation_drawer);
+
+                    break;
+                case R.id.mn_map:
+                    viewFlipper.setDisplayedChild(1);
+                    navigationView.getMenu().clear();
+                     navigationView.inflateMenu(R.menu.menu_map);
+                    break;
+                case R.id.mn_map_ve_tinh:
+                    viewFlipper.setDisplayedChild(1);
+                    mapManager.setMapVeTinh();
+                    drawer.closeDrawer(GravityCompat.START);
+                    break;
+                case R.id.mn_map_giao_thong:
+                    viewFlipper.setDisplayedChild(1);
+                    mapManager.setMapGiaoThong();
+                    drawer.closeDrawer(GravityCompat.START);
+                    break;
+                case R.id.mn_map_tim_kiem:
+
+                    break;
             }
         } else {
             setViewOffLine();
         }
-        drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
     private void setViewOffLine() {
