@@ -110,9 +110,10 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
         LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
         if (myLocation==null){
             myLocation=location;
-//            mMarker=drawMarker(latLng.latitude,latLng.longitude,R.drawable.ic_my_location,"My Location","");
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
             googleMap.animateCamera(cameraUpdate);
+        }else {
+            myLocation=location;
         }
 //        mMarker.setPosition(latLng);
 //        PolylineOptions options = new PolylineOptions();
@@ -142,7 +143,9 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
 //        initMap();
     }
     public void moveToMyLocation() {
-        myLocation=null;
+        LatLng latLng = new LatLng(myLocation.getLatitude(),myLocation.getLongitude());
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+        googleMap.animateCamera(cameraUpdate);
     }
     public void setMapVeTinh() {
         Log.e("faker","setMapVeTinh");

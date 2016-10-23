@@ -148,7 +148,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         log.remove();
         startLogin();
     }
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         switch (contenView){
@@ -256,8 +255,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
     private void creatData() {
         if (isOnline()){
-            navigationView.setCheckedItem(R.id.mn_nguoi_tim_xe);
-            setMap();
+            toolbar.setTitle("Lời gửi");
+            yeuCauFragment=new YeuCauFragment();
+            fragmentTransaction=getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
+            navigationView.setCheckedItem(R.id.mn_home);
+            progressDialog.dismiss();
         }else {
             setViewOffLine();
         }
@@ -287,7 +290,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                     startLogin();
                                 }
                             }
-
                             @Override
                             public void onCancelled(DatabaseError databaseError) {
                                 android.util.Log.e("faker", "onCancelled");
@@ -318,24 +320,21 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (isOnline()) {
             contenView=item.getItemId();
-            viewFlipper.setDisplayedChild(0);
+            navigationView.setCheckedItem(item.getItemId());
             switch (item.getItemId()) {
                 case R.id.mn_nguoi_tim_xe:
                     toolbar.setTitle("Tìm xe");
                     viewFlipper.setDisplayedChild(1);
                     mapManager.setTimXe();
-//                    setMap();
-                    drawer.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.mn_xe_tim_nguoi:
                     toolbar.setTitle("Tìm người");
                     viewFlipper.setDisplayedChild(1);
                     mapManager.setTimNguoi();
-                    drawer.closeDrawer(GravityCompat.START);
-//                    setMap();
                     break;
                 case R.id.mn_user:
                     toolbar.setTitle("Thông tin cá nhân");
+                    viewFlipper.setDisplayedChild(0);
                     myInforFragment = new MyInforFragment();
                     database.child("users").child(maSV).addListenerForSingleValueEvent(
                             new ValueEventListener() {
@@ -362,14 +361,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                             });
                     fragmentTransaction=getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
-                    drawer.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.mn_yeucau:
-                    toolbar.setTitle("Yêu cầu của bạn");
-                    yeuCauFragment=new YeuCauFragment();
-                    fragmentTransaction=getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
-                    drawer.closeDrawer(GravityCompat.START);
+
                     break;
                 case R.id.mn_error:
                     break;
@@ -388,29 +382,34 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
                     break;
                 case R.id.mn_home:
+                    viewFlipper.setDisplayedChild(0);
                     navigationView.getMenu().clear();
                     navigationView.inflateMenu(R.menu.activity_navigation_drawer);
-
+                    toolbar.setTitle("Lời gửi");
+                    yeuCauFragment=new YeuCauFragment();
+                    fragmentTransaction=getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
                     break;
                 case R.id.mn_map:
                     viewFlipper.setDisplayedChild(1);
                     navigationView.getMenu().clear();
                      navigationView.inflateMenu(R.menu.menu_map);
+                    setMap();
                     break;
                 case R.id.mn_map_ve_tinh:
                     viewFlipper.setDisplayedChild(1);
                     mapManager.setMapVeTinh();
-                    drawer.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.mn_map_giao_thong:
                     viewFlipper.setDisplayedChild(1);
                     mapManager.setMapGiaoThong();
-                    drawer.closeDrawer(GravityCompat.START);
                     break;
                 case R.id.mn_map_tim_kiem:
 
                     break;
             }
+
+            drawer.closeDrawer(GravityCompat.START);
         } else {
             setViewOffLine();
         }
@@ -435,6 +434,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .setAction("Action", null).show();
     }
     private void setMap() {
+        progressDialog.show();
         viewFlipper.setDisplayedChild(1);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location);
@@ -448,12 +448,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private MapManager mapManager;
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        progressDialog.dismiss();
-//        navigationView.getMenu().clear();
-//        navigationView.inflateMenu(R.menu.menu_select_image);
+        mapManager= new MapManager(googleMap,this);
         Intent intent=new Intent(this, MyService.class);
         startService(intent);
-        mapManager= new MapManager(googleMap,this);
+        progressDialog.dismiss();
     }
 
     @Override

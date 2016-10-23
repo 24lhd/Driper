@@ -39,7 +39,6 @@ public class MyService extends Service implements LocationListener{
     public IBinder onBind(Intent intent) {
         return null;
     }
-
     private String maSV;
     private LocationManager mLocationManager;
     private com.haui.log.Log log;
@@ -114,9 +113,8 @@ public class MyService extends Service implements LocationListener{
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                     if (databaseError == null) {
-                        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1, MyService.this);
-                    }else {
-                }
+                        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
+                    }
             }
         });
     }
@@ -125,23 +123,13 @@ public class MyService extends Service implements LocationListener{
         public void handleMessage(Message msg) {
             if (msg.what==111) {
                 Location location= (Location) msg.obj;
-                Log.e("faker","chay"+location.getLatitude());
-//                Intent intent = new Intent("my.location");
-                // add data
-//                intent.putExtra("lat",""+location.getLatitude());
-//                intent.putExtra("lng",""+location.getLongitude());
                 upDateUser("location/lat",""+location.getLatitude());
                 upDateUser("location/lng",""+location.getLongitude());
                 upDateUser("viTri",getNameByLocation(location.getLatitude(),location.getLongitude()));
-
-//                LocalBroadcastManager.getInstance(MyService.this).sendBroadcast(intent);
-//                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,10000, MyService.this);
             }else if(msg.what==1010){
                 maSV= (String) msg.obj;
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1, MyService.this);
+                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
             }
-
-
         }
     };
     @Override
@@ -153,20 +141,14 @@ public class MyService extends Service implements LocationListener{
         mLocationManager.removeUpdates(this);
 
     }
-
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
-
     }
-
     @Override
     public void onProviderEnabled(String provider) {
-
     }
-
     @Override
     public void onProviderDisabled(String provider) {
-
     }
-    }
+}
 

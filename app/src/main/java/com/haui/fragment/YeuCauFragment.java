@@ -34,19 +34,20 @@ public class YeuCauFragment extends Fragment{
             tabLayout.setTabTextColors( getResources().getColor(R.color.md_blue_grey_300),getResources().getColor(R.color.md_blue_500));
             tabLayout.setSelectedTabIndicatorHeight(0);
             tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorAccent));
-            tabLayout.getTabAt(0).setIcon(R.drawable.ic_wait_1).setText("Đang đợi");
-            tabLayout.getTabAt(1).setIcon(R.drawable.ic_done_0).setText("Đã xong");
+            tabLayout.getTabAt(0).setText("Tìm xe");
+            tabLayout.getTabAt(1).setText("Tìm người");
+            tabLayout.getTabAt(2).setText("Của tôi");
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
                     switch (tab.getPosition()) {
                         case 0:
-                            tabLayout.getTabAt(0).setIcon(R.drawable.ic_wait_1).setText("Đang đợi");
-                            tabLayout.getTabAt(1).setIcon(R.drawable.ic_done_0).setText("Đã xong");
+
                             break;
                         case 1:
-                            tabLayout.getTabAt(0).setIcon(R.drawable.ic_wait_0).setText("Đang đợi");
-                            tabLayout.getTabAt(1).setIcon(R.drawable.ic_done_1).setText("Đã xong");
+
+                            break;
+                        case 2:
 
                             break;
                     }
