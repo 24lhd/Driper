@@ -45,6 +45,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.haui.fragment.MyInforFragment;
 import com.haui.fragment.NullDataFragment;
+import com.haui.fragment.YeuCauFragment;
 import com.haui.log.Log;
 import com.haui.map.MapManager;
 import com.haui.object.User;
@@ -318,6 +319,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
     }
     private FragmentTransaction ft;
+    private YeuCauFragment yeuCauFragment;
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -364,6 +366,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     ft.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
                     break;
                 case R.id.mn_yeucau:
+                    toolbar.setTitle("Yêu cầu của bạn");
+                    yeuCauFragment=new YeuCauFragment();
+                    ft=getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
                     break;
                 case R.id.mn_error:
                     break;

@@ -28,7 +28,8 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".Test"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme">
+
         </activity>
         <receiver android:name="com.haui.receiver.MyReceiver">
             <intent-filter>

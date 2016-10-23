@@ -1,36 +1,33 @@
-package com.haui.activity;
+package com.haui.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
-import android.widget.Button;
-import android.widget.EditText;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.haui.activity.R;
 
 /**
- * Created by Duong on 10/19/2016.
+ * Created by Duong on 10/23/2016.
  */
 
-public class Test extends ActionBarActivity {
-    private EditText editText;
-    private Toolbar toolbar;
-    private Button bt;
+public class YeuCauFragment extends Fragment{
+    private View view;
     private TabLayout tabLayout;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.yeu_cau_layout);
-//        editText= (EditText) findViewById(R.id.tv);
-//        toolbar= (Toolbar) findViewById(R.id.test_tb);
-//        toolbar.inflateMenu(R.menu.test);
-//        toolbar.setNavigationIcon(android.R.drawable.ic_delete);
-    initView();
-
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        view=inflater.inflate(R.layout.yeu_cau_layout,container,false);
+        initView();
+        return view;
     }
     private void initView() {
-        tabLayout = (TabLayout) findViewById(R.id.tab_yeucau);
+        tabLayout = (TabLayout) view.findViewById(R.id.tab_yeucau);
         if (tabLayout != null) {
             tabLayout.setTabMode(TabLayout.MODE_FIXED);
             tabLayout.setBackgroundColor(Color.WHITE);
@@ -46,7 +43,6 @@ public class Test extends ActionBarActivity {
                         case 0:
                             tabLayout.getTabAt(0).setIcon(R.drawable.ic_wait_1).setText("Đang đợi");
                             tabLayout.getTabAt(1).setIcon(R.drawable.ic_done_0).setText("Đã xong");
-
                             break;
                         case 1:
                             tabLayout.getTabAt(0).setIcon(R.drawable.ic_wait_0).setText("Đang đợi");

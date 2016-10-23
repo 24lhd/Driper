@@ -1,32 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/coordinatorLayout"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:background="@color/colorAccent"
-    android:layout_height="match_parent">
-        <android.support.v7.widget.Toolbar
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <android.support.design.widget.TabLayout
+        android:layout_width="match_parent"
+        android:layout_margin="10dp"
+        android:fitsSystemWindows="true"
+        android:id="@+id/tab_yeucau"
+        app:layout_scrollFlags="scroll|enterAlways"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.TabItem
             android:layout_width="match_parent"
-            android:id="@+id/test_tb"
-            android:background="@drawable/toolbar_animation"
-            android:layout_margin="10dp"
-            android:layout_height="wrap_content">
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:background="@drawable/login_animation"
-                android:layout_height="wrap_content">
-                <EditText
-                    android:layout_width="match_parent"
-                    android:hint="@string/hint_pass"
-                    android:singleLine="true"
-                    android:layout_marginBottom="@dimen/margin_5dp"
-                    android:textColorHint="@color/md_green_500"
-                    android:id="@+id/tv"
-                    android:background="@color/bg_app"
-                    android:textColor="@color/md_green_500"
-                    android:textSize="@dimen/text_size_20dp"
-                    android:layout_height="wrap_content"
-                    />
-            </android.support.design.widget.TextInputLayout>
-        </android.support.v7.widget.Toolbar>
+            app:tabTextAppearance="@style/TextAppearance.AppCompat.Title"
+            android:layout_height="wrap_content" />
+        <android.support.design.widget.TabItem
+            android:layout_width="match_parent"
+            app:tabTextAppearance="@style/TextAppearance.AppCompat.Title"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.TabLayout>
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-</LinearLayout>
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|enterAlways" />
+
+    </android.support.design.widget.AppBarLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+
+
+</android.support.design.widget.CoordinatorLayout>

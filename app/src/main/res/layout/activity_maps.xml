@@ -1,13 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:fabSize="normal"
+        app:layout_anchor="@id/map"
+        app:layout_scrollFlags="scroll|enterAlways"
+        app:useCompatPadding="true"
+        app:borderWidth="0dp"
+        android:src="@drawable/ic_add_white_36dp"
+        app:layout_anchorGravity="bottom|right"
+        android:layout_height="wrap_content" />
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:id="@+id/test_tb"
@@ -32,4 +44,4 @@
                 />
         </android.support.design.widget.TextInputLayout>
     </android.support.v7.widget.Toolbar>
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
