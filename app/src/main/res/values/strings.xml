@@ -43,4 +43,7 @@
     <string name="bt_request_find_bike_text">Đăng yêu cầu tìm xe</string>
     <string name="bt_request_find_person_text">Đăng yêu cầu tìm người</string>
     <string name="hint_search">Tìm kiếm vị trí</string>
+    <string name="gps_network_not_enabled">Bật vị trí của bạn</string>
+    <string name="open_location_settings">Ok</string>
+    <string name="Cancel">Cancel</string>
 </resources>

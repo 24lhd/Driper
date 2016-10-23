@@ -3,10 +3,8 @@ package com.haui.activity;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -19,7 +17,6 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -78,7 +75,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         progressDialog.setMessage("Đang khởi tạo....");
         progressDialog.setCancelable(false);
         progressDialog.show();
-//        reQuestPermistion();
         creatView();
         checkLogin("","");
     }
@@ -105,8 +101,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         tvTenHeadNavigation= (TextView) view.findViewById(R.id.hd_tv_tensv);
         tvViTriHeadNavigation= (TextView) view.findViewById(R.id.hd_tv_vitri);
         navigationView.setNavigationItemSelectedListener(this);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,new IntentFilter("my.location"));
-
     }
     private StorageReference mStorageRef;
     public void checkLogin(String extra, String stringExtra) {
@@ -127,6 +121,24 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         } else {
             progressDialog.dismiss();
             setViewOffLine();
+            final Snackbar snackbar = Snackbar.make(navigationView, "Vui lòng bật kết nối internet!", Snackbar.LENGTH_SHORT);
+            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+            snackbar.setAction("Bật wifi", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                    if (!wifiManager.isWifiEnabled()) {
+                        wifiManager.setWifiEnabled(true);
+                    }else {
+                        Intent intent=new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
+                        startActivity(intent);
+                    }
+                    snackbar.dismiss();
+                    checkLogin(log.getID(), log.getPass());
+                }
+            });
+            snackbar.show();
+
         }
 
     }
@@ -231,23 +243,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             Intent intent = new Intent(NavigationActivity.this, LoginActivity.class);
             startActivityForResult(intent, 1001);
         } else {
-            final Snackbar snackbar = Snackbar.make(nullDataFragment.getTextView(), "Vui lòng bật kết nối internet!", Snackbar.LENGTH_SHORT);
-            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            snackbar.setAction("Bật wifi", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    if (!wifiManager.isWifiEnabled()) {
-                        wifiManager.setWifiEnabled(true);
-                    }else {
-                        Intent intent=new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
-                        startActivity(intent);
-                    }
-                    snackbar.dismiss();
-                    checkLogin(log.getID(), log.getPass());
-                }
-            });
-            snackbar.show();
+            setViewOffLine();
         }
 
     }
@@ -286,6 +282,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                     if (user.getPassWord().equals(stringExtra)) {
                                        tvTenHeadNavigation.setText(user.getTenSV());
                                         tvViTriHeadNavigation.setText(user.getViTri());
+                                        Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
                                         passWord = stringExtra;
                                         maSV = extra;
                                         creatData();
@@ -349,6 +346,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                         if (user.getPassWord().equals(passWord)) {
                                             myInforFragment.setTextInfor(user.getTenSV(), user.getMaSV(), user.getTenLopDL(), user.getSoDT(), user.getViTri());
                                             myInforFragment.setProImage(user.getImgProfile());
+                                            tvTenHeadNavigation.setText(user.getTenSV());
+                                            tvViTriHeadNavigation.setText(user.getViTri());
                                         } else {
                                             startLogin();
                                         }
@@ -389,7 +388,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
     private void setViewOffLine() {
          viewFlipper = (ViewFlipper) findViewById(R.id.viewFliper);
         viewFlipper.setDisplayedChild(0);
@@ -397,7 +395,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         ft=getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment, nullDataFragment).commit();
     }
-
     private void callPhone(String s) {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + s));
@@ -427,18 +424,5 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         startService(intent);
        new MapManager(googleMap,this);
     }
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String lat = intent.getStringExtra("lat");
-            String lng = intent.getStringExtra("lng");
-            android.util.Log.e("faker lat",lat+" "+lng);
-        }
-    };
-    @Override
-    protected void onPause() {
-        // Unregister since the activity is not visible
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
-        super.onPause();
-    }
+
 }

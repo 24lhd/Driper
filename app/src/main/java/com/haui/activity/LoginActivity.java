@@ -199,11 +199,13 @@ public class LoginActivity extends AppCompatActivity implements ValueEventListen
                         User user = dataSnapshot.getValue(User.class);
                         try {
                             if (user.getPassWord().equals(pass)){
+                                log.putID(id);
+                                log.putPass(pass);
                                 if (animatedSwitch.isChecked()){
                                     log.putID(id);
                                     log.putPass(pass);
                                 }else{
-                                    log.remove();
+//                                    log.remove();
                                 }
                                 processButton.setVisibility(View.VISIBLE);
                                 progressBar.setVisibility(View.GONE);
