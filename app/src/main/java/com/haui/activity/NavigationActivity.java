@@ -68,20 +68,30 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private ImageView imHeadNavigation;
     private TextView tvTenHeadNavigation;
     private TextView tvViTriHeadNavigation;
+    private StorageReference mStorageRef;
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        progressDialog=new ProgressDialog(this);
-        progressDialog.setMessage("Đang khởi tạo....");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        initDialogAndShow("Đang khởi tạo....");
         creatView();
         checkLogin("","");
     }
 
-
-
+    /**
+     * khỏi tạo dialog thông báo
+     * @param s thông điệp muốn hiển thị
+     */
+    private void initDialogAndShow(String s) {
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setMessage(s);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+    }
+    /**
+     * khỏi tạo các view cần thiết trong ứng dụng
+     */
     private void creatView() {
         setContentView(R.layout.activity_navigation);
         log = new Log(this);
@@ -103,18 +113,24 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         tvViTriHeadNavigation= (TextView) view.findViewById(R.id.hd_tv_vitri);
         navigationView.setNavigationItemSelectedListener(this);
     }
-    private StorageReference mStorageRef;
-    public void checkLogin(String extra, String stringExtra) {
+
+    /**
+     * kiểm tra đăng nhập
+     *
+     * @param maSV mã sinh viên
+     * @param pass mật khẩu đăng nhập
+     *
+     */
+    public void checkLogin(String maSV, String pass) {
         if (isOnline()) {
             try {
                 if (!log.getID().isEmpty()||!log.getPass().isEmpty()) {
                     login(log.getID(), log.getPass());
-                } else if (!stringExtra.isEmpty()||!extra.isEmpty()){
-                    login(extra, stringExtra);
+                } else if (!pass.isEmpty()||!maSV.isEmpty()){
+                    login(maSV, pass);
                 }else{
                     startLogin();
                 }
-
             } catch (NullPointerException e) {
                 android.util.Log.e("faker", "checkLogin");
                 startLogin();
@@ -122,32 +138,40 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         } else {
             progressDialog.dismiss();
             setViewOffLine();
-            final Snackbar snackbar = Snackbar.make(navigationView, "Vui lòng bật kết nối internet!", Snackbar.LENGTH_SHORT);
-            snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
-            snackbar.setAction("Bật wifi", new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                    if (!wifiManager.isWifiEnabled()) {
-                        wifiManager.setWifiEnabled(true);
-                    }else {
-                        Intent intent=new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
-                        startActivity(intent);
-                    }
-                    snackbar.dismiss();
-                    checkLogin(log.getID(), log.getPass());
-                }
-            });
-            snackbar.show();
-
+            showSnackbar();
         }
-
+    }
+    private void showSnackbar() {
+        final Snackbar snackbar = Snackbar.make(navigationView, "Vui lòng bật kết nối internet!", Snackbar.LENGTH_SHORT);
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
+        snackbar.setAction("Bật wifi", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                if (!wifiManager.isWifiEnabled()) {
+                    wifiManager.setWifiEnabled(true);
+                }else {
+                    Intent intent=new Intent(Settings.ACTION_NETWORK_OPERATOR_SETTINGS);
+                    startActivity(intent);
+                }
+                snackbar.dismiss();
+                checkLogin(log.getID(), log.getPass());
+            }
+        });
+        snackbar.show();
     }
 
     public void signOut() {
         log.remove();
         startLogin();
     }
+
+    /**
+     * khỏi tạo dialog menu
+     * @param menu
+     * @param v
+     * @param menuInfo
+     */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         switch (contenView){
@@ -158,6 +182,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
+    /**
+     * kết quả trả về khi bật 1 activity mới và yêu cầu 1 kết quả trả về
+     * @param requestCode mã code yêu cầu kết quả trả về
+     * @param resultCode mã code kết quả trả về
+     * @param data kết quả được trả về
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (isOnline()){
@@ -179,14 +209,25 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             setViewOffLine();
         }
     }
+
+    /**
+     * gửi ảnh lên stroge firebase
+     * @param file là uri của hình ảnh được chọn trong máy
+     */
     private void upAndGetUrlImageProfile(Uri file) {
         myInforFragment.showProgress();
-        StorageReference riversRef = mStorageRef.child("images/"+"image_"+maSV);
-        riversRef.putFile(file)
+        StorageReference riversRef = mStorageRef.child("images/"+"image_"+maSV);// tạo đường dẫn của file ảnh trên database cùng với tên của file
+        riversRef.putFile(file) // gưi file lên
                 .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    /**
+                     * kết quả trẻ về nếu thành công
+                     * @param taskSnapshot
+                     * taskSnapshot.getDownloadUrl() lấy đường dẫn url của file ảnh trên firebase
+                     */
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                          Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                        // khi thành công sẽ gọi phương thức update về ảnh đại diện cho user và set ảnh cho view
                         upDateUser("imgProfile",downloadUrl.toString());
                     }
                 })
@@ -198,6 +239,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 });
     }
 
+    /**
+     * cập nhật lại thông tin người dùng
+     * @param item là tên node (đường dẫn cha)
+     * @param valuse và giá trị của node con
+     */
     public void upDateUser(final String item, final String valuse) {
         database.child("users").child(maSV).child(item).setValue(valuse, new DatabaseReference.CompletionListener() {
             @Override
@@ -207,7 +253,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         myInforFragment.hideProgress();
                     } else {
                         myInforFragment.setProImage(valuse);
-                        Glide.with(NavigationActivity.this).load(valuse).fitCenter().into(imHeadNavigation);
+                        Glide.with(NavigationActivity.this).load(valuse).fitCenter().into(imHeadNavigation); // load ảnh online và hiển thị lên 1 view dùng thư viện Glide
                     }
                 }
 
@@ -215,6 +261,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         });
     }
 
+    /**
+     * sẽ được gọi khi 1 item men được click
+     * @param item item menu được cick
+     * @return true
+     */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         item.getItemId();
@@ -238,6 +289,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         return super.onContextItemSelected(item);
     }
 
+    /**
+     * kiểm tra online và bật activity đăng nhập
+     *  yêu cầu kết quả trả về với mã yêu cầu két quả trả về 1001
+     */
     public void startLogin() {
         if (isOnline()) {
             Intent intent = new Intent(NavigationActivity.this, LoginActivity.class);
@@ -246,6 +301,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             setViewOffLine();
         }
     }
+
+    /**
+     * kiểm tra trạng thai on hay offline của máy
+     * @return true nếu đang online và false nếu đang offline
+     */
     public boolean isOnline() {
         try {
             ConnectivityManager cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -253,6 +313,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         } catch (Exception e) {return false;}
     }
 
+    /**
+     * kiểm tra online và
+     * khỏi tạo đữ liệu đầu tiên sau khi đăng nhập thành công
+     *
+     */
     private void creatData() {
         if (isOnline()){
             toolbar.setTitle("Lời gửi");
@@ -265,21 +330,31 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             setViewOffLine();
         }
     }
-    private void login(final String extra, final String stringExtra) {
+
+    /**
+     * đăng nhập hệ thống
+     * @param masv mã sinh viên
+     * @param pass mật khẩu
+     */
+    private void login(final String masv, final String pass) {
         if (isOnline()) {
             try {
-                database.child("users").child(extra).addListenerForSingleValueEvent(
+                database.child("users").child(masv).addListenerForSingleValueEvent( // kiểm tra theo từng node con node users -> node masv rồi đến các node con của msv
                         new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                User user = dataSnapshot.getValue(User.class);
-                                try {
-                                    if (user.getPassWord().equals(stringExtra)) {
+                                User user = dataSnapshot.getValue(User.class); //láy 1 đối tượng tương ứng vs node con được trả về
+                                try {// nếu k lấy được giá trị hoặc giá trị đó k lấy kết quả trả về = null
+                                    /**kiểm tra mật khẩu
+                                     * đúng thì khởi tạo dữ liệu đầu tiên
+                                     * sai thì bật lại activity đăng nhập
+                                     */
+                                    if (user.getPassWord().equals(pass)) {
                                        tvTenHeadNavigation.setText(user.getTenSV());
                                         tvViTriHeadNavigation.setText(user.getViTri());
                                         Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
-                                        passWord = stringExtra;
-                                        maSV = extra;
+                                        passWord = pass;
+                                         maSV=masv;
                                         creatData();
                                     } else {
                                         progressDialog.dismiss();
@@ -299,6 +374,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             }
         } else {
             progressDialog.dismiss();
+            setViewOffLine();
         }
 
     }
@@ -416,13 +492,23 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
         return true;
     }
+
+    /**
+     * khởi tạo fragment offline
+     *
+     */
     private void setViewOffLine() {
          viewFlipper = (ViewFlipper) findViewById(R.id.viewFliper);
-        viewFlipper.setDisplayedChild(0);
+        viewFlipper.setDisplayedChild(0);  // hiện lại view 0
         nullDataFragment = new NullDataFragment();
-        fragmentTransaction=getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment, nullDataFragment).commit();
+        fragmentTransaction=getSupportFragmentManager().beginTransaction(); // lấy dối tương quản lý các fragment
+        fragmentTransaction.replace(R.id.fragment, nullDataFragment).commit(); // ghi đè lên fragment hiện tại
     }
+
+    /**
+     * tạo 1 cuộc gọi điện thoại
+     * @param s số điện thoại
+     */
     private void callPhone(String s) {
         Intent callIntent = new Intent(Intent.ACTION_CALL);
         callIntent.setData(Uri.parse("tel:" + s));
@@ -433,11 +519,15 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         make(getCurrentFocus(), "mn_share", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
+
+    /**
+     * khởi tạo bản đồ
+     */
     private void setMap() {
         progressDialog.show();
         viewFlipper.setDisplayedChild(1);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location);
+        floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
         floatingActionButton.setOnClickListener(this);
 //        toolbar= (Toolbar) findViewById(R.id.test_tb);
 //        toolbar.getMenu().clear();
