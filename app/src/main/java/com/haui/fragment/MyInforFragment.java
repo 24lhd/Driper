@@ -45,7 +45,6 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
         floatingActionButton= (FloatingActionButton) view.findViewById(R.id.fbt_my_infor);
          collapsingToolbar =(CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
          imageView = (ImageView) view.findViewById(R.id.im_img_profile);
-//        Glide.with(this).load(Cheeses.getRandomCheeseDrawable()).centerCrop().into(imageView);
         navigationActivity= (NavigationActivity) getActivity();
         navigationActivity.registerForContextMenu(floatingActionButton);
         showProgress();
@@ -77,11 +76,6 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
         collapsingToolbar.setTitle(tv_infor_ten);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        android.util.Log.e("faker",""+requestCode);
-    }
     public void setProImage(String proImage) {
         if (!proImage.isEmpty()){
             Glide.with(navigationActivity).load(proImage).fitCenter().into(imageView);

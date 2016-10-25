@@ -14,10 +14,6 @@
             android:icon="@drawable/ic_student"
             android:title="Cá nhân" />
         <item
-            android:id="@+id/mn_yeucau"
-            android:icon="@drawable/ic_history"
-            android:title="Yêu cầu" />
-        <item
             android:id="@+id/mn_error"
             android:icon="@drawable/ic_error"
             android:title="Báo cáo sự cố" />
@@ -33,18 +29,17 @@
             android:id="@+id/mn_exit"
             android:icon="@drawable/ic_exit"
             android:title="Thoát" />
+        <item android:title="Khác" >
+            <menu>
+                <item
+                    android:id="@+id/mn_dev"
+                    android:icon="@drawable/code"
+                    android:title="Các ứng dụng khác" />
+                <item
+                    android:id="@+id/mn_share"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="Ứng dụng liên quan" />
+            </menu>
+        </item>
     </group>
-    <item android:title="Khác" >
-        <menu>
-            <item
-                android:id="@+id/mn_dev"
-                android:icon="@drawable/code"
-                android:title="Các ứng dụng khác" />
-            <item
-                android:id="@+id/mn_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Ứng dụng liên quan" />
-        </menu>
-    </item>
-
 </menu>

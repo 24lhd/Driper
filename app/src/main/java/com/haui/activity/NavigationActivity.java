@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
@@ -16,9 +17,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +34,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -43,9 +49,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.haui.fragment.CuaToiFragment;
 import com.haui.fragment.MyInforFragment;
 import com.haui.fragment.NullDataFragment;
-import com.haui.fragment.YeuCauFragment;
+import com.haui.fragment.TimNguoiFragment;
+import com.haui.fragment.TimXeFragment;
 import com.haui.log.Log;
 import com.haui.map.MapManager;
 import com.haui.object.User;
@@ -69,11 +77,19 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private TextView tvTenHeadNavigation;
     private TextView tvViTriHeadNavigation;
     private StorageReference mStorageRef;
+    private ViewPager viewPageYeuCau;
+    private TabLayout tabLayoutYeuCau;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        try {
+            Intent intent=new Intent(this, MyService.class);
+            stopService(intent);
+        }catch (Exception e){
+
+        }
         initDialogAndShow("Đang khởi tạo....");
         creatView();
         checkLogin("","");
@@ -113,7 +129,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         tvViTriHeadNavigation= (TextView) view.findViewById(R.id.hd_tv_vitri);
         navigationView.setNavigationItemSelectedListener(this);
     }
-
     /**
      * kiểm tra đăng nhập
      *
@@ -166,21 +181,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         startLogin();
     }
 
-    /**
-     * khỏi tạo dialog menu
-     * @param menu
-     * @param v
-     * @param menuInfo
-     */
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        switch (contenView){
-            case R.id.mn_user:
-                getMenuInflater().inflate(R.menu.menu_select_image,menu);
-                break;
-        }
-        super.onCreateContextMenu(menu, v, menuInfo);
-    }
+
 
     /**
      * kết quả trả về khi bật 1 activity mới và yêu cầu 1 kết quả trả về
@@ -261,33 +262,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         });
     }
 
-    /**
-     * sẽ được gọi khi 1 item men được click
-     * @param item item menu được cick
-     * @return true
-     */
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        item.getItemId();
-        switch (item.getItemId()){
-            case R.id.mn_stroge:
-                myInforFragment.from_gallery();
-                return true;
-            case R.id.mn_camera:
-                myInforFragment.from_camera();
-                return true;
-            case R.id.mn_update:
-                myInforFragment.updateInfor();
-                return true;
-            case R.id.mn_update_pass:
-                myInforFragment.updatePass();
-                return true;
-            case R.id.mn_delete_user:
-                myInforFragment.deleteAcc();
-                return true;
-        }
-        return super.onContextItemSelected(item);
-    }
+
 
     /**
      * kiểm tra online và bật activity đăng nhập
@@ -318,19 +293,76 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
      * khỏi tạo đữ liệu đầu tiên sau khi đăng nhập thành công
      *
      */
-    private void creatData() {
+    private TimXeFragment timXeFragment;
+    private TimNguoiFragment timNguoiFragment;
+    private CuaToiFragment  cuaToiFragment;
+    private void viewHome() {
         if (isOnline()){
+            navigationView.getMenu().clear();
+            navigationView.inflateMenu(R.menu.activity_navigation_drawer);
+            viewFlipper.setDisplayedChild(2);
             toolbar.setTitle("Lời gửi");
-            yeuCauFragment=new YeuCauFragment();
-            fragmentTransaction=getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
-            navigationView.setCheckedItem(R.id.mn_home);
+            if (viewPageYeuCau==null){
+                timXeFragment=new TimXeFragment();
+                timNguoiFragment=new TimNguoiFragment();
+                cuaToiFragment=new CuaToiFragment();
+                viewPageYeuCau= (ViewPager) findViewById(R.id.viewpager_yeucau);
+                tabLayoutYeuCau = (TabLayout) findViewById(R.id.tab_yeucau);
+            }
+            if (tabLayoutYeuCau != null) {
+                tabLayoutYeuCau.setTabMode(TabLayout.MODE_FIXED);
+                tabLayoutYeuCau.setBackgroundColor(Color.WHITE);
+                tabLayoutYeuCau.setTabTextColors( getResources().getColor(R.color.md_blue_grey_300),getResources().getColor(R.color.md_blue_500));
+                tabLayoutYeuCau.setSelectedTabIndicatorHeight(0);
+                tabLayoutYeuCau.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorAccent));
+//                tabLayoutYeuCau.getTabAt(0).setText("Tìm xe");
+//                tabLayoutYeuCau.getTabAt(1).setText("Tìm người");
+//                tabLayoutYeuCau.getTabAt(2).setText("Của tôi");
+
+            }
+            viewPageYeuCau.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+                                          @Override
+                                          public Fragment getItem(int position) {
+                                              switch (position){
+                                                  case 0:
+
+                                                      return timXeFragment;
+                                                  case 1:
+
+                                                      return timNguoiFragment;
+                                                  case 2:
+
+                                                  default:
+                                                      return cuaToiFragment;
+                                              }
+                                          }
+                                          @Override
+                                          public int getCount() {
+                                              return 3;
+                                          }
+
+                @Override
+                public CharSequence getPageTitle(int position) {
+                    switch (position){
+                        case 0:
+                            return "Tìm xe";
+                        case 1:
+                            return "Tìm người";
+                        case 2:
+                        default:
+                            return "Của tôi";
+                    }
+                }
+            });
+            tabLayoutYeuCau.setupWithViewPager(viewPageYeuCau);
+//            yeuCauFragment=new YeuCauFragment();
+//            fragmentTransaction=getSupportFragmentManager().beginTransaction();
+//            fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
             progressDialog.dismiss();
         }else {
             setViewOffLine();
-        }
+         }
     }
-
     /**
      * đăng nhập hệ thống
      * @param masv mã sinh viên
@@ -355,7 +387,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                         Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
                                         passWord = pass;
                                          maSV=masv;
-                                        creatData();
+                                        viewHome();
                                     } else {
                                         progressDialog.dismiss();
                                         startLogin();
@@ -388,7 +420,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
     }
     private FragmentTransaction fragmentTransaction;
-    private YeuCauFragment yeuCauFragment;
     private FloatingActionButton floatingActionButton;
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -396,16 +427,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (isOnline()) {
             contenView=item.getItemId();
-            navigationView.setCheckedItem(item.getItemId());
             switch (item.getItemId()) {
                 case R.id.mn_nguoi_tim_xe:
                     toolbar.setTitle("Tìm xe");
-                    viewFlipper.setDisplayedChild(1);
                     mapManager.setTimXe();
                     break;
                 case R.id.mn_xe_tim_nguoi:
                     toolbar.setTitle("Tìm người");
-                    viewFlipper.setDisplayedChild(1);
                     mapManager.setTimNguoi();
                     break;
                 case R.id.mn_user:
@@ -438,9 +466,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     fragmentTransaction=getSupportFragmentManager().beginTransaction();
                     fragmentTransaction.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
                     break;
-                case R.id.mn_yeucau:
-
-                    break;
                 case R.id.mn_error:
                     break;
                 case R.id.mn_help:
@@ -458,33 +483,33 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
                     break;
                 case R.id.mn_home:
-                    viewFlipper.setDisplayedChild(0);
-                    navigationView.getMenu().clear();
-                    navigationView.inflateMenu(R.menu.activity_navigation_drawer);
-                    toolbar.setTitle("Lời gửi");
-                    yeuCauFragment=new YeuCauFragment();
-                    fragmentTransaction=getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
+                    viewHome();
                     break;
                 case R.id.mn_map:
+                    initDialogAndShow("Đang khỏi tạo dữ liệu....");
                     viewFlipper.setDisplayedChild(1);
                     navigationView.getMenu().clear();
-                     navigationView.inflateMenu(R.menu.menu_map);
+                    navigationView.inflateMenu(R.menu.menu_map);
                     setMap();
                     break;
                 case R.id.mn_map_ve_tinh:
-                    viewFlipper.setDisplayedChild(1);
                     mapManager.setMapVeTinh();
                     break;
                 case R.id.mn_map_giao_thong:
-                    viewFlipper.setDisplayedChild(1);
                     mapManager.setMapGiaoThong();
                     break;
                 case R.id.mn_map_tim_kiem:
 
                     break;
-            }
+                case R.id.mn_dang_bai:
 
+                    View v=navigationView.getMenu().getItem(3).getActionView();
+                    registerForContextMenu(v);
+                    v.setOnClickListener(this);
+                    openContextMenu(item.getActionView());
+                    break;
+            }
+            navigationView.setCheckedItem(contenView);
             drawer.closeDrawer(GravityCompat.START);
         } else {
             setViewOffLine();
@@ -492,6 +517,60 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
         return true;
     }
+    /**
+     * khỏi tạo dialog menu
+     * @param menu
+     * @param v
+     * @param menuInfo
+     */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        switch (contenView){
+            case R.id.mn_user:
+                getMenuInflater().inflate(R.menu.menu_select_image,menu);
+                break;
+            case R.id.mn_dang_bai:
+                android.util.Log.e("faker","vao");
+                getMenuInflater().inflate(R.menu.mn_dang_yeu_cau,menu);
+                break;
+        }
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+    /**
+     * sẽ được gọi khi 1 item men được click
+     * @param item item menu được cick
+     * @return true
+     */
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        item.getItemId();
+        switch (item.getItemId()){
+            case R.id.mn_stroge:
+                myInforFragment.from_gallery();
+                return true;
+            case R.id.mn_camera:
+                myInforFragment.from_camera();
+                return true;
+            case R.id.mn_update:
+                myInforFragment.updateInfor();
+                return true;
+            case R.id.mn_update_pass:
+                myInforFragment.updatePass();
+                return true;
+            case R.id.mn_delete_user:
+                myInforFragment.deleteAcc();
+                return true;
+            case R.id.mn_yc_tim_xe:
+
+                return true;
+            case R.id.mn_yc_tim_nguoi:
+
+                return true;
+
+        }
+        return super.onContextItemSelected(item);
+    }
+
 
     /**
      * khởi tạo fragment offline
@@ -524,16 +603,19 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
      * khởi tạo bản đồ
      */
     private void setMap() {
-        progressDialog.show();
         viewFlipper.setDisplayedChild(1);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
-        floatingActionButton.setOnClickListener(this);
+        if (mapManager==null){
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
+            floatingActionButton.setOnClickListener(this);
 //        toolbar= (Toolbar) findViewById(R.id.test_tb);
 //        toolbar.getMenu().clear();
 //        toolbar.inflateMenu(R.menu.test);
 //        toolbar.setNavigationIcon(android.R.drawable.ic_delete);
-        mapFragment.getMapAsync(this);
+            mapFragment.getMapAsync(this);
+        }else {
+            progressDialog.dismiss();
+        }
     }
     private MapManager mapManager;
     @Override
@@ -550,6 +632,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             case R.id.fab_map_my_location:
                 mapManager.moveToMyLocation();
                 break;
+            case R.id.mn_dang_bai:
+                openContextMenu(v);
+                break;
+
+
         }
     }
 }

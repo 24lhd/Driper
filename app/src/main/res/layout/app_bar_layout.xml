@@ -16,6 +16,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" >
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
+
     <ViewFlipper xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/viewFliper"
         android:layout_width="match_parent"
