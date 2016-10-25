@@ -22,5 +22,6 @@
         android:layout_height="match_parent" >
         <include layout="@layout/frame_layout" />
         <include layout="@layout/activity_maps"/>
+        <include layout="@layout/yeu_cau_layout"/>
     </ViewFlipper>
 </LinearLayout>
