@@ -41,13 +41,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -71,7 +71,10 @@ import com.haui.service.MyService;
 
 import static android.support.design.widget.Snackbar.make;
 
-public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback,View.OnClickListener {
+public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+        OnMapReadyCallback,
+        View.OnClickListener,
+        ValueEventListener,ChildEventListener {
     private com.haui.log.Log log;
     private DatabaseReference database;
     private String passWord;
@@ -90,6 +93,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private ViewPager viewPageYeuCau;
     private TabLayout tabLayoutYeuCau;
     private Dialog dialogYeuCau;
+    private DatabaseReference referenceInfor;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -153,6 +157,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 if (!log.getID().isEmpty()||!log.getPass().isEmpty()) {
                     login(log.getID(), log.getPass());
                 } else if (!pass.isEmpty()||!maSV.isEmpty()){
+
                     login(maSV, pass);
                 }else{
                     startLogin();
@@ -324,13 +329,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             if (tabLayoutYeuCau != null) {
                 tabLayoutYeuCau.setTabMode(TabLayout.MODE_FIXED);
                 tabLayoutYeuCau.setBackgroundColor(Color.WHITE);
-                tabLayoutYeuCau.setTabTextColors( getResources().getColor(R.color.md_blue_grey_300),getResources().getColor(R.color.md_blue_500));
-                tabLayoutYeuCau.setSelectedTabIndicatorHeight(0);
-                tabLayoutYeuCau.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorAccent));
-//                tabLayoutYeuCau.getTabAt(0).setText("Tìm xe");
-//                tabLayoutYeuCau.getTabAt(1).setText("Tìm người");
-//                tabLayoutYeuCau.getTabAt(2).setText("Của tôi");
-
+                tabLayoutYeuCau.setSelectedTabIndicatorHeight(10);
+                tabLayoutYeuCau.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorPrimary));
+                tabLayoutYeuCau.setTabTextColors( getResources().getColor(R.color.md_blue_grey_300),getResources().getColor(R.color.colorPrimary));
             }
             viewPageYeuCau.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
                                           @Override
@@ -383,38 +384,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
      */
     private void login(final String masv, final String pass) {
         if (isOnline()) {
+            contenView=1000;
             try {
-                database.child("users").child(masv).addListenerForSingleValueEvent( // kiểm tra theo từng node con node users -> node masv rồi đến các node con của msv
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                User user = dataSnapshot.getValue(User.class); //láy 1 đối tượng tương ứng vs node con được trả về
-                                try {// nếu k lấy được giá trị hoặc giá trị đó k lấy kết quả trả về = null
-                                    /**kiểm tra mật khẩu
-                                     * đúng thì khởi tạo dữ liệu đầu tiên
-                                     * sai thì bật lại activity đăng nhập
-                                     */
-                                    if (user.getPassWord().equals(pass)) {
-                                       tvTenHeadNavigation.setText(user.getTenSV());
-                                        tvViTriHeadNavigation.setText(user.getViTri());
-                                        Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
-                                        passWord = pass;
-                                         maSV=masv;
-                                        viewHome();
-                                    } else {
-                                        progressDialog.dismiss();
-                                        startLogin();
-                                    }
-                                } catch (NullPointerException e) {
-                                    progressDialog.dismiss();
-                                    startLogin();
-                                }
-                            }
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-                                android.util.Log.e("faker", "onCancelled");
-                            }
-                        });
+                passWord=pass;
+                maSV=masv;
+                //https://hauiclass.firebaseio.com/users/094120041
+                database.child("users").child(maSV).addListenerForSingleValueEvent(this); // kiểm tra theo từng node con node users -> node masv rồi đến các node con của msv
             } catch (NullPointerException e) {
             }
         } else {
@@ -452,32 +427,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 case R.id.mn_user:
                     toolbar.setTitle("Thông tin cá nhân");
                     viewFlipper.setDisplayedChild(0);
-                    myInforFragment = new MyInforFragment();
-                    database.child("users").child(maSV).addListenerForSingleValueEvent(
-                            new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    User user = dataSnapshot.getValue(User.class);
-                                    try {
-                                        if (user.getPassWord().equals(passWord)) {
-                                            myInforFragment.setTextInfor(user.getTenSV(), user.getMaSV(), user.getTenLopDL(), user.getSoDT(), user.getViTri());
-                                            myInforFragment.setProImage(user.getImgProfile());
-                                            tvTenHeadNavigation.setText(user.getTenSV());
-                                            tvViTriHeadNavigation.setText(user.getViTri());
-                                        } else {
-                                            startLogin();
-                                        }
-                                    } catch (NullPointerException e) {
-                                        startLogin();
-                                    }
-                                }
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-                                    android.util.Log.e("faker", "onCancelled");
-                                }
-                            });
-                    fragmentTransaction=getSupportFragmentManager().beginTransaction();
-                    fragmentTransaction.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
+                    if (myInforFragment==null){
+                        myInforFragment = new MyInforFragment();
+                        fragmentTransaction=getSupportFragmentManager().beginTransaction();
+                        fragmentTransaction.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
+                        referenceInfor = database.child("users").child(maSV);
+                        referenceInfor.addListenerForSingleValueEvent(this);
+                        referenceInfor.addChildEventListener(this);
+                    }
                     break;
                 case R.id.mn_error:
                     break;
@@ -751,8 +708,82 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             case R.id.fab_map_my_location:
                 mapManager.moveToMyLocation();
                 break;
-
-
         }
+    }
+    @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+
+        switch (contenView){
+            case  R.id.mn_user:
+                try {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user.getPassWord().equals(passWord)) {
+                        myInforFragment.setTextInfor(user.getTenSV(), user.getMaSV(), user.getTenLopDL(), user.getSoDT(), user.getViTri());
+                        myInforFragment.setProImage(user.getImgProfile());
+                        tvTenHeadNavigation.setText(user.getTenSV());
+                        tvViTriHeadNavigation.setText(user.getViTri());
+                        Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
+                    } else {
+                        startLogin();
+                    }
+                } catch (NullPointerException e) {
+                    startLogin();
+                }
+            break;
+            case  1000:    //láy 1 đối tượng tương ứng vs node con được trả về
+                try {// nếu k lấy được giá trị hoặc giá trị đó k lấy kết quả trả về = null
+                    /**kiểm tra mật khẩu
+                     * đúng thì khởi tạo dữ liệu đầu tiên
+                     * sai thì bật lại activity đăng nhập
+                     */
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user.getPassWord().equals(passWord)) {
+                        tvTenHeadNavigation.setText(user.getTenSV());
+                        tvViTriHeadNavigation.setText(user.getViTri());
+                        Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
+                        viewHome();
+                    } else {
+                        progressDialog.dismiss();
+                        startLogin();
+                    }
+                } catch (NullPointerException e) {
+                    progressDialog.dismiss();
+                    startLogin();
+                }
+                break;
+        }
+
+
+
+    }
+
+    @Override
+    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+        android.util.Log.e("faker", "onChildAdded "+s);
+    }
+
+    @Override
+    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+        android.util.Log.e("faker", "onChildChanged "+s);
+        android.util.Log.e("faker", "onChildChanged vl"+dataSnapshot.getValue());
+//        android.util.Log.e("faker", "onChildChanged key"+);
+        dataSnapshot.getRef().getParent().addListenerForSingleValueEvent(NavigationActivity.this);
+//        android.util.Log.e("faker", "onChildChanged vl"+dataSnapshot.getRef().getParent().child("passWord").);
+
+    }
+
+    @Override
+    public void onChildRemoved(DataSnapshot dataSnapshot) {
+        android.util.Log.e("faker", "onChildRemoved");
+    }
+
+    @Override
+    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+
     }
 }
