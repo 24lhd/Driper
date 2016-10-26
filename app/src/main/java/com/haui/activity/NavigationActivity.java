@@ -2,11 +2,13 @@ package com.haui.activity;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
@@ -27,10 +29,12 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -79,6 +83,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private StorageReference mStorageRef;
     private ViewPager viewPageYeuCau;
     private TabLayout tabLayoutYeuCau;
+    private Dialog dialogYeuCau;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -194,6 +199,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         if (isOnline()){
             if (requestCode == 1001) {
                 if (resultCode == RESULT_OK) {
+                    initDialogAndShow("Đang khởi tạo dữ liệu....");
                     checkLogin(data.getStringExtra(Log.LOG_ID), data.getStringExtra(Log.LOG_PASS));
                 } else {
                     log.remove();
@@ -360,6 +366,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 //            fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
             progressDialog.dismiss();
         }else {
+            progressDialog.dismiss();
             setViewOffLine();
          }
     }
@@ -502,11 +509,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
                     break;
                 case R.id.mn_dang_bai:
-
-                    View v=navigationView.getMenu().getItem(3).getActionView();
-                    registerForContextMenu(v);
-                    v.setOnClickListener(this);
-                    openContextMenu(item.getActionView());
+                    registerForContextMenu(floatingActionButton);
+                    openContextMenu(floatingActionButton);
                     break;
             }
             navigationView.setCheckedItem(contenView);
@@ -525,12 +529,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
      */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        switch (contenView){
-            case R.id.mn_user:
+        switch (v.getId()){
+            case R.id.fbt_my_infor:
                 getMenuInflater().inflate(R.menu.menu_select_image,menu);
                 break;
-            case R.id.mn_dang_bai:
-                android.util.Log.e("faker","vao");
+            case R.id.fab_map_my_location:
                 getMenuInflater().inflate(R.menu.mn_dang_yeu_cau,menu);
                 break;
         }
@@ -561,14 +564,39 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 myInforFragment.deleteAcc();
                 return true;
             case R.id.mn_yc_tim_xe:
-
+                createDialogTimXe();
                 return true;
             case R.id.mn_yc_tim_nguoi:
-
+                createDialogTimNguoi();
                 return true;
 
         }
         return super.onContextItemSelected(item);
+    }
+
+    private void createDialogTimNguoi() {
+        View v=getLayoutInflater().inflate(R.layout.dialog_tim_nguoi,null);
+        EditText etLoiNhan= (EditText) v.findViewById(R.id.et_dl_tim_nguoi_loi_nhan);
+        EditText etBSX= (EditText) v.findViewById(R.id.et_dl_tim_nguoi_bsx);
+        AppCompatButton btDang= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_nguoi_dang);
+        AppCompatButton btHuy= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_nguoi_huy);
+        dialogYeuCau.setCanceledOnTouchOutside(false);
+        dialogYeuCau.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialogYeuCau.setContentView(v);
+        dialogYeuCau.show();
+    }
+    private void createDialogTimXe() {
+        View v=getLayoutInflater().inflate(R.layout.dialog_tim_xe,null);
+        EditText etDiemDi= (EditText) v.findViewById(R.id.et_dl_tim_xe_diem_di);
+        EditText etDiemDen= (EditText) v.findViewById(R.id.et_dl_tim_xe_diem_den);
+        EditText etGiaTien= (EditText) v.findViewById(R.id.et_dl_tim_xe_gia_tien);
+        EditText etLoiNhan= (EditText) v.findViewById(R.id.et_dl_tim_xe_loi_nhan);
+        AppCompatButton btDang= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_xe_dang);
+        AppCompatButton btHuy= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_xe_huy);
+        dialogYeuCau.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
+        dialogYeuCau.setCanceledOnTouchOutside(false);
+        dialogYeuCau.setContentView(v);
+        dialogYeuCau.show();
     }
 
 
@@ -605,6 +633,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private void setMap() {
         viewFlipper.setDisplayedChild(1);
         if (mapManager==null){
+            dialogYeuCau=new Dialog(this,android.R.style.Theme_DeviceDefault_Dialog_Alert);
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
             floatingActionButton.setOnClickListener(this);
