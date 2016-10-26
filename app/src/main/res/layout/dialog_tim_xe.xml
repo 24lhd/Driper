@@ -9,7 +9,7 @@
     android:layout_height="wrap_content">
     <TextView
         android:layout_width="match_parent"
-        android:text="Tìm xe"
+        android:text="Tôi cần tìm xe"
         android:gravity="center"
         android:layout_marginBottom="@dimen/margin_5dp"
         android:layout_marginLeft="@dimen/margin_5dp"
@@ -19,27 +19,41 @@
         android:textColor="@color/md_white_1000"
         style="@style/TextAppearance.AppCompat.Title"
         android:layout_height="wrap_content" />
-    <android.support.design.widget.TextInputLayout
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_marginBottom="@dimen/margin_5dp"
-        android:layout_marginLeft="@dimen/margin_5dp"
-        android:layout_marginRight="@dimen/margin_5dp"
-        android:padding="@dimen/padding_login"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/login_animation"
         android:layout_height="wrap_content">
-        <EditText
-            android:layout_width="match_parent"
-            android:background="@color/bg_app"
-            android:id="@+id/et_dl_tim_xe_diem_di"
-            android:hint="@string/hint_dl_tim_xe_diem_di"
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_weight="1"
             android:layout_marginBottom="@dimen/margin_5dp"
-            android:imeOptions="actionDone"
-            android:textColorHint="@color/md_green_500"
-            android:textSize="@dimen/text_size_20dp"
-            android:textColor="@color/md_green_500"
-            android:layout_height="wrap_content" />
-    </android.support.design.widget.TextInputLayout>
+            android:layout_marginLeft="@dimen/margin_5dp"
+            android:layout_marginRight="@dimen/margin_5dp"
+            android:padding="@dimen/padding_login"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/login_animation"
+            android:layout_height="wrap_content">
+            <EditText
+                android:layout_width="match_parent"
+                android:background="@color/bg_app"
+                android:id="@+id/et_dl_tim_xe_diem_di"
+                android:hint="@string/hint_dl_tim_xe_diem_di"
+                android:layout_marginBottom="@dimen/margin_5dp"
+                android:imeOptions="actionDone"
+                android:textColorHint="@color/md_green_500"
+                android:textSize="@dimen/text_size_20dp"
+                android:textColor="@color/md_green_500"
+                android:layout_height="wrap_content" />
+        </android.support.design.widget.TextInputLayout>
+        <ImageButton
+            android:layout_width="40dp"
+            android:src="@drawable/ic_my_location_black_48dp"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            style="@style/Widget.AppCompat.ImageButton"
+            android:layout_height="40dp"
+            android:id="@+id/imageView" />
+    </LinearLayout>
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
         android:layout_margin="@dimen/margin_5dp"

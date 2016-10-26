@@ -143,6 +143,7 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
 //        initMap();
     }
     public void moveToMyLocation() {
+        checkLocationIsEnable();
         LatLng latLng = new LatLng(myLocation.getLatitude(),myLocation.getLongitude());
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
         googleMap.animateCamera(cameraUpdate);
