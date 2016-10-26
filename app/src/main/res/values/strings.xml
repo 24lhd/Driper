@@ -15,7 +15,7 @@
     <string name="sigin_text">Đăng ký</string>
     <string name="reset_pass_text">Tìm MK</string>
     <string name="chu_y_2">* Vì lí do bảo mật nên bạn phải gửi một bức ảnh chụp có ảnh thẻ sinh viên của mình để xác nhận thông tin là đúng. Mật khẩu sẽ được gửi đến bạn khi đã được xác nhận.</string>
-    <string name="chu_y_3">* Trong trường hợp không gửi được bạn có thể liên hệ tới địa chỉ : caubelamchuyen@gmail.com</string>
+    <string name="chu_y_3">* Trong trường hợp không gửi được bạn có thể liên hệ tới địa chỉ : 24duong@gmail.com</string>
     <string name="hint_std">Số điện thoại của bạn</string>
     <string name="hint_sms">Nhập tin nhắn vào đây</string>
     <string name="chu_y_4">* Hãy sử dụng mã sinh viên là mã sinh viên của bạn.</string>
@@ -44,6 +44,11 @@
     <string name="bt_request_find_person_text">Đăng yêu cầu tìm người</string>
     <string name="hint_search">Tìm kiếm vị trí</string>
     <string name="gps_network_not_enabled">Bật vị trí của bạn</string>
-    <string name="open_location_settings">Ok</string>
-    <string name="Cancel">Cancel</string>
+    <string name="open_location_settings">Bật</string>
+    <string name="Cancel">Kệ</string>
+    <string name="hint_dl_tim_xe_diem_di">Điểm đi</string>
+    <string name="hint_dl_tim_xe_diem_den">Điểm đến</string>
+    <string name="hint_dl_tim_xe_gia_tien">Giá tiền</string>
+    <string name="hint_dl_tim_xe_loi_nhan">Chú thích, lời nhắn, thông điệp...</string>
+    <string name="hint_dl_tim_nguoi_bsx">Biển số xe của tôi</string>
 </resources>

@@ -30,5 +30,17 @@ public class Test extends ActionBarActivity {
     }
 
     private void initView() {
+//        EditText editText = (EditText) findViewById(R.id.search);
+//        editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+//            @Override
+//            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+//                boolean handled = false;
+//                if (actionId == EditorInfo.IME_ACTION_SEND) {
+////                    sendMessage();
+//                    handled = true;
+//                }
+//                return handled;
+//            }
+//        });
     }
 }

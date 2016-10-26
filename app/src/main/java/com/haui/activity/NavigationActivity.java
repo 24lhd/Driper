@@ -34,8 +34,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
@@ -577,9 +579,26 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private void createDialogTimNguoi() {
         View v=getLayoutInflater().inflate(R.layout.dialog_tim_nguoi,null);
         EditText etLoiNhan= (EditText) v.findViewById(R.id.et_dl_tim_nguoi_loi_nhan);
-        EditText etBSX= (EditText) v.findViewById(R.id.et_dl_tim_nguoi_bsx);
+        final EditText etBSX= (EditText) v.findViewById(R.id.et_dl_tim_nguoi_bsx);
+        ProgressBar progressBar= (ProgressBar) v.findViewById(R.id.pb_dl_tim_nguoi);
         AppCompatButton btDang= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_nguoi_dang);
+        final TextView textView= (TextView) v.findViewById(R.id.tv_notidl_tim_nguoi);
         AppCompatButton btHuy= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_nguoi_huy);
+        btDang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (etBSX.getText().toString().isEmpty()){
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText("* Không được để trống...");
+                }
+            }
+        });
+        btHuy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogYeuCau.dismiss();
+            }
+        });
         dialogYeuCau.setCanceledOnTouchOutside(false);
         dialogYeuCau.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialogYeuCau.setContentView(v);
@@ -587,12 +606,33 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
     private void createDialogTimXe() {
         View v=getLayoutInflater().inflate(R.layout.dialog_tim_xe,null);
-        EditText etDiemDi= (EditText) v.findViewById(R.id.et_dl_tim_xe_diem_di);
-        EditText etDiemDen= (EditText) v.findViewById(R.id.et_dl_tim_xe_diem_den);
+        final EditText etDiemDi= (EditText) v.findViewById(R.id.et_dl_tim_xe_diem_di);
+        etDiemDi.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        final EditText etDiemDen= (EditText) v.findViewById(R.id.et_dl_tim_xe_diem_den);
         EditText etGiaTien= (EditText) v.findViewById(R.id.et_dl_tim_xe_gia_tien);
         EditText etLoiNhan= (EditText) v.findViewById(R.id.et_dl_tim_xe_loi_nhan);
+        ProgressBar progressBar= (ProgressBar) v.findViewById(R.id.pb_dl_tim_xe);
+        final TextView textView= (TextView) v.findViewById(R.id.tv_notidl_tim_xe);
         AppCompatButton btDang= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_xe_dang);
+        btDang.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (etDiemDi.getText().toString().isEmpty()){
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText("* Không được để trống...");
+                }else if (etDiemDen.getText().toString().isEmpty()){
+                    textView.setVisibility(View.VISIBLE);
+                    textView.setText("* Không được để trống...");
+                }
+            }
+        });
         AppCompatButton btHuy= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_xe_huy);
+        btHuy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogYeuCau.dismiss();
+            }
+        });
         dialogYeuCau.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
         dialogYeuCau.setCanceledOnTouchOutside(false);
         dialogYeuCau.setContentView(v);
