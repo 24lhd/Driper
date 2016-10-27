@@ -18,17 +18,17 @@
             android:value="@string/google_maps_key" />
         <activity
             android:name="com.haui.activity.NavigationActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity android:name=".LoginActivity">
+
         </activity>
-        <activity android:name=".Test"
-            android:theme="@style/AppTheme">
+        <activity android:name=".Test">
 
         </activity>
         <receiver android:name="com.haui.receiver.MyReceiver">
@@ -37,5 +37,9 @@
             </intent-filter>
         </receiver>
         <service android:name="com.haui.service.MyService"/>
+        <activity android:name=".ViewUser"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:parentActivityName=".NavigationActivity">
+        </activity>
     </application>
 </manifest>

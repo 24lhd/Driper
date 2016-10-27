@@ -70,6 +70,8 @@ import com.haui.object.TimXe;
 import com.haui.object.User;
 import com.haui.service.MyService;
 
+import java.util.ArrayList;
+
 import static android.support.design.widget.Snackbar.make;
 
 public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -157,7 +159,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 if (!log.getID().isEmpty()||!log.getPass().isEmpty()) {
                     login(log.getID(), log.getPass());
                 } else if (!pass.isEmpty()||!maSV.isEmpty()){
-
                     login(maSV, pass);
                 }else{
                     startLogin();
@@ -344,6 +345,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
     private FragmentTransaction fragmentTransaction;
     private FloatingActionButton floatingActionButton;
+    private ArrayList<TimXe> arrTimXes;
+    private ArrayList<TimNguoi> arrTimNguois;
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -362,14 +365,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 case R.id.mn_user:
                     toolbar.setTitle("Thông tin cá nhân");
                     viewFlipper.setDisplayedChild(0);
-                    if (myInforFragment==null){
                         myInforFragment = new MyInforFragment();
                         fragmentTransaction=getSupportFragmentManager().beginTransaction();
                         fragmentTransaction.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
                         referenceInfor = database.child("users").child(maSV);
                         referenceInfor.addListenerForSingleValueEvent(this);
                         referenceInfor.addChildEventListener(this);
-                    }
                     break;
                 case R.id.mn_error:
                     break;
@@ -676,6 +677,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         tvViTriHeadNavigation.setText(user.getViTri());
                         Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
                         contenView=R.id.mn_home;
+                        progressDialog.dismiss();
                         viewHome();
                     } else {
                         progressDialog.dismiss();
@@ -713,16 +715,34 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     public void setDatabase(DatabaseReference database) {
         this.database = database;
     }
+
+    public void setArrTimNguois(ArrayList<TimNguoi> arrTimNguois) {
+        this.arrTimNguois = arrTimNguois;
+    }
+
+    public ArrayList<TimNguoi> getArrTimNguois() {
+        return arrTimNguois;
+    }
+
+    public ArrayList<TimXe> getArrTimXes() {
+        return arrTimXes;
+    }
+
+    public void setArrTimXes(ArrayList<TimXe> arrTimXes) {
+        this.arrTimXes = arrTimXes;
+    }
+
     private void viewHome() {
         if (isOnline()){
             navigationView.getMenu().clear();
             navigationView.inflateMenu(R.menu.activity_navigation_drawer);
             viewFlipper.setDisplayedChild(2);
-
             toolbar.setTitle("Lời gửi");
             if (viewPageYeuCau==null){
                 viewPageYeuCau= (ViewPager) findViewById(R.id.viewpager_yeucau);
                 tabLayoutYeuCau = (TabLayout) findViewById(R.id.tab_yeucau);
+                arrTimNguois=new ArrayList<>();
+                arrTimXes=new ArrayList<>();
             }
             if (tabLayoutYeuCau != null) {
                 tabLayoutYeuCau.setTabMode(TabLayout.MODE_FIXED);
@@ -769,7 +789,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             setViewOffLine();
         }
     }
-
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
     }

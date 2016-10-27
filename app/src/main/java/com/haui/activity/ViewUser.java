@@ -1,6 +1,5 @@
 package com.haui.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -8,14 +7,16 @@ import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,7 +28,7 @@ import com.haui.object.User;
  * Created by Duong on 10/27/2016.
  */
 
-public class ViewUser extends Activity implements View.OnClickListener{
+public class ViewUser extends AppCompatActivity implements View.OnClickListener{
     public static final String KEY_ID = "msv";
     private ImageView imageView;
     private ProgressBar progressBar;
@@ -38,6 +39,9 @@ public class ViewUser extends Activity implements View.OnClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.layout_user_infor);
         database = FirebaseDatabase.getInstance().getReference();
         initView();
@@ -47,12 +51,11 @@ public class ViewUser extends Activity implements View.OnClickListener{
         imageView.setVisibility(View.GONE);
     }
     private String sdt;
-    private Toolbar toolbar;
     private void initView( ) {
-//        toolbar= (Toolbar) findViewById(R.id.tb_view_user);
-//        toolbar.setNavigationIcon(R.drawable.ic_x_close);
-//        toolbar.setTitle("Thông tin sinh viên");
-//        toolbar.setNavigationOnClickListener(this);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarUser);
+        toolbar.setTitle("Thông tin sinh viên");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         progressBar= (ProgressBar) findViewById(R.id.pg_profile);
         floatingActionButton= (FloatingActionButton) findViewById(R.id.fbt_my_infor);
         collapsingToolbar =(CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
@@ -103,7 +106,7 @@ public class ViewUser extends Activity implements View.OnClickListener{
     }
     public void setProImage(String proImage) {
         if (!proImage.isEmpty()){
-            Glide.with(this).load(proImage).fitCenter().into(imageView);
+//            Glide.with(this).load(proImage).fitCenter().into(imageView);
             hideProgress();
         }
     }
@@ -114,6 +117,7 @@ public class ViewUser extends Activity implements View.OnClickListener{
                 callPhone(sdt);
                 break;
             case R.drawable.ic_x_close:
+
                 finish();
                 break;
         }

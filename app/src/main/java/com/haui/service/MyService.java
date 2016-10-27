@@ -35,6 +35,7 @@ import java.util.Locale;
 public class MyService extends Service implements LocationListener{
     private DatabaseReference database;
     private Geocoder geocoder;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -93,10 +94,10 @@ public class MyService extends Service implements LocationListener{
                                         message.obj=maSV;
                                         message.what=1010;
                                         handler.sendMessage(message);
-                                        database.child("users").child(extra).removeEventListener(this);
                                         return;
                                     }
                                 } catch (NullPointerException e) {
+
                                 }
                             }
 
@@ -115,7 +116,7 @@ public class MyService extends Service implements LocationListener{
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                     if (databaseError == null) {
                         Log.e("faker2",""+maSV);
-                        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
+//                        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
                     }
             }
         });
@@ -133,9 +134,6 @@ public class MyService extends Service implements LocationListener{
                     upDateUser("location/lng",""+location.getLongitude());
                     upDateUser("viTri",getNameByLocation(location.getLatitude(),location.getLongitude()));
                     locationOld= location;
-                }else {
-                    locationOld=(Location) msg.obj;
-                    mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
                 }
             }else  if(msg.what==1010){
                 maSV= (String) msg.obj;
@@ -145,12 +143,17 @@ public class MyService extends Service implements LocationListener{
     };
     @Override
     public void onLocationChanged(Location location) {
-        Message message=new Message();
-        message.what=111;
-        message.obj=location;
-        handler.sendMessage(message);
-        mLocationManager.removeUpdates(this);
-
+        if (locationOld==null){
+            upDateUser("location/lat",""+location.getLatitude());
+            upDateUser("location/lng",""+location.getLongitude());
+            upDateUser("viTri",getNameByLocation(location.getLatitude(),location.getLongitude()));
+            locationOld=location;
+        }else {
+            Message message=new Message();
+            message.what=111;
+            message.obj=location;
+            handler.sendMessage(message);
+        }
     }
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {

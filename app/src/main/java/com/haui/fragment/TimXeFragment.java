@@ -55,6 +55,7 @@ public class TimXeFragment extends Fragment{
                 TimXe timXe= (TimXe) dataSnapshot.getValue(TimXe.class);
                 if (!timXe.getMaSV().equals(log.getID())){
                     arrTimXes.add(timXe);
+                    navigationActivity.setArrTimXes(arrTimXes);
                     AdapterTimXe adapterTimXe = new AdapterTimXe(arrTimXes);
                     recyclerView.setAdapter(adapterTimXe);
                 }

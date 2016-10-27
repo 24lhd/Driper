@@ -42,7 +42,6 @@ public class TimNguoiFragment extends Fragment {
         android.util.Log.e("faker TimNguoiFragment","onCreateView");
         return view;
     }
-
     private void initView() {
         navigationActivity= (NavigationActivity) getActivity();
         recyclerView= (RecyclerView) view.findViewById(R.id.rcv_yeucau_fragment);
@@ -58,11 +57,9 @@ public class TimNguoiFragment extends Fragment {
                 TimNguoi timNguoi= (TimNguoi) dataSnapshot.getValue(TimNguoi.class);
                 if (!timNguoi.getMaSV().equals(log.getID())){
                     arrTimNguois.add(timNguoi);
+                    navigationActivity.setArrTimNguois(arrTimNguois);
                      adapterTimNguoi.notifyDataSetChanged();
                 }
-
-
-
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
