@@ -17,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -106,7 +107,7 @@ public class ViewUser extends AppCompatActivity implements View.OnClickListener{
     }
     public void setProImage(String proImage) {
         if (!proImage.isEmpty()){
-//            Glide.with(this).load(proImage).fitCenter().into(imageView);
+            Glide.with(this).load(proImage).fitCenter().into(imageView);
             hideProgress();
         }
     }

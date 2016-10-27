@@ -15,13 +15,14 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.haui.object.TimNguoi;
+import com.haui.object.TimXe;
 import com.haui.object.User;
 
 import java.io.IOException;
@@ -35,7 +36,6 @@ import java.util.Locale;
 public class MyService extends Service implements LocationListener{
     private DatabaseReference database;
     private Geocoder geocoder;
-
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -74,10 +74,8 @@ public class MyService extends Service implements LocationListener{
             name +=" - " +addresses.get(0).getAddressLine(2);
             return name;
         } catch (IOException e) {
-
             return "";
         }
-
     }
     private void checkLogin(final String extra, final String stringExtra) {
         if (isOnline()) {
@@ -110,14 +108,14 @@ public class MyService extends Service implements LocationListener{
             }
         }
     }
-    public void upDateUser(final String item, final String valuse) {
-        database.child("users").child(maSV).child(item).setValue(valuse, new DatabaseReference.CompletionListener() {
+    public void upDateDB(final String child,final String item, final String valuse) {
+
+        database.child(child).child(maSV).child(item).setValue(valuse, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
-                    if (databaseError == null) {
-                        Log.e("faker2",""+maSV);
-//                        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
-                    }
+                if (databaseError == null) {
+
+                }
             }
         });
     }
@@ -127,27 +125,57 @@ public class MyService extends Service implements LocationListener{
         @Override
         public void handleMessage(Message msg) {
             if (msg.what==111) {
-                Location location= (Location) msg.obj;
+                Location location;
+                 location= (Location) msg.obj;
                 if (locationOld!=null&&location.distanceTo(locationOld)>100){
-                Toast.makeText(MyService.this, ""+"Khoảng cách "+(int )location.distanceTo(locationOld)+" mét", Toast.LENGTH_SHORT).show();
-                    upDateUser("location/lat",""+location.getLatitude());
-                    upDateUser("location/lng",""+location.getLongitude());
-                    upDateUser("viTri",getNameByLocation(location.getLatitude(),location.getLongitude()));
                     locationOld= location;
+                    upDateALL();
                 }
             }else  if(msg.what==1010){
                 maSV= (String) msg.obj;
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
+
             }
         }
     };
+
+    private void upDateALL() {
+        database.child("TimNguoi").child(maSV).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                TimNguoi timNguoi=dataSnapshot.getValue(TimNguoi.class);
+                if (timNguoi!=null){
+                    upDateDB("TimNguoi","location/lat",""+locationOld.getLatitude());
+                    upDateDB("TimNguoi","location/lng",""+locationOld.getLongitude());
+                    upDateDB("TimNguoi","viTri",getNameByLocation(locationOld.getLatitude(),locationOld.getLongitude()));
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+        database.child("TimXe").child(maSV).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                TimXe timXe=dataSnapshot.getValue(TimXe.class);
+                if (timXe!=null){
+                    upDateDB("TimXe","location/lat",""+locationOld.getLatitude());
+                    upDateDB("TimXe","location/lng",""+locationOld.getLongitude());
+                    upDateDB("TimXe","viTri",getNameByLocation(locationOld.getLatitude(),locationOld.getLongitude()));
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         if (locationOld==null){
-            upDateUser("location/lat",""+location.getLatitude());
-            upDateUser("location/lng",""+location.getLongitude());
-            upDateUser("viTri",getNameByLocation(location.getLatitude(),location.getLongitude()));
             locationOld=location;
+            upDateALL();
         }else {
             Message message=new Message();
             message.what=111;

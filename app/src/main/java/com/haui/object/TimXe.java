@@ -12,9 +12,20 @@ public class TimXe {
     public String maSV;
     public String diemDen;
     public String giaTien;
-    public String diemDi;
     public String thongDiep;
     public TimXe() {
+    }
+
+    @Override
+    public String toString() {
+        return "TimXe{" +
+                "location=" + location +
+                ", viTri='" + viTri + '\'' +
+                ", maSV='" + maSV + '\'' +
+                ", diemDen='" + diemDen + '\'' +
+                ", giaTien='" + giaTien + '\'' +
+                ", thongDiep='" + thongDiep + '\'' +
+                '}';
     }
 
     public Location getLocation() {
@@ -37,22 +48,18 @@ public class TimXe {
         return giaTien;
     }
 
-    public String getDiemDi() {
-        return diemDi;
-    }
 
     public String getThongDiep() {
         return thongDiep;
     }
 
-    public TimXe(Location location, String viTri, String maSV, String diemDen, String giaTien, String diemDi, String thongDiep) {
+    public TimXe(Location location, String viTri, String maSV, String diemDen, String giaTien, String thongDiep) {
 
         this.location = location;
         this.viTri = viTri;
         this.maSV = maSV;
         this.diemDen = diemDen;
         this.giaTien = giaTien;
-        this.diemDi = diemDi;
         this.thongDiep = thongDiep;
     }
 }

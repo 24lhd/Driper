@@ -33,12 +33,12 @@ public class TimXeFragment extends Fragment{
     private NavigationActivity navigationActivity;
     private ArrayList<TimXe> arrTimXes;
     private Log log;
+    private AdapterTimXe adapterTimXe;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.yeu_cau_fragment_layout,container,false);
-        android.util.Log.e("faker ItemTimXe","onCreateView");
         initView();
         return view;
     }
@@ -48,6 +48,8 @@ public class TimXeFragment extends Fragment{
         recyclerView.setHasFixedSize(true);
         arrTimXes=new ArrayList<>();
         log=navigationActivity.getLog();
+        adapterTimXe = new AdapterTimXe(arrTimXes);
+        recyclerView.setAdapter(adapterTimXe);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         navigationActivity.getDatabase().child("TimXe").addChildEventListener(new ChildEventListener() {
             @Override
@@ -56,15 +58,25 @@ public class TimXeFragment extends Fragment{
                 if (!timXe.getMaSV().equals(log.getID())){
                     arrTimXes.add(timXe);
                     navigationActivity.setArrTimXes(arrTimXes);
-                    AdapterTimXe adapterTimXe = new AdapterTimXe(arrTimXes);
-                    recyclerView.setAdapter(adapterTimXe);
+                    adapterTimXe.notifyDataSetChanged();
                 }
-
             }
-
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+                android.util.Log.e("faker TimXe","s= "+dataSnapshot.getValue());
+                TimXe timXe= (TimXe) dataSnapshot.getValue(TimXe.class);
+                if (!timXe.getMaSV().equals(log.getID())){
+                    int i=0;
+                    for (int j = 0; j <arrTimXes.size() ; j++) {
+                        if (arrTimXes.get(j).getMaSV().equals(timXe.getMaSV())){
+                            i=j;
+                            break;
+                        }
+                    }
+                    arrTimXes.set(i,timXe);
+                    navigationActivity.setArrTimXes(arrTimXes);
+                    adapterTimXe.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -99,7 +111,6 @@ public class TimXeFragment extends Fragment{
             this.tvViTri = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_vi_tri);
             this.imUser = (ImageView) itemView.findViewById(R.id.im_item_tim_xe);
             this.tvGiaTien = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_gia_tien);
-
         }
     }
     private class AdapterTimXe extends RecyclerView.Adapter<TimXeFragment.ItemTimXe>
@@ -137,39 +148,5 @@ public class TimXeFragment extends Fragment{
             navigationActivity.startActivity(intent);
         }
     }
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        android.util.Log.e("faker ItemTimXe","onCreate");
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onStart() {
-        android.util.Log.e("faker ItemTimXe","onStart");
-        super.onStart();
-    }
-    @Override
-    public void onResume() {
-        android.util.Log.e("faker ItemTimXe","onResume ");
-        super.onResume();
-    }
-
-    @Override
-    public void onStop() {
-        android.util.Log.e("faker ItemTimXe","onStop");
-        super.onStop();
-    }
-    @Override
-    public void onDestroy() {
-        android.util.Log.e("faker ItemTimXe","onDestroy");
-        super.onDestroy();
-    }
-//    public void createList(ArrayList<TimXe> data) {
-//        android.util.Log.e("faker TimXe",""+data.size());
-//        if (data.size()>0){
-//            AdapterTimXe adapterTimXe = new AdapterTimXe(data);
-//            recyclerView.setAdapter(adapterTimXe);
-//        }
-//    }
 
 }

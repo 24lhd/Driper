@@ -21,6 +21,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.haui.activity.NavigationActivity;
 import com.haui.activity.R;
+import com.haui.object.TimNguoi;
+import com.haui.object.TimXe;
 
 /**
  * Created by Duong on 10/16/2016.
@@ -46,11 +48,12 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
         uiSettings.setMapToolbarEnabled(true);
         googleMap.setMyLocationEnabled(true);
         locationManager = (LocationManager) navigationActivity.getSystemService(Context.LOCATION_SERVICE);
-        initMap();
+        googleMap.setOnMyLocationChangeListener(this);
+        setAll();
     }
 
     private void initMap() {
-        googleMap.setOnMyLocationChangeListener(this);
+
     }
     private void checkLocationIsEnable() {
         LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
@@ -131,16 +134,48 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
             }
         }
     };
+
     public void setTimNguoi() {
-//        googleMap.clear();
-//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 400, 1000, this);
-//        initMap();
+        googleMap.clear();
+        for (TimNguoi timXe:navigationActivity.getArrTimNguois()) {
+            double a=Double.parseDouble(timXe.getLocation().getLat());
+            double b=Double.parseDouble(timXe.getLocation().getLng());
+            if (a!=0.0||b!=0.0){
+                        drawMarker(a,b,R.drawable.ic_location_driver,timXe.getThongDiep()+"\n"+timXe.getMaSV(),timXe.getViTri());
+            }
+        }
+    }
+
+    public void setAll() {
+        googleMap.clear();
+        for (TimXe timXe:navigationActivity.getArrTimXes()) {
+            double a=Double.parseDouble(timXe.getLocation().getLat());
+            double b=Double.parseDouble(timXe.getLocation().getLng());
+            if (a!=0.0||b!=0.0){
+                drawMarker(a,b,
+                        R.drawable.ic_student,timXe.getThongDiep()+"\n"+timXe.getMaSV()+"\n"+timXe.getDiemDen(),timXe.getViTri());
+            }
+        }
+        for (TimNguoi timXe:navigationActivity.getArrTimNguois()) {
+            double a=Double.parseDouble(timXe.getLocation().getLat());
+            double b=Double.parseDouble(timXe.getLocation().getLng());
+            if (a!=0.0||b!=0.0){
+                drawMarker(a,b,R.drawable.ic_location_driver,timXe.getThongDiep()+"\n"+timXe.getMaSV(),timXe.getViTri());
+            }
+        }
     }
 
     public void setTimXe() {
-//        googleMap.clear();
-//        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 400, 1000, this);
-//        initMap();
+        googleMap.clear();
+        for (TimXe timXe:navigationActivity.getArrTimXes()) {
+            double a=Double.parseDouble(timXe.getLocation().getLat());
+            double b=Double.parseDouble(timXe.getLocation().getLng());
+            if (a!=0.0||b!=0.0){
+                drawMarker(a,b,
+                        R.drawable.ic_student,timXe.getThongDiep()+"\n"+timXe.getMaSV()+"\n"+timXe.getDiemDen(),timXe.getViTri());
+            }
+
+        }
     }
     public void moveToMyLocation() {
         checkLocationIsEnable();

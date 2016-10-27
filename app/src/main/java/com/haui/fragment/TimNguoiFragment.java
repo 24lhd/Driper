@@ -39,7 +39,6 @@ public class TimNguoiFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view=inflater.inflate(R.layout.yeu_cau_fragment_layout,container,false);
         initView();
-        android.util.Log.e("faker TimNguoiFragment","onCreateView");
         return view;
     }
     private void initView() {
@@ -63,6 +62,21 @@ public class TimNguoiFragment extends Fragment {
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                TimNguoi timNguoi= (TimNguoi) dataSnapshot.getValue(TimNguoi.class);
+                int i=-1;
+                    for (int j = 0; j <arrTimNguois.size() ; j++) {
+                        if (arrTimNguois.get(j).getMaSV().equals(timNguoi.getMaSV())){
+                            android.util.Log.e("faker TimNguoi","vao= "+timNguoi.getMaSV());
+                            i=j;
+                            break;
+                        }
+                    }
+                android.util.Log.e("faker TimNguoi","s= "+i);
+                    if (i!=-1){
+                        arrTimNguois.set(i,timNguoi);
+                        navigationActivity.setArrTimNguois(arrTimNguois);
+                        adapterTimNguoi.notifyDataSetChanged();
+                    }
 
             }
 
@@ -83,36 +97,6 @@ public class TimNguoiFragment extends Fragment {
         });
 
     }
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        android.util.Log.e("faker TimNguoi","onCreate");
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onStart() {
-        android.util.Log.e("faker TimNguoi","onStart");
-        super.onStart();
-    }
-
-    @Override
-    public void onResume() {
-            android.util.Log.e("faker TimNguoi","onResume");
-        super.onResume();
-    }
-
-    @Override
-    public void onStop() {
-        android.util.Log.e("faker TimNguoi","onStop");
-        super.onStop();
-    }
-
-    @Override
-    public void onDestroy() {
-        android.util.Log.e("faker TimNguoi","onDestroy");
-        super.onDestroy();
-    }
-
     class ItemTimNguoi extends RecyclerView.ViewHolder{ // tao mot đói tượng
         ImageView imUser;
         TextView tvThongDiep;
@@ -162,20 +146,5 @@ public class TimNguoiFragment extends Fragment {
             navigationActivity.startActivity(intent);
         }
     }
-//
-//    public void createList(ArrayList<TimNguoi> data) {
-//        android.util.Log.e("faker timNguoi",""+data.size());
-//        if (data.size()>0){
-//            AdapterTimNguoi adapterTimNguoi = new AdapterTimNguoi(data);
-//            recyclerView.setAdapter(adapterTimNguoi);
-//        }
-//    }
-
-//    public void addItemTimNguoi(TimNguoi timNguoi) {
-//        data.add(timNguoi);
-//        adapterTimNguoi.notifyDataSetChanged();
-//
-//        recyclerView.setAdapter(adapterTimNguoi);
-//    }
 
 }

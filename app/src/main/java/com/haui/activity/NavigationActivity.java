@@ -97,6 +97,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private TabLayout tabLayoutYeuCau;
     private Dialog dialogYeuCau;
     private DatabaseReference referenceInfor;
+    private CuaToiFragment cuaToiFragment;
+    private TimNguoiFragment timNguoiFragment;
+    private TimXeFragment timXeFragment;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -352,7 +355,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     public boolean onNavigationItemSelected(MenuItem item) {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (isOnline()) {
-            contenView=item.getItemId();
+
             switch (item.getItemId()) {
                 case R.id.mn_nguoi_tim_xe:
                     toolbar.setTitle("Tìm xe");
@@ -363,6 +366,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     mapManager.setTimNguoi();
                     break;
                 case R.id.mn_user:
+                    contenView=item.getItemId();
                     toolbar.setTitle("Thông tin cá nhân");
                     viewFlipper.setDisplayedChild(0);
                         myInforFragment = new MyInforFragment();
@@ -392,6 +396,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     viewHome();
                     break;
                 case R.id.mn_map:
+                    contenView=item.getItemId();
                     initDialogAndShow("Đang khỏi tạo dữ liệu....");
                     viewFlipper.setDisplayedChild(1);
                     navigationView.getMenu().clear();
@@ -455,8 +460,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             }
         }); // gửi một đối tượng lên firebase vói child là những node cha
     }
-    public void writeNewYeuCauTimXe(Location location, String viTri, String maSV, String diemDen, String giaTien, String diemDi, String thongDiep) {
-        database.child("TimXe").child(maSV).setValue(new TimXe(location, viTri, maSV, diemDen, giaTien,diemDi,thongDiep), new DatabaseReference.CompletionListener() {
+    public void writeNewYeuCauTimXe(Location location, String viTri, String maSV, String diemDen, String giaTien , String thongDiep) {
+        database.child("TimXe").child(maSV).setValue(new TimXe(location, viTri, maSV, diemDen, giaTien,thongDiep), new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError==null){
@@ -571,7 +576,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     btDang.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
                     btHuy.setVisibility(View.GONE);
-                    writeNewYeuCauTimXe(new Location("0","0"),"",maSV,etDiemDen.getText().toString(),etGiaTien.getText().toString(),etDiemDi.getText().toString(),etLoiNhan.getText().toString());
+                    writeNewYeuCauTimXe(new Location("0","0"),"",maSV,etDiemDen.getText().toString(),etGiaTien.getText().toString(),etLoiNhan.getText().toString());
                 }
             }
         });
@@ -620,10 +625,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
             floatingActionButton.setOnClickListener(this);
-//        toolbar= (Toolbar) findViewById(R.id.test_tb);
-//        toolbar.getMenu().clear();
-//        toolbar.inflateMenu(R.menu.test);
-//        toolbar.setNavigationIcon(android.R.drawable.ic_delete);
             mapFragment.getMapAsync(this);
         }else {
             progressDialog.dismiss();
@@ -633,8 +634,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mapManager= new MapManager(googleMap,this);
-        Intent intent=new Intent(this, MyService.class);
-        startService(intent);
+
         progressDialog.dismiss();
     }
 
@@ -715,29 +715,35 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     public void setDatabase(DatabaseReference database) {
         this.database = database;
     }
-
     public void setArrTimNguois(ArrayList<TimNguoi> arrTimNguois) {
         this.arrTimNguois = arrTimNguois;
+        if (contenView==R.id.mn_map){
+            mapManager.setAll();
+        }
     }
-
     public ArrayList<TimNguoi> getArrTimNguois() {
         return arrTimNguois;
     }
-
     public ArrayList<TimXe> getArrTimXes() {
         return arrTimXes;
     }
-
     public void setArrTimXes(ArrayList<TimXe> arrTimXes) {
         this.arrTimXes = arrTimXes;
+        if (contenView==R.id.mn_map){
+            mapManager.setAll();
+        }
     }
-
     private void viewHome() {
         if (isOnline()){
+            Intent intent=new Intent(this, MyService.class);
+            startService(intent);
             navigationView.getMenu().clear();
             navigationView.inflateMenu(R.menu.activity_navigation_drawer);
             viewFlipper.setDisplayedChild(2);
             toolbar.setTitle("Lời gửi");
+              cuaToiFragment=new CuaToiFragment();
+              timNguoiFragment=new TimNguoiFragment();
+              timXeFragment=new TimXeFragment();
             if (viewPageYeuCau==null){
                 viewPageYeuCau= (ViewPager) findViewById(R.id.viewpager_yeucau);
                 tabLayoutYeuCau = (TabLayout) findViewById(R.id.tab_yeucau);
@@ -756,12 +762,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 public Fragment getItem(int position) {
                     switch (position){
                         case 2:
-                            return new CuaToiFragment();
+                            return cuaToiFragment;
                         case 1:
-                            return new TimNguoiFragment();
+                            return timNguoiFragment;
                         case 0:
                         default:
-                        return new TimXeFragment();
+                        return timXeFragment;
                     }
                 }
                 @Override
