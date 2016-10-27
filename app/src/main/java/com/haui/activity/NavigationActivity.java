@@ -657,6 +657,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         tvTenHeadNavigation.setText(user.getTenSV());
                         tvViTriHeadNavigation.setText(user.getViTri());
                         Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
+                          
+                   
                     } else {
                         startLogin();
                     }
@@ -676,6 +678,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         tvViTriHeadNavigation.setText(user.getViTri());
                         Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
                         contenView=R.id.mn_home;
+                         progressDialog.dismiss();
                         viewHome();
                     } else {
                         progressDialog.dismiss();
