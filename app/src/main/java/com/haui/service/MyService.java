@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -113,20 +114,30 @@ public class MyService extends Service implements LocationListener{
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                     if (databaseError == null) {
+                        Log.e("faker2",""+maSV);
                         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
                     }
             }
         });
     }
+
+    private Location locationOld;
     private Handler handler=new Handler(){
         @Override
         public void handleMessage(Message msg) {
             if (msg.what==111) {
                 Location location= (Location) msg.obj;
-                upDateUser("location/lat",""+location.getLatitude());
-                upDateUser("location/lng",""+location.getLongitude());
-                upDateUser("viTri",getNameByLocation(location.getLatitude(),location.getLongitude()));
-            }else if(msg.what==1010){
+                if (locationOld!=null&&location.distanceTo(locationOld)>100){
+                Toast.makeText(MyService.this, ""+"Khoảng cách "+(int )location.distanceTo(locationOld)+" mét", Toast.LENGTH_SHORT).show();
+                    upDateUser("location/lat",""+location.getLatitude());
+                    upDateUser("location/lng",""+location.getLongitude());
+                    upDateUser("viTri",getNameByLocation(location.getLatitude(),location.getLongitude()));
+                    locationOld= location;
+                }else {
+                    locationOld=(Location) msg.obj;
+                    mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
+                }
+            }else  if(msg.what==1010){
                 maSV= (String) msg.obj;
                 mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 400,1000, MyService.this);
             }

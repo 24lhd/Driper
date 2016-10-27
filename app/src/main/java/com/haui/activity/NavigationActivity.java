@@ -41,6 +41,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
+
 import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -103,7 +104,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             Intent intent=new Intent(this, MyService.class);
             stopService(intent);
         }catch (Exception e){
-
         }
         initDialogAndShow("Đang khởi tạo....");
         creatView();
@@ -310,73 +310,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
      * khỏi tạo đữ liệu đầu tiên sau khi đăng nhập thành công
      *
      */
-    private TimXeFragment timXeFragment;
-    private TimNguoiFragment timNguoiFragment;
-    private CuaToiFragment  cuaToiFragment;
-    private void viewHome() {
-        if (isOnline()){
-            navigationView.getMenu().clear();
-            navigationView.inflateMenu(R.menu.activity_navigation_drawer);
-            viewFlipper.setDisplayedChild(2);
-            toolbar.setTitle("Lời gửi");
-            if (viewPageYeuCau==null){
-                timXeFragment=new TimXeFragment();
-                timNguoiFragment=new TimNguoiFragment();
-                cuaToiFragment=new CuaToiFragment();
-                viewPageYeuCau= (ViewPager) findViewById(R.id.viewpager_yeucau);
-                tabLayoutYeuCau = (TabLayout) findViewById(R.id.tab_yeucau);
-            }
-            if (tabLayoutYeuCau != null) {
-                tabLayoutYeuCau.setTabMode(TabLayout.MODE_FIXED);
-                tabLayoutYeuCau.setBackgroundColor(Color.WHITE);
-                tabLayoutYeuCau.setSelectedTabIndicatorHeight(10);
-                tabLayoutYeuCau.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorPrimary));
-                tabLayoutYeuCau.setTabTextColors( getResources().getColor(R.color.md_blue_grey_300),getResources().getColor(R.color.colorPrimary));
-            }
-            viewPageYeuCau.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
-                                          @Override
-                                          public Fragment getItem(int position) {
-                                              switch (position){
-                                                  case 0:
-
-                                                      return timXeFragment;
-                                                  case 1:
-
-                                                      return timNguoiFragment;
-                                                  case 2:
-
-                                                  default:
-                                                      return cuaToiFragment;
-                                              }
-                                          }
-                                          @Override
-                                          public int getCount() {
-                                              return 3;
-                                          }
-
-                @Override
-                public CharSequence getPageTitle(int position) {
-                    switch (position){
-                        case 0:
-                            return "Tìm xe";
-                        case 1:
-                            return "Tìm người";
-                        case 2:
-                        default:
-                            return "Của tôi";
-                    }
-                }
-            });
-            tabLayoutYeuCau.setupWithViewPager(viewPageYeuCau);
-//            yeuCauFragment=new YeuCauFragment();
-//            fragmentTransaction=getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction.replace(R.id.fragment, yeuCauFragment).commitAllowingStateLoss();
-            progressDialog.dismiss();
-        }else {
-            progressDialog.dismiss();
-            setViewOffLine();
-         }
-    }
     /**
      * đăng nhập hệ thống
      * @param masv mã sinh viên
@@ -389,7 +322,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 passWord=pass;
                 maSV=masv;
                 //https://hauiclass.firebaseio.com/users/094120041
-                database.child("users").child(maSV).addListenerForSingleValueEvent(this); // kiểm tra theo từng node con node users -> node masv rồi đến các node con của msv
+                referenceInfor = database.child("users").child(maSV);
+                referenceInfor.addListenerForSingleValueEvent(this);
+                referenceInfor.addChildEventListener(this); // kiểm tra theo từng node con node users -> node masv rồi đến các node con của msv
             } catch (NullPointerException e) {
             }
         } else {
@@ -712,9 +647,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
-
         switch (contenView){
-            case  R.id.mn_user:
+            case R.id.mn_user:
                 try {
                     User user = dataSnapshot.getValue(User.class);
                     if (user.getPassWord().equals(passWord)) {
@@ -726,10 +660,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     } else {
                         startLogin();
                     }
-                } catch (NullPointerException e) {
+                }catch (NullPointerException e) {
                     startLogin();
                 }
-            break;
+                return;
             case  1000:    //láy 1 đối tượng tương ứng vs node con được trả về
                 try {// nếu k lấy được giá trị hoặc giá trị đó k lấy kết quả trả về = null
                     /**kiểm tra mật khẩu
@@ -741,6 +675,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         tvTenHeadNavigation.setText(user.getTenSV());
                         tvViTriHeadNavigation.setText(user.getViTri());
                         Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
+                        contenView=R.id.mn_home;
                         viewHome();
                     } else {
                         progressDialog.dismiss();
@@ -751,39 +686,105 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     startLogin();
                 }
                 break;
+                default:
+                try {
+                    User user = dataSnapshot.getValue(User.class);
+                    if (user.getPassWord().equals(passWord)) {
+                        tvTenHeadNavigation.setText(user.getTenSV());
+                        tvViTriHeadNavigation.setText(user.getViTri());
+//                        Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
+                    }
+                }catch (NullPointerException e) {
+
+                }
+                break;
         }
+    }
+    public Log getLog() {
+        if (!log.getID().equals(maSV)){
+            startLogin();
+        }
+        return log;
+    }
 
+    public DatabaseReference getDatabase() {
+        return database;
+    }
+    public void setDatabase(DatabaseReference database) {
+        this.database = database;
+    }
+    private void viewHome() {
+        if (isOnline()){
+            navigationView.getMenu().clear();
+            navigationView.inflateMenu(R.menu.activity_navigation_drawer);
+            viewFlipper.setDisplayedChild(2);
 
+            toolbar.setTitle("Lời gửi");
+            if (viewPageYeuCau==null){
+                viewPageYeuCau= (ViewPager) findViewById(R.id.viewpager_yeucau);
+                tabLayoutYeuCau = (TabLayout) findViewById(R.id.tab_yeucau);
+            }
+            if (tabLayoutYeuCau != null) {
+                tabLayoutYeuCau.setTabMode(TabLayout.MODE_FIXED);
+                tabLayoutYeuCau.setBackgroundColor(Color.WHITE);
+                tabLayoutYeuCau.setSelectedTabIndicatorHeight(10);
+                tabLayoutYeuCau.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorPrimary));
+                tabLayoutYeuCau.setTabTextColors( getResources().getColor(R.color.md_blue_grey_300),getResources().getColor(R.color.colorPrimary));
+            }
+            viewPageYeuCau.setAdapter(new FragmentStatePagerAdapter(getSupportFragmentManager()) {
+                @Override
+                public Fragment getItem(int position) {
+                    switch (position){
+                        case 2:
+                            return new CuaToiFragment();
+                        case 1:
+                            return new TimNguoiFragment();
+                        case 0:
+                        default:
+                        return new TimXeFragment();
+                    }
+                }
+                @Override
+                public int getCount() {
+                    return 3;
+                }
 
+                @Override
+                public CharSequence getPageTitle(int position) {
+                    switch (position){
+                        case 0:
+                            return "Tìm xe";
+                        case 1:
+                            return "Tìm người";
+                        case 2:
+                        default:
+                            return "Của tôi";
+                    }
+                }
+            });
+            tabLayoutYeuCau.setupWithViewPager(viewPageYeuCau);
+            progressDialog.dismiss();
+        }else {
+            progressDialog.dismiss();
+            setViewOffLine();
+        }
     }
 
     @Override
     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-        android.util.Log.e("faker", "onChildAdded "+s);
     }
-
     @Override
     public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        android.util.Log.e("faker", "onChildChanged "+s);
-        android.util.Log.e("faker", "onChildChanged vl"+dataSnapshot.getValue());
-//        android.util.Log.e("faker", "onChildChanged key"+);
         dataSnapshot.getRef().getParent().addListenerForSingleValueEvent(NavigationActivity.this);
-//        android.util.Log.e("faker", "onChildChanged vl"+dataSnapshot.getRef().getParent().child("passWord").);
-
     }
-
     @Override
     public void onChildRemoved(DataSnapshot dataSnapshot) {
         android.util.Log.e("faker", "onChildRemoved");
     }
-
     @Override
     public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
     }
-
     @Override
     public void onCancelled(DatabaseError databaseError) {
-
     }
 }
