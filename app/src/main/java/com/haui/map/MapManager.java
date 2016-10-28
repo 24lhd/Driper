@@ -3,6 +3,8 @@ package com.haui.map;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Handler;
@@ -24,6 +26,10 @@ import com.haui.activity.R;
 import com.haui.object.NguoiTimXe;
 import com.haui.object.XeTimNguoi;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
 /**
  * Created by Duong on 10/16/2016.
  */
@@ -34,15 +40,33 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
 
     private Context context;
     private NavigationActivity navigationActivity;
-//    private Geocoder geocoder;//đối tượng quản lý vị trí địa lý vùng mình đang đứng
+    private Geocoder geocoder;
+
+    //    private Geocoder geocoder;//đối tượng quản lý vị trí địa lý vùng mình đang đứng
     public MapManager(GoogleMap googleMap, Context context) {
         this.googleMap = googleMap;
         this.context = context;
         checkLocationIsEnable();
         initMapView();
     }
+    public String getNameByLocation(double lat,double lng){
+        //tìm kiếm vị trí
+        try {
+            List<Address> addresses = geocoder.getFromLocation(lat,lng,1);// getfromlocation trả vể list nên cần tạo 1 list
+            if (addresses.size()==0){
+                return "";
+            }
+            String name = addresses.get(0).getAddressLine(0);
+            name +=" - " +addresses.get(0).getAddressLine(1);
+            name +=" - " +addresses.get(0).getAddressLine(2);
+            return name;
+        } catch (IOException e) {
+            return "";
+        }
+    }
     private void initMapView() {
         navigationActivity= (NavigationActivity) context;
+        geocoder = new Geocoder(navigationActivity, Locale.getDefault());
         UiSettings uiSettings = googleMap.getUiSettings();
         uiSettings.setMyLocationButtonEnabled(true);
         uiSettings.setMapToolbarEnabled(true);
@@ -104,7 +128,7 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
         LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
         if (myLocation==null){
             myLocation=location;
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 12);
             googleMap.animateCamera(cameraUpdate);
         }else {
             myLocation=location;
@@ -158,7 +182,7 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
     public void moveToMyLocation() {
         checkLocationIsEnable();
         LatLng latLng = new LatLng(myLocation.getLatitude(),myLocation.getLongitude());
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 11);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 12);
         googleMap.animateCamera(cameraUpdate);
     }
     public void setMapVeTinh() {

@@ -553,7 +553,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     btDang.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
                     btHuy.setVisibility(View.GONE);
-                    writeNewYeuCauTimNguoi(new Location(""+mapManager.getMyLocation().getLatitude(),""+mapManager.getMyLocation().getLongitude()),"Đang cập nhật vị trí",maSV,etBSX.getText().toString(),etLoiNhan.getText().toString());
+                    writeNewYeuCauTimNguoi(new Location(""+mapManager.getMyLocation().getLatitude(),
+                            ""+mapManager.getMyLocation().getLongitude()),mapManager.getNameByLocation(mapManager.getMyLocation().getLatitude(),mapManager.getMyLocation().getLongitude()),maSV,etBSX.getText().toString(),etLoiNhan.getText().toString());
                 }
             }
         });
@@ -598,7 +599,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     btDang.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
                     btHuy.setVisibility(View.GONE);
-                    writeNewYeuCauTimXe(new Location(""+mapManager.getMyLocation().getLatitude(),""+mapManager.getMyLocation().getLongitude()),"Đang cập nhật vị trí",maSV,etDiemDen.getText().toString(),etGiaTien.getText().toString(),etLoiNhan.getText().toString());
+                    writeNewYeuCauTimXe(new Location(""+mapManager.getMyLocation().getLatitude(),
+                            ""+mapManager.getMyLocation().getLongitude()),
+                            mapManager.getNameByLocation(mapManager.getMyLocation().getLatitude(),mapManager.getMyLocation().getLongitude()),maSV,etDiemDen.getText().toString(),etGiaTien.getText().toString(),etLoiNhan.getText().toString());
                 }
             }
         });

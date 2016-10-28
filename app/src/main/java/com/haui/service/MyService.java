@@ -36,7 +36,7 @@ import java.util.Locale;
 
 public class MyService extends Service implements LocationListener{
     private DatabaseReference database;
-    private Geocoder geocoder;
+    private  Geocoder geocoder;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
