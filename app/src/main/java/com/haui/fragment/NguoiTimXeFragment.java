@@ -19,20 +19,21 @@ import com.haui.activity.NavigationActivity;
 import com.haui.activity.R;
 import com.haui.activity.ViewUser;
 import com.haui.log.Log;
-import com.haui.object.TimNguoi;
+import com.haui.object.NguoiTimXe;
+
 import java.util.ArrayList;
 
 /**
  * Created by Duong on 10/25/2016.
  */
 
-public class TimNguoiFragment extends Fragment {
-    private RecyclerView recyclerView;
+public class NguoiTimXeFragment extends Fragment{
     private View view;
+    private RecyclerView recyclerView;
     private NavigationActivity navigationActivity;
-    private ArrayList<TimNguoi> arrTimNguois;
+    private ArrayList<NguoiTimXe> arrNguoiTimXes;
     private Log log;
-    private AdapterTimNguoi adapterTimNguoi;
+    private AdapterTimXe adapterTimXe;
 
     @Nullable
     @Override
@@ -45,39 +46,36 @@ public class TimNguoiFragment extends Fragment {
         navigationActivity= (NavigationActivity) getActivity();
         recyclerView= (RecyclerView) view.findViewById(R.id.rcv_yeucau_fragment);
         recyclerView.setHasFixedSize(true);
-        arrTimNguois=new ArrayList<>();
+        arrNguoiTimXes =new ArrayList<>();
         log=navigationActivity.getLog();
-        adapterTimNguoi = new AdapterTimNguoi(arrTimNguois);
-        recyclerView.setAdapter(adapterTimNguoi);
+        adapterTimXe = new AdapterTimXe(arrNguoiTimXes);
+        recyclerView.setAdapter(adapterTimXe);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        navigationActivity.getDatabase().child("TimNguoi").addChildEventListener(new ChildEventListener() {
+        navigationActivity.getDatabase().child("NguoiTimXe").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                TimNguoi timNguoi= (TimNguoi) dataSnapshot.getValue(TimNguoi.class);
-                if (!timNguoi.getMaSV().equals(log.getID())){
-                    arrTimNguois.add(timNguoi);
-                    navigationActivity.setArrTimNguois(arrTimNguois);
-                     adapterTimNguoi.notifyDataSetChanged();
+                NguoiTimXe nguoiTimXe = (NguoiTimXe) dataSnapshot.getValue(NguoiTimXe.class);
+                if (!nguoiTimXe.getMaSV().equals(log.getID())){
+                    arrNguoiTimXes.add(nguoiTimXe);
+                    navigationActivity.setArrNguoiTimXes(arrNguoiTimXes);
+                    adapterTimXe.notifyDataSetChanged();
                 }
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                TimNguoi timNguoi= (TimNguoi) dataSnapshot.getValue(TimNguoi.class);
-                int i=-1;
-                    for (int j = 0; j <arrTimNguois.size() ; j++) {
-                        if (arrTimNguois.get(j).getMaSV().equals(timNguoi.getMaSV())){
-                            android.util.Log.e("faker TimNguoi","vao= "+timNguoi.getMaSV());
+                NguoiTimXe nguoiTimXe = (NguoiTimXe) dataSnapshot.getValue(NguoiTimXe.class);
+                if (arrNguoiTimXes.size()>0){
+                    int i=0;
+                    for (int j = 0; j < arrNguoiTimXes.size() ; j++) {
+                        if (arrNguoiTimXes.get(j).getMaSV().equals(nguoiTimXe.getMaSV())){
                             i=j;
                             break;
                         }
                     }
-                android.util.Log.e("faker TimNguoi","s= "+i);
-                    if (i!=-1){
-                        arrTimNguois.set(i,timNguoi);
-                        navigationActivity.setArrTimNguois(arrTimNguois);
-                        adapterTimNguoi.notifyDataSetChanged();
-                    }
-
+                    arrNguoiTimXes.set(i, nguoiTimXe);
+                    navigationActivity.setArrNguoiTimXes(arrNguoiTimXes);
+                    adapterTimXe.notifyDataSetChanged();
+                }
             }
 
             @Override
@@ -97,41 +95,44 @@ public class TimNguoiFragment extends Fragment {
         });
 
     }
-    class ItemTimNguoi extends RecyclerView.ViewHolder{ // tao mot đói tượng
+    class ItemTimXe extends RecyclerView.ViewHolder{ // tao mot đói tượng
         ImageView imUser;
         TextView tvThongDiep;
         TextView tvMaSV;
-        TextView tvBSX;
         TextView tvViTri;
-        public ItemTimNguoi(View itemView) {
+        TextView tvDiemDen;
+        TextView tvGiaTien;
+        public ItemTimXe(View itemView) {
             super(itemView);
-            this.tvThongDiep = (TextView) itemView.findViewById(R.id.tv_item_tim_nguoi_thong_diep);
-            this.tvMaSV = (TextView) itemView.findViewById(R.id.tv_item_tim_nguoi_msv);
-            this.tvBSX = (TextView) itemView.findViewById(R.id.tv_item_tim_nguoi_bsx);
-            this.tvViTri = (TextView) itemView.findViewById(R.id.tv_item_tim_nguoi_vi_tri);
-            this.imUser = (ImageView) itemView.findViewById(R.id.im_item_tim_nguoi);
+            this.tvThongDiep = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_thong_diep);
+            this.tvMaSV = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_msv);
+            this.tvDiemDen = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_diem_den);
+            this.tvViTri = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_vi_tri);
+            this.imUser = (ImageView) itemView.findViewById(R.id.im_item_tim_xe);
+            this.tvGiaTien = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_gia_tien);
         }
     }
-    private class AdapterTimNguoi extends RecyclerView.Adapter<TimNguoiFragment.ItemTimNguoi>
+    private class AdapterTimXe extends RecyclerView.Adapter<NguoiTimXeFragment.ItemTimXe>
             implements RecyclerView.OnClickListener {
-        private ArrayList<TimNguoi> data;
-        public AdapterTimNguoi( ArrayList<TimNguoi> data) {
+        private ArrayList<NguoiTimXe> data;
+        public AdapterTimXe( ArrayList<NguoiTimXe> data) {
             this.data = data;
         }
         @Override
-        public TimNguoiFragment.ItemTimNguoi onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_list_tim_nguoi, parent, false);
+        public NguoiTimXeFragment.ItemTimXe onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_list_tim_xe, parent, false);
             view.setOnClickListener(this);
-            TimNguoiFragment.ItemTimNguoi holder = new TimNguoiFragment.ItemTimNguoi(view);
+            NguoiTimXeFragment.ItemTimXe holder = new NguoiTimXeFragment.ItemTimXe(view);
             return holder;
         }
         @Override
-        public void onBindViewHolder(TimNguoiFragment.ItemTimNguoi holder, int position) {
-            TimNguoi timNguoi=data.get(position);
-            holder.tvThongDiep.setText(timNguoi.getThongDiep());
-            holder.tvMaSV.setText(timNguoi.getMaSV());
-            holder.tvBSX.setText(timNguoi.getBsx());
-            holder.tvViTri.setText(timNguoi.getViTri());
+        public void onBindViewHolder(NguoiTimXeFragment.ItemTimXe holder, int position) {
+            NguoiTimXe nguoiTimXe =data.get(position);
+            holder.tvThongDiep.setText(nguoiTimXe.getThongDiep());
+            holder.tvMaSV.setText(nguoiTimXe.getMaSV());
+            holder.tvDiemDen.setText(nguoiTimXe.getDiemDen());
+            holder.tvViTri.setText(nguoiTimXe.getViTri());
+            holder.tvGiaTien.setText(nguoiTimXe.getGiaTien());
 //            holder.imUser.setText(itemKetQuaThiLop.getGhiChu());
         }
         @Override

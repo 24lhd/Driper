@@ -6,14 +6,14 @@ import com.google.firebase.database.IgnoreExtraProperties;
  * Created by Duong on 10/26/2016.
  */
 @IgnoreExtraProperties
-public class TimNguoi {
+public class XeTimNguoi {
     public Location location;
     public String viTri;
     public String maSV;
 
     @Override
     public String toString() {
-        return "TimNguoi{" +
+        return "XeTimNguoi{" +
                 "location=" + location +
                 ", viTri='" + viTri + '\'' +
                 ", maSV='" + maSV + '\'' +
@@ -42,11 +42,11 @@ public class TimNguoi {
         return thongDiep;
     }
 
-    public TimNguoi() {
+    public XeTimNguoi() {
 
     }
 
-    public TimNguoi(Location location, String viTri, String maSV, String bsx, String thongDiep) {
+    public XeTimNguoi(Location location, String viTri, String maSV, String bsx, String thongDiep) {
 
         this.location = location;
         this.viTri = viTri;

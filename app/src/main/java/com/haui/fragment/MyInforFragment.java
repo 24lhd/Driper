@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +15,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
 import com.haui.activity.NavigationActivity;
 import com.haui.activity.R;
+import com.haui.object.User;
 
 /**
  * Created by Duong on 10/19/2016.
@@ -31,6 +37,7 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
          view=inflater.inflate(R.layout.layout_my_infor,container,false);
+        Log.e("faker L","khoi tao");
         initView();
         return view;
     }
@@ -49,6 +56,60 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
         navigationActivity.registerForContextMenu(floatingActionButton);
         showProgress();
         floatingActionButton.setOnClickListener(this);
+
+        navigationActivity.getDatabase().child("users").child(navigationActivity.getLog().getID()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                navigationActivity.getDatabase().child("users").child(navigationActivity.getLog().getID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User user=dataSnapshot.getValue(User.class);
+                        navigationActivity.setViewHeader(user);
+                        setProImage(user.getImgProfile());
+                        setTextInfor(user.getTenSV(), user.getMaSV(), user.getTenLopDL(), user.getSoDT(), user.getViTri());
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                navigationActivity.getDatabase().child("users").child(navigationActivity.getLog().getID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        User user=dataSnapshot.getValue(User.class);
+                        navigationActivity.setViewHeader(user);
+                        setProImage(user.getImgProfile());
+                        setTextInfor(user.getTenSV(), user.getMaSV(), user.getTenLopDL(), user.getSoDT(), user.getViTri());
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void hideProgress() {
@@ -73,7 +134,7 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
         ((TextView) view.findViewById(R.id.tv_infor_sdt)).setText(tv_infor_sdt);
         ((TextView) view.findViewById(R.id.tv_infor_vitri)).setText(tenVitTri);
         hideProgress();
-        collapsingToolbar.setTitle(tv_infor_ten);
+//        collapsingToolbar.setTitle(tv_infor_ten);
     }
 
     public void setProImage(String proImage) {

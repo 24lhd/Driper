@@ -19,7 +19,7 @@ import com.haui.activity.NavigationActivity;
 import com.haui.activity.R;
 import com.haui.activity.ViewUser;
 import com.haui.log.Log;
-import com.haui.object.TimXe;
+import com.haui.object.XeTimNguoi;
 
 import java.util.ArrayList;
 
@@ -27,13 +27,13 @@ import java.util.ArrayList;
  * Created by Duong on 10/25/2016.
  */
 
-public class TimXeFragment extends Fragment{
-    private View view;
+public class XeTimNguoiFragment extends Fragment {
     private RecyclerView recyclerView;
+    private View view;
     private NavigationActivity navigationActivity;
-    private ArrayList<TimXe> arrTimXes;
+    private ArrayList<XeTimNguoi> arrXeTimNguois;
     private Log log;
-    private AdapterTimXe adapterTimXe;
+    private AdapterTimNguoi adapterTimNguoi;
 
     @Nullable
     @Override
@@ -46,36 +46,37 @@ public class TimXeFragment extends Fragment{
         navigationActivity= (NavigationActivity) getActivity();
         recyclerView= (RecyclerView) view.findViewById(R.id.rcv_yeucau_fragment);
         recyclerView.setHasFixedSize(true);
-        arrTimXes=new ArrayList<>();
+        arrXeTimNguois =new ArrayList<>();
         log=navigationActivity.getLog();
-        adapterTimXe = new AdapterTimXe(arrTimXes);
-        recyclerView.setAdapter(adapterTimXe);
+        adapterTimNguoi = new AdapterTimNguoi(arrXeTimNguois);
+        recyclerView.setAdapter(adapterTimNguoi);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        navigationActivity.getDatabase().child("TimXe").addChildEventListener(new ChildEventListener() {
+        navigationActivity.getDatabase().child("XeTimNguoi").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                TimXe timXe= (TimXe) dataSnapshot.getValue(TimXe.class);
-                if (!timXe.getMaSV().equals(log.getID())){
-                    arrTimXes.add(timXe);
-                    navigationActivity.setArrTimXes(arrTimXes);
-                    adapterTimXe.notifyDataSetChanged();
+                XeTimNguoi xeTimNguoi = (XeTimNguoi) dataSnapshot.getValue(XeTimNguoi.class);
+                if (!xeTimNguoi.getMaSV().equals(log.getID())){
+                    arrXeTimNguois.add(xeTimNguoi);
+                    navigationActivity.setArrXeTimNguois(arrXeTimNguois);
+                     adapterTimNguoi.notifyDataSetChanged();
                 }
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                android.util.Log.e("faker TimXe","s= "+dataSnapshot.getValue());
-                TimXe timXe= (TimXe) dataSnapshot.getValue(TimXe.class);
-                if (!timXe.getMaSV().equals(log.getID())){
-                    int i=0;
-                    for (int j = 0; j <arrTimXes.size() ; j++) {
-                        if (arrTimXes.get(j).getMaSV().equals(timXe.getMaSV())){
+                XeTimNguoi xeTimNguoi = (XeTimNguoi) dataSnapshot.getValue(XeTimNguoi.class);
+                if (arrXeTimNguois.size()>0){
+                    int i=-1;
+                    for (int j = 0; j < arrXeTimNguois.size() ; j++) {
+                        if (arrXeTimNguois.get(j).getMaSV().equals(xeTimNguoi.getMaSV())){
                             i=j;
                             break;
                         }
                     }
-                    arrTimXes.set(i,timXe);
-                    navigationActivity.setArrTimXes(arrTimXes);
-                    adapterTimXe.notifyDataSetChanged();
+                    if (i!=-1){
+                        arrXeTimNguois.set(i, xeTimNguoi);
+                        navigationActivity.setArrXeTimNguois(arrXeTimNguois);
+                        adapterTimNguoi.notifyDataSetChanged();
+                    }
                 }
             }
 
@@ -96,44 +97,41 @@ public class TimXeFragment extends Fragment{
         });
 
     }
-    class ItemTimXe extends RecyclerView.ViewHolder{ // tao mot đói tượng
+    class ItemTimNguoi extends RecyclerView.ViewHolder{ // tao mot đói tượng
         ImageView imUser;
         TextView tvThongDiep;
         TextView tvMaSV;
+        TextView tvBSX;
         TextView tvViTri;
-        TextView tvDiemDen;
-        TextView tvGiaTien;
-        public ItemTimXe(View itemView) {
+        public ItemTimNguoi(View itemView) {
             super(itemView);
-            this.tvThongDiep = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_thong_diep);
-            this.tvMaSV = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_msv);
-            this.tvDiemDen = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_diem_den);
-            this.tvViTri = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_vi_tri);
-            this.imUser = (ImageView) itemView.findViewById(R.id.im_item_tim_xe);
-            this.tvGiaTien = (TextView) itemView.findViewById(R.id.tv_item_tim_xe_gia_tien);
+            this.tvThongDiep = (TextView) itemView.findViewById(R.id.tv_item_tim_nguoi_thong_diep);
+            this.tvMaSV = (TextView) itemView.findViewById(R.id.tv_item_tim_nguoi_msv);
+            this.tvBSX = (TextView) itemView.findViewById(R.id.tv_item_tim_nguoi_bsx);
+            this.tvViTri = (TextView) itemView.findViewById(R.id.tv_item_tim_nguoi_vi_tri);
+            this.imUser = (ImageView) itemView.findViewById(R.id.im_item_tim_nguoi);
         }
     }
-    private class AdapterTimXe extends RecyclerView.Adapter<TimXeFragment.ItemTimXe>
+    private class AdapterTimNguoi extends RecyclerView.Adapter<XeTimNguoiFragment.ItemTimNguoi>
             implements RecyclerView.OnClickListener {
-        private ArrayList<TimXe> data;
-        public AdapterTimXe( ArrayList<TimXe> data) {
+        private ArrayList<XeTimNguoi> data;
+        public AdapterTimNguoi( ArrayList<XeTimNguoi> data) {
             this.data = data;
         }
         @Override
-        public TimXeFragment.ItemTimXe onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_list_tim_xe, parent, false);
+        public XeTimNguoiFragment.ItemTimNguoi onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(getActivity()).inflate(R.layout.item_list_tim_nguoi, parent, false);
             view.setOnClickListener(this);
-            TimXeFragment.ItemTimXe holder = new TimXeFragment.ItemTimXe(view);
+            XeTimNguoiFragment.ItemTimNguoi holder = new XeTimNguoiFragment.ItemTimNguoi(view);
             return holder;
         }
         @Override
-        public void onBindViewHolder(TimXeFragment.ItemTimXe holder, int position) {
-            TimXe timXe=data.get(position);
-            holder.tvThongDiep.setText(timXe.getThongDiep());
-            holder.tvMaSV.setText(timXe.getMaSV());
-            holder.tvDiemDen.setText(timXe.getDiemDen());
-            holder.tvViTri.setText(timXe.getViTri());
-            holder.tvGiaTien.setText(timXe.getGiaTien());
+        public void onBindViewHolder(XeTimNguoiFragment.ItemTimNguoi holder, int position) {
+            XeTimNguoi xeTimNguoi =data.get(position);
+            holder.tvThongDiep.setText(xeTimNguoi.getThongDiep());
+            holder.tvMaSV.setText(xeTimNguoi.getMaSV());
+            holder.tvBSX.setText(xeTimNguoi.getBsx());
+            holder.tvViTri.setText(xeTimNguoi.getViTri());
 //            holder.imUser.setText(itemKetQuaThiLop.getGhiChu());
         }
         @Override

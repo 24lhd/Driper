@@ -11,11 +11,11 @@
         <item
             android:id="@+id/mn_nguoi_tim_xe"
             android:icon="@drawable/ic_motorcycle_black_48dp"
-            android:title="Tìm xe" />
+            android:title="Hiện người" />
         <item
             android:id="@+id/mn_xe_tim_nguoi"
             android:icon="@drawable/police"
-            android:title="Tìm người" />
+            android:title="Hiện xe" />
         <item
             android:id="@+id/mn_tai_xe"
             android:icon="@drawable/ic_tim_xe"

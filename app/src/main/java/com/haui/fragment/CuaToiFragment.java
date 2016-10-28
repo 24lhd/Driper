@@ -16,8 +16,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.haui.activity.NavigationActivity;
 import com.haui.activity.R;
-import com.haui.object.TimNguoi;
-import com.haui.object.TimXe;
+import com.haui.object.NguoiTimXe;
+import com.haui.object.XeTimNguoi;
 
 /**
  * Created by Duong on 10/25/2016.
@@ -54,16 +54,15 @@ public class CuaToiFragment extends Fragment{
         this.tvViTriTimNguoi = (TextView) view.findViewById(R.id.tv_item_tim_nguoi_vi_tri);
         navigationActivity= (NavigationActivity) getActivity();
         log=navigationActivity.getLog();
-        navigationActivity.getDatabase().child("TimNguoi").child(log.getID())
+        navigationActivity.getDatabase().child("XeTimNguoi").child(log.getID())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.e("faker",""+dataSnapshot.getValue());
-                        TimNguoi timNguoi=dataSnapshot.getValue(TimNguoi.class);
-                        if (timNguoi!=null){
-                            tvThongDiepTimNguoi.setText(timNguoi.getThongDiep());
-                            tvMaSVTimNguoi.setText(timNguoi.getMaSV());
-                            tvBSXTimNguoi.setText(timNguoi.getBsx());
-                            tvViTriTimNguoi.setText(timNguoi.getViTri());
+                        XeTimNguoi xeTimNguoi =dataSnapshot.getValue(XeTimNguoi.class);
+                        if (xeTimNguoi !=null){
+                            tvThongDiepTimNguoi.setText(xeTimNguoi.getThongDiep());
+                            tvMaSVTimNguoi.setText(xeTimNguoi.getMaSV());
+                            tvBSXTimNguoi.setText(xeTimNguoi.getBsx());
+                            tvViTriTimNguoi.setText(xeTimNguoi.getViTri());
                         }else {
                             card1.setVisibility(View.GONE);
                         }
@@ -72,7 +71,7 @@ public class CuaToiFragment extends Fragment{
                     public void onCancelled(DatabaseError databaseError) {
                     }
                 });
-        navigationActivity.getDatabase().child("TimNguoi").addChildEventListener(new ChildEventListener() {
+        navigationActivity.getDatabase().child("XeTimNguoi").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
@@ -80,19 +79,19 @@ public class CuaToiFragment extends Fragment{
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                TimNguoi timNguoi= (TimNguoi) dataSnapshot.getValue(TimNguoi.class);
-                if (timNguoi.getMaSV().equals(log.getID())){
-                    tvThongDiepTimNguoi.setText(timNguoi.getThongDiep());
-                    tvMaSVTimNguoi.setText(timNguoi.getMaSV());
-                    tvBSXTimNguoi.setText(timNguoi.getBsx());
-                    tvViTriTimNguoi.setText(timNguoi.getViTri());
+                XeTimNguoi xeTimNguoi = (XeTimNguoi) dataSnapshot.getValue(XeTimNguoi.class);
+                if (xeTimNguoi.getMaSV().equals(log.getID())){
+                    tvThongDiepTimNguoi.setText(xeTimNguoi.getThongDiep());
+                    tvMaSVTimNguoi.setText(xeTimNguoi.getMaSV());
+                    tvBSXTimNguoi.setText(xeTimNguoi.getBsx());
+                    tvViTriTimNguoi.setText(xeTimNguoi.getViTri());
                 }
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                TimNguoi timNguoi= (TimNguoi) dataSnapshot.getValue(TimNguoi.class);
-                if (timNguoi.getMaSV().equals(log.getID())){
+                XeTimNguoi xeTimNguoi = (XeTimNguoi) dataSnapshot.getValue(XeTimNguoi.class);
+                if (xeTimNguoi.getMaSV().equals(log.getID())){
                     card1.setVisibility(View.GONE);
                 }
             }
@@ -112,17 +111,17 @@ public class CuaToiFragment extends Fragment{
         this.tvDiemDenTimXe = (TextView) view.findViewById(R.id.tv_item_tim_xe_diem_den);
         this.tvViTriTimXe = (TextView) view.findViewById(R.id.tv_item_tim_xe_vi_tri);
         this.tvGiaTienTimXe = (TextView) view.findViewById(R.id.tv_item_tim_xe_gia_tien);
-        navigationActivity.getDatabase().child("TimXe").child(log.getID())
+
+        navigationActivity.getDatabase().child("NguoiTimXe").child(log.getID())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.e("faker",""+dataSnapshot.getValue());
-                        TimXe timXe=dataSnapshot.getValue(TimXe.class);
-                        if (timXe!=null){
-                            tvThongDiepTimXe.setText(timXe.getThongDiep());
-                            tvMaSVTimXe.setText(timXe.getMaSV());
-                            tvDiemDenTimXe.setText(timXe.getDiemDen());
-                            tvViTriTimXe.setText(timXe.getViTri());
-                            tvGiaTienTimXe.setText(timXe.getGiaTien());
+                        NguoiTimXe nguoiTimXe =dataSnapshot.getValue(NguoiTimXe.class);
+                        if (nguoiTimXe !=null){
+                            tvThongDiepTimXe.setText(nguoiTimXe.getThongDiep());
+                            tvMaSVTimXe.setText(nguoiTimXe.getMaSV());
+                            tvDiemDenTimXe.setText(nguoiTimXe.getDiemDen());
+                            tvViTriTimXe.setText(nguoiTimXe.getViTri());
+                            tvGiaTienTimXe.setText(nguoiTimXe.getGiaTien());
                         }else {
                             card2.setVisibility(View.GONE);
                         }
@@ -132,7 +131,8 @@ public class CuaToiFragment extends Fragment{
                         Log.e("faker","onCancelled");
                     }
                 });
-        navigationActivity.getDatabase().child("TimXe").addChildEventListener(new ChildEventListener() {
+
+        navigationActivity.getDatabase().child("NguoiTimXe").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
@@ -140,20 +140,20 @@ public class CuaToiFragment extends Fragment{
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                TimXe timXe=dataSnapshot.getValue(TimXe.class);
-                if (timXe.getMaSV().equals(log.getID())){
-                    tvThongDiepTimXe.setText(timXe.getThongDiep());
-                    tvMaSVTimXe.setText(timXe.getMaSV());
-                    tvDiemDenTimXe.setText(timXe.getDiemDen());
-                    tvViTriTimXe.setText(timXe.getViTri());
-                    tvGiaTienTimXe.setText(timXe.getGiaTien());
+                NguoiTimXe nguoiTimXe =dataSnapshot.getValue(NguoiTimXe.class);
+                if (nguoiTimXe.getMaSV().equals(log.getID())){
+                    tvThongDiepTimXe.setText(nguoiTimXe.getThongDiep());
+                    tvMaSVTimXe.setText(nguoiTimXe.getMaSV());
+                    tvDiemDenTimXe.setText(nguoiTimXe.getDiemDen());
+                    tvViTriTimXe.setText(nguoiTimXe.getViTri());
+                    tvGiaTienTimXe.setText(nguoiTimXe.getGiaTien());
                 }
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
-                TimXe timXe=dataSnapshot.getValue(TimXe.class);
-                if (timXe.getMaSV().equals(log.getID())){
+                NguoiTimXe nguoiTimXe =dataSnapshot.getValue(NguoiTimXe.class);
+                if (nguoiTimXe.getMaSV().equals(log.getID())){
                     card2.setVisibility(View.GONE);
                 }
             }

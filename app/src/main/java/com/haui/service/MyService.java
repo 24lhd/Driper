@@ -21,8 +21,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.haui.object.TimNguoi;
-import com.haui.object.TimXe;
+import com.haui.object.NguoiTimXe;
+import com.haui.object.XeTimNguoi;
 import com.haui.object.User;
 
 import java.io.IOException;
@@ -140,28 +140,28 @@ public class MyService extends Service implements LocationListener{
     };
 
     private void upDateALL() {
-        database.child("TimNguoi").child(maSV).addListenerForSingleValueEvent(new ValueEventListener() {
+        database.child("XeTimNguoi").child(maSV).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                TimNguoi timNguoi=dataSnapshot.getValue(TimNguoi.class);
-                if (timNguoi!=null){
-                    upDateDB("TimNguoi","location/lat",""+locationOld.getLatitude());
-                    upDateDB("TimNguoi","location/lng",""+locationOld.getLongitude());
-                    upDateDB("TimNguoi","viTri",getNameByLocation(locationOld.getLatitude(),locationOld.getLongitude()));
+                XeTimNguoi xeTimNguoi =dataSnapshot.getValue(XeTimNguoi.class);
+                if (xeTimNguoi !=null){
+                    upDateDB("XeTimNguoi","location/lat",""+locationOld.getLatitude());
+                    upDateDB("XeTimNguoi","location/lng",""+locationOld.getLongitude());
+                    upDateDB("XeTimNguoi","viTri",getNameByLocation(locationOld.getLatitude(),locationOld.getLongitude()));
                 }
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
             }
         });
-        database.child("TimXe").child(maSV).addListenerForSingleValueEvent(new ValueEventListener() {
+        database.child("NguoiTimXe").child(maSV).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                TimXe timXe=dataSnapshot.getValue(TimXe.class);
-                if (timXe!=null){
-                    upDateDB("TimXe","location/lat",""+locationOld.getLatitude());
-                    upDateDB("TimXe","location/lng",""+locationOld.getLongitude());
-                    upDateDB("TimXe","viTri",getNameByLocation(locationOld.getLatitude(),locationOld.getLongitude()));
+                NguoiTimXe nguoiTimXe =dataSnapshot.getValue(NguoiTimXe.class);
+                if (nguoiTimXe !=null){
+                    upDateDB("NguoiTimXe","location/lat",""+locationOld.getLatitude());
+                    upDateDB("NguoiTimXe","location/lng",""+locationOld.getLongitude());
+                    upDateDB("NguoiTimXe","viTri",getNameByLocation(locationOld.getLatitude(),locationOld.getLongitude()));
                 }
             }
             @Override

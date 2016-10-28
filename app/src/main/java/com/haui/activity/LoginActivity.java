@@ -128,8 +128,8 @@ public class LoginActivity extends AppCompatActivity implements ValueEventListen
             tabLayout.setSelectedTabIndicatorHeight(10);
             tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.colorPrimary));
             tabLayout.setupWithViewPager(wrappingViewPager);
-            wrappingViewPager.setCurrentItem(0);
-            onSelectTab(0);
+            wrappingViewPager.setCurrentItem(1);
+            onSelectTab(1);
             tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
                 @Override
                 public void onTabSelected(TabLayout.Tab tab) {
@@ -221,7 +221,7 @@ public class LoginActivity extends AppCompatActivity implements ValueEventListen
         database.child("users").child(id).addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onDataChange(DataSnapshot dataSnapshot){
                         User user = dataSnapshot.getValue(User.class);
                         try {
                             if (user.getPassWord().equals(pass)){

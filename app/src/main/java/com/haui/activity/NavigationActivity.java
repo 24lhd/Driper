@@ -48,7 +48,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -60,13 +59,13 @@ import com.google.firebase.storage.UploadTask;
 import com.haui.fragment.CuaToiFragment;
 import com.haui.fragment.MyInforFragment;
 import com.haui.fragment.NullDataFragment;
-import com.haui.fragment.TimNguoiFragment;
-import com.haui.fragment.TimXeFragment;
+import com.haui.fragment.XeTimNguoiFragment;
+import com.haui.fragment.NguoiTimXeFragment;
 import com.haui.log.Log;
 import com.haui.map.MapManager;
 import com.haui.object.Location;
-import com.haui.object.TimNguoi;
-import com.haui.object.TimXe;
+import com.haui.object.XeTimNguoi;
+import com.haui.object.NguoiTimXe;
 import com.haui.object.User;
 import com.haui.service.MyService;
 
@@ -76,8 +75,7 @@ import static android.support.design.widget.Snackbar.make;
 
 public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
-        View.OnClickListener,
-        ValueEventListener,ChildEventListener {
+        View.OnClickListener {
     private com.haui.log.Log log;
     private DatabaseReference database;
     private String passWord;
@@ -96,10 +94,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private ViewPager viewPageYeuCau;
     private TabLayout tabLayoutYeuCau;
     private Dialog dialogYeuCau;
-    private DatabaseReference referenceInfor;
     private CuaToiFragment cuaToiFragment;
-    private TimNguoiFragment timNguoiFragment;
-    private TimXeFragment timXeFragment;
+    private XeTimNguoiFragment xeTimNguoiFragment;
+    private NguoiTimXeFragment nguoiTimXeFragment;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -167,7 +164,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     startLogin();
                 }
             } catch (NullPointerException e) {
-                android.util.Log.e("faker", "checkLogin");
                 startLogin();
             }
         } else {
@@ -214,7 +210,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         if (isOnline()){
             if (requestCode == 1001) {
                 if (resultCode == RESULT_OK) {
-                    initDialogAndShow("Đang khởi tạo dữ liệu....");
                     checkLogin(data.getStringExtra(Log.LOG_ID), data.getStringExtra(Log.LOG_PASS));
                 } else {
                     log.remove();
@@ -326,9 +321,29 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 passWord=pass;
                 maSV=masv;
                 //https://hauiclass.firebaseio.com/users/094120041
-                referenceInfor = database.child("users").child(maSV);
-                referenceInfor.addListenerForSingleValueEvent(this);
-                referenceInfor.addChildEventListener(this); // kiểm tra theo từng node con node users -> node masv rồi đến các node con của msv
+                database.child("users").child(maSV).addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                User user = dataSnapshot.getValue(User.class);
+                                try{
+                                if (user.getPassWord().equals(passWord)) {
+                                    contenView=R.id.mn_home;
+                                    setViewHeader(user);
+                                    viewHome();
+                                    progressDialog.dismiss();
+                                } else {
+                                    progressDialog.dismiss();
+                                    startLogin();
+                                }
+                            } catch (NullPointerException e) {
+                                  progressDialog.dismiss();
+                                    startLogin();
+                                 }
+                            }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+                            }});
             } catch (NullPointerException e) {
             }
         } else {
@@ -348,33 +363,30 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
     private FragmentTransaction fragmentTransaction;
     private FloatingActionButton floatingActionButton;
-    private ArrayList<TimXe> arrTimXes;
-    private ArrayList<TimNguoi> arrTimNguois;
+    private ArrayList<NguoiTimXe> arrNguoiTimXes;
+    private ArrayList<XeTimNguoi> arrXeTimNguois;
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (isOnline()) {
-
+            contenView=item.getItemId();
             switch (item.getItemId()) {
                 case R.id.mn_nguoi_tim_xe:
+
                     toolbar.setTitle("Tìm xe");
-                    mapManager.setTimXe();
+                    mapManager.setHienXe();
                     break;
                 case R.id.mn_xe_tim_nguoi:
                     toolbar.setTitle("Tìm người");
-                    mapManager.setTimNguoi();
+                    mapManager.setHienNguoi();
                     break;
                 case R.id.mn_user:
-                    contenView=item.getItemId();
                     toolbar.setTitle("Thông tin cá nhân");
                     viewFlipper.setDisplayedChild(0);
-                        myInforFragment = new MyInforFragment();
-                        fragmentTransaction=getSupportFragmentManager().beginTransaction();
-                        fragmentTransaction.replace(R.id.fragment, myInforFragment).commitAllowingStateLoss();
-                        referenceInfor = database.child("users").child(maSV);
-                        referenceInfor.addListenerForSingleValueEvent(this);
-                        referenceInfor.addChildEventListener(this);
+                    myInforFragment = new MyInforFragment();
+                    fragmentTransaction=getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.replace(R.id.fragment, myInforFragment).commit();
                     break;
                 case R.id.mn_error:
                     break;
@@ -396,7 +408,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     viewHome();
                     break;
                 case R.id.mn_map:
-                    contenView=item.getItemId();
                     initDialogAndShow("Đang khỏi tạo dữ liệu....");
                     viewFlipper.setDisplayedChild(1);
                     navigationView.getMenu().clear();
@@ -446,7 +457,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         super.onCreateContextMenu(menu, v, menuInfo);
     }
     public void writeNewYeuCauTimNguoi(Location location, String viTri, String maSV, String bsx, String thongDiep) {
-        database.child("TimNguoi").child(maSV).setValue(new TimNguoi(location, viTri, maSV, bsx, thongDiep), new DatabaseReference.CompletionListener() {
+        database.child("XeTimNguoi").child(maSV).setValue(new XeTimNguoi(location, viTri, maSV, bsx, thongDiep), new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError==null){
@@ -461,7 +472,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }); // gửi một đối tượng lên firebase vói child là những node cha
     }
     public void writeNewYeuCauTimXe(Location location, String viTri, String maSV, String diemDen, String giaTien , String thongDiep) {
-        database.child("TimXe").child(maSV).setValue(new TimXe(location, viTri, maSV, diemDen, giaTien,thongDiep), new DatabaseReference.CompletionListener() {
+        database.child("NguoiTimXe").child(maSV).setValue(new NguoiTimXe(location, viTri, maSV, diemDen, giaTien,thongDiep), new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError==null){
@@ -646,62 +657,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 break;
         }
     }
-    @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
-        switch (contenView){
-            case R.id.mn_user:
-                try {
-                    User user = dataSnapshot.getValue(User.class);
-                    if (user.getPassWord().equals(passWord)) {
-                        myInforFragment.setTextInfor(user.getTenSV(), user.getMaSV(), user.getTenLopDL(), user.getSoDT(), user.getViTri());
-                        myInforFragment.setProImage(user.getImgProfile());
-                        tvTenHeadNavigation.setText(user.getTenSV());
-                        tvViTriHeadNavigation.setText(user.getViTri());
-                        Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
-                    } else {
-                        startLogin();
-                    }
-                }catch (NullPointerException e) {
-                    startLogin();
-                }
-                return;
-            case  1000:    //láy 1 đối tượng tương ứng vs node con được trả về
-                try {// nếu k lấy được giá trị hoặc giá trị đó k lấy kết quả trả về = null
-                    /**kiểm tra mật khẩu
-                     * đúng thì khởi tạo dữ liệu đầu tiên
-                     * sai thì bật lại activity đăng nhập
-                     */
-                    User user = dataSnapshot.getValue(User.class);
-                    if (user.getPassWord().equals(passWord)) {
-                        tvTenHeadNavigation.setText(user.getTenSV());
-                        tvViTriHeadNavigation.setText(user.getViTri());
-                        Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
-                        contenView=R.id.mn_home;
-                        progressDialog.dismiss();
-                        viewHome();
-                    } else {
-                        progressDialog.dismiss();
-                        startLogin();
-                    }
-                } catch (NullPointerException e) {
-                    progressDialog.dismiss();
-                    startLogin();
-                }
-                break;
-                default:
-                try {
-                    User user = dataSnapshot.getValue(User.class);
-                    if (user.getPassWord().equals(passWord)) {
-                        tvTenHeadNavigation.setText(user.getTenSV());
-                        tvViTriHeadNavigation.setText(user.getViTri());
-//                        Glide.with(NavigationActivity.this).load(user.getImgProfile()).fitCenter().into(imHeadNavigation);
-                    }
-                }catch (NullPointerException e) {
 
-                }
-                break;
-        }
-    }
     public Log getLog() {
         if (!log.getID().equals(maSV)){
             startLogin();
@@ -715,22 +671,24 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     public void setDatabase(DatabaseReference database) {
         this.database = database;
     }
-    public void setArrTimNguois(ArrayList<TimNguoi> arrTimNguois) {
-        this.arrTimNguois = arrTimNguois;
-        if (contenView==R.id.mn_map){
-            mapManager.setAll();
+
+    public void setArrXeTimNguois(ArrayList<XeTimNguoi> arrXeTimNguois) {
+        this.arrXeTimNguois = arrXeTimNguois;
+        if (contenView==R.id.mn_xe_tim_nguoi){
+            mapManager.setHienXe();
         }
     }
-    public ArrayList<TimNguoi> getArrTimNguois() {
-        return arrTimNguois;
+    public ArrayList<XeTimNguoi> getArrXeTimNguois() {
+        return arrXeTimNguois;
     }
-    public ArrayList<TimXe> getArrTimXes() {
-        return arrTimXes;
+    public ArrayList<NguoiTimXe> getArrNguoiTimXes() {
+        return arrNguoiTimXes;
     }
-    public void setArrTimXes(ArrayList<TimXe> arrTimXes) {
-        this.arrTimXes = arrTimXes;
-        if (contenView==R.id.mn_map){
-            mapManager.setAll();
+
+    public void setArrNguoiTimXes(ArrayList<NguoiTimXe> arrNguoiTimXes) {
+        this.arrNguoiTimXes = arrNguoiTimXes;
+        if (contenView==R.id.mn_nguoi_tim_xe){
+            mapManager.setHienNguoi();
         }
     }
     private void viewHome() {
@@ -742,13 +700,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             viewFlipper.setDisplayedChild(2);
             toolbar.setTitle("Lời gửi");
               cuaToiFragment=new CuaToiFragment();
-              timNguoiFragment=new TimNguoiFragment();
-              timXeFragment=new TimXeFragment();
+              xeTimNguoiFragment =new XeTimNguoiFragment();
+              nguoiTimXeFragment =new NguoiTimXeFragment();
             if (viewPageYeuCau==null){
                 viewPageYeuCau= (ViewPager) findViewById(R.id.viewpager_yeucau);
                 tabLayoutYeuCau = (TabLayout) findViewById(R.id.tab_yeucau);
-                arrTimNguois=new ArrayList<>();
-                arrTimXes=new ArrayList<>();
+                arrXeTimNguois =new ArrayList<>();
+                arrNguoiTimXes =new ArrayList<>();
             }
             if (tabLayoutYeuCau != null) {
                 tabLayoutYeuCau.setTabMode(TabLayout.MODE_FIXED);
@@ -764,10 +722,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                         case 2:
                             return cuaToiFragment;
                         case 1:
-                            return timNguoiFragment;
+                            return xeTimNguoiFragment;
                         case 0:
                         default:
-                        return timXeFragment;
+                        return nguoiTimXeFragment;
                     }
                 }
                 @Override
@@ -795,21 +753,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             setViewOffLine();
         }
     }
-    @Override
-    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-    }
-    @Override
-    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-        dataSnapshot.getRef().getParent().addListenerForSingleValueEvent(NavigationActivity.this);
-    }
-    @Override
-    public void onChildRemoved(DataSnapshot dataSnapshot) {
-        android.util.Log.e("faker", "onChildRemoved");
-    }
-    @Override
-    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-    }
-    @Override
-    public void onCancelled(DatabaseError databaseError) {
+    public void setViewHeader(User viewHeader) {
+        tvTenHeadNavigation.setText(viewHeader.getTenSV());
+        tvViTriHeadNavigation.setText(viewHeader.getViTri());
+        if (!viewHeader.getImgProfile().toString().isEmpty()){
+            Glide.with(NavigationActivity.this).load(viewHeader.getImgProfile()).fitCenter().into(imHeadNavigation);
+        }
     }
 }
