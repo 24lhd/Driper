@@ -9,13 +9,13 @@
             android:icon="@drawable/places_ic_search"
             android:title="Tìm kiếm" />
         <item
-            android:id="@+id/mn_nguoi_tim_xe"
+            android:id="@+id/mn_nguoi_quanh_day"
             android:icon="@drawable/ic_motorcycle_black_48dp"
-            android:title="Hiện người" />
+            android:title="Sinh viên quanh đây" />
         <item
-            android:id="@+id/mn_xe_tim_nguoi"
+            android:id="@+id/mn_xe_om_quanh_day"
             android:icon="@drawable/police"
-            android:title="Hiện xe" />
+            android:title="Xe ôm quanh đây" />
         <item
             android:id="@+id/mn_tai_xe"
             android:icon="@drawable/ic_tim_xe"

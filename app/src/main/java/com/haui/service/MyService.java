@@ -15,6 +15,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,8 +23,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.haui.object.NguoiTimXe;
-import com.haui.object.XeTimNguoi;
 import com.haui.object.User;
+import com.haui.object.XeTimNguoi;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,9 +48,10 @@ public class MyService extends Service implements LocationListener{
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         database = FirebaseDatabase.getInstance().getReference();
+        Toast.makeText(this, "Đang chạy service", Toast.LENGTH_SHORT).show();
         log=new com.haui.log.Log(this);
+        Log.e("faker update","onStartCommand");
         mLocationManager= (LocationManager) getSystemService(LOCATION_SERVICE);
-        Log.e("faker","chay");
         geocoder = new Geocoder(this, Locale.getDefault());
         checkLogin(log.getID(),log.getPass());
         return START_STICKY;
@@ -114,7 +116,8 @@ public class MyService extends Service implements LocationListener{
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                 if (databaseError == null) {
-
+                    Toast.makeText(MyService.this, "upDateALL", Toast.LENGTH_SHORT).show();
+                    Log.e("faker update","upDateALL");
                 }
             }
         });
@@ -127,7 +130,7 @@ public class MyService extends Service implements LocationListener{
             if (msg.what==111) {
                 Location location;
                  location= (Location) msg.obj;
-                if (locationOld!=null&&location.distanceTo(locationOld)>100){
+                if (location.distanceTo(locationOld)>100){
                     locationOld= location;
                     upDateALL();
                 }

@@ -63,6 +63,7 @@ public class CuaToiFragment extends Fragment{
                             tvMaSVTimNguoi.setText(xeTimNguoi.getMaSV());
                             tvBSXTimNguoi.setText(xeTimNguoi.getBsx());
                             tvViTriTimNguoi.setText(xeTimNguoi.getViTri());
+                            navigationActivity.setViewHeaderViTri(xeTimNguoi.getViTri());
                         }else {
                             card1.setVisibility(View.GONE);
                         }
@@ -85,6 +86,7 @@ public class CuaToiFragment extends Fragment{
                     tvMaSVTimNguoi.setText(xeTimNguoi.getMaSV());
                     tvBSXTimNguoi.setText(xeTimNguoi.getBsx());
                     tvViTriTimNguoi.setText(xeTimNguoi.getViTri());
+                    navigationActivity.setViewHeaderViTri(xeTimNguoi.getViTri());
                 }
             }
 
@@ -122,6 +124,7 @@ public class CuaToiFragment extends Fragment{
                             tvDiemDenTimXe.setText(nguoiTimXe.getDiemDen());
                             tvViTriTimXe.setText(nguoiTimXe.getViTri());
                             tvGiaTienTimXe.setText(nguoiTimXe.getGiaTien());
+                            navigationActivity.setViewHeaderViTri(nguoiTimXe.getViTri());
                         }else {
                             card2.setVisibility(View.GONE);
                         }
@@ -135,9 +138,7 @@ public class CuaToiFragment extends Fragment{
         navigationActivity.getDatabase().child("NguoiTimXe").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
             }
-
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 NguoiTimXe nguoiTimXe =dataSnapshot.getValue(NguoiTimXe.class);
@@ -147,6 +148,7 @@ public class CuaToiFragment extends Fragment{
                     tvDiemDenTimXe.setText(nguoiTimXe.getDiemDen());
                     tvViTriTimXe.setText(nguoiTimXe.getViTri());
                     tvGiaTienTimXe.setText(nguoiTimXe.getGiaTien());
+                    navigationActivity.setViewHeaderViTri(nguoiTimXe.getViTri());
                 }
             }
 

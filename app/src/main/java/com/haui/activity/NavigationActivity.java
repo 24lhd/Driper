@@ -58,15 +58,15 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.haui.fragment.CuaToiFragment;
 import com.haui.fragment.MyInforFragment;
+import com.haui.fragment.NguoiTimXeFragment;
 import com.haui.fragment.NullDataFragment;
 import com.haui.fragment.XeTimNguoiFragment;
-import com.haui.fragment.NguoiTimXeFragment;
 import com.haui.log.Log;
 import com.haui.map.MapManager;
 import com.haui.object.Location;
-import com.haui.object.XeTimNguoi;
 import com.haui.object.NguoiTimXe;
 import com.haui.object.User;
+import com.haui.object.XeTimNguoi;
 import com.haui.service.MyService;
 
 import java.util.ArrayList;
@@ -97,19 +97,31 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private CuaToiFragment cuaToiFragment;
     private XeTimNguoiFragment xeTimNguoiFragment;
     private NguoiTimXeFragment nguoiTimXeFragment;
-
+    private FragmentTransaction fragmentTransaction;
+    private FloatingActionButton floatingActionButton;
+    private ArrayList<NguoiTimXe> arrNguoiTimXes;
+    private ArrayList<XeTimNguoi> arrXeTimNguois;
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            Intent intent=new Intent(this, MyService.class);
-            stopService(intent);
-        }catch (Exception e){
-        }
         initDialogAndShow("Đang khởi tạo....");
+        Intent intent=new Intent(this, MyService.class);
+        startService(intent);
         creatView();
         checkLogin("","");
+    }
+
+    private void createNullView() {
+          myInforFragment=null;
+          viewPageYeuCau=null;
+          cuaToiFragment=null;
+          xeTimNguoiFragment=null;
+          nguoiTimXeFragment=null;
+          fragmentTransaction=null;
+          floatingActionButton=null;
+         arrNguoiTimXes=null;
+          arrXeTimNguois=null;
     }
 
     /**
@@ -193,6 +205,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
 
     public void signOut() {
+        Intent intent=new Intent(this, MyService.class);
+        stopService(intent);
+        createNullView();
         log.remove();
         startLogin();
     }
@@ -361,10 +376,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             super.onBackPressed();
         }
     }
-    private FragmentTransaction fragmentTransaction;
-    private FloatingActionButton floatingActionButton;
-    private ArrayList<NguoiTimXe> arrNguoiTimXes;
-    private ArrayList<XeTimNguoi> arrXeTimNguois;
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -372,14 +384,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         if (isOnline()) {
             contenView=item.getItemId();
             switch (item.getItemId()) {
-                case R.id.mn_nguoi_tim_xe:
-
+                case R.id.mn_nguoi_quanh_day:
                     toolbar.setTitle("Tìm xe");
-                    mapManager.setHienXe();
-                    break;
-                case R.id.mn_xe_tim_nguoi:
-                    toolbar.setTitle("Tìm người");
                     mapManager.setHienNguoi();
+                    break;
+                case R.id.mn_xe_om_quanh_day:
+                    toolbar.setTitle("Tìm người");
+                    mapManager.setHienXe();
                     break;
                 case R.id.mn_user:
                     toolbar.setTitle("Thông tin cá nhân");
@@ -542,7 +553,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     btDang.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
                     btHuy.setVisibility(View.GONE);
-                    writeNewYeuCauTimNguoi(new Location("0","0"),"",maSV,etBSX.getText().toString(),etLoiNhan.getText().toString());
+                    writeNewYeuCauTimNguoi(new Location(""+mapManager.getMyLocation().getLatitude(),""+mapManager.getMyLocation().getLongitude()),"Đang cập nhật vị trí",maSV,etBSX.getText().toString(),etLoiNhan.getText().toString());
                 }
             }
         });
@@ -587,7 +598,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     btDang.setVisibility(View.GONE);
                     progressBar.setVisibility(View.VISIBLE);
                     btHuy.setVisibility(View.GONE);
-                    writeNewYeuCauTimXe(new Location("0","0"),"",maSV,etDiemDen.getText().toString(),etGiaTien.getText().toString(),etLoiNhan.getText().toString());
+                    writeNewYeuCauTimXe(new Location(""+mapManager.getMyLocation().getLatitude(),""+mapManager.getMyLocation().getLongitude()),"Đang cập nhật vị trí",maSV,etDiemDen.getText().toString(),etGiaTien.getText().toString(),etLoiNhan.getText().toString());
                 }
             }
         });
@@ -674,7 +685,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
     public void setArrXeTimNguois(ArrayList<XeTimNguoi> arrXeTimNguois) {
         this.arrXeTimNguois = arrXeTimNguois;
-        if (contenView==R.id.mn_xe_tim_nguoi){
+        if (contenView==R.id.mn_xe_om_quanh_day){
             mapManager.setHienXe();
         }
     }
@@ -687,14 +698,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
     public void setArrNguoiTimXes(ArrayList<NguoiTimXe> arrNguoiTimXes) {
         this.arrNguoiTimXes = arrNguoiTimXes;
-        if (contenView==R.id.mn_nguoi_tim_xe){
+        if (contenView==R.id.mn_nguoi_quanh_day){
             mapManager.setHienNguoi();
         }
     }
     private void viewHome() {
         if (isOnline()){
-            Intent intent=new Intent(this, MyService.class);
-            startService(intent);
             navigationView.getMenu().clear();
             navigationView.inflateMenu(R.menu.activity_navigation_drawer);
             viewFlipper.setDisplayedChild(2);
@@ -755,9 +764,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
     public void setViewHeader(User viewHeader) {
         tvTenHeadNavigation.setText(viewHeader.getTenSV());
-        tvViTriHeadNavigation.setText(viewHeader.getViTri());
+//        tvViTriHeadNavigation.setText(viewHeader.getViTri());
         if (!viewHeader.getImgProfile().toString().isEmpty()){
             Glide.with(NavigationActivity.this).load(viewHeader.getImgProfile()).fitCenter().into(imHeadNavigation);
         }
+    }
+    public void setViewHeaderViTri(String viewHeader) {
+        tvViTriHeadNavigation.setText(viewHeader);
     }
 }

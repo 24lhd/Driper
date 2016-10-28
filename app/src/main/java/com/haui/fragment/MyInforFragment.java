@@ -56,7 +56,6 @@ public class MyInforFragment extends Fragment implements View.OnClickListener{
         navigationActivity.registerForContextMenu(floatingActionButton);
         showProgress();
         floatingActionButton.setOnClickListener(this);
-
         navigationActivity.getDatabase().child("users").child(navigationActivity.getLog().getID()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {

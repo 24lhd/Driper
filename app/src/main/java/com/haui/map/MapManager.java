@@ -132,7 +132,8 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
             double a=Double.parseDouble(xeTimNguoi.getLocation().getLat());
             double b=Double.parseDouble(xeTimNguoi.getLocation().getLng());
             if (a!=0.0||b!=0.0){
-                drawMarker(a,b,R.drawable.ic_location_driver, xeTimNguoi.getThongDiep()+"\n"+ xeTimNguoi.getMaSV(), xeTimNguoi.getViTri());
+                drawMarker(a,b,R.drawable.ic_location_driver, xeTimNguoi.getThongDiep()+"\n"+ xeTimNguoi.getMaSV(),
+                        xeTimNguoi.getViTri());
             }
         }
     }
@@ -143,15 +144,21 @@ public class MapManager implements GoogleMap.OnMarkerClickListener, GoogleMap.On
             double a=Double.parseDouble(nguoiTimXe.getLocation().getLat());
             double b=Double.parseDouble(nguoiTimXe.getLocation().getLng());
             if (a!=0.0||b!=0.0){
-                drawMarker(a,b,R.drawable.ic_student, nguoiTimXe.getThongDiep()+"\n"+ nguoiTimXe.getMaSV()+"\n"+ nguoiTimXe.getDiemDen(), nguoiTimXe.getViTri());
+                drawMarker(a,b,R.drawable.ic_student, nguoiTimXe.getThongDiep()+"\n"+
+                        nguoiTimXe.getMaSV()+"\n"+ nguoiTimXe.getDiemDen(), nguoiTimXe.getViTri());
             }
 
         }
     }
+
+    public Location getMyLocation() {
+        return myLocation;
+    }
+
     public void moveToMyLocation() {
         checkLocationIsEnable();
         LatLng latLng = new LatLng(myLocation.getLatitude(),myLocation.getLongitude());
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 14);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 11);
         googleMap.animateCamera(cameraUpdate);
     }
     public void setMapVeTinh() {

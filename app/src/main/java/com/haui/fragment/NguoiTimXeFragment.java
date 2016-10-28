@@ -64,7 +64,7 @@ public class NguoiTimXeFragment extends Fragment{
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 NguoiTimXe nguoiTimXe = (NguoiTimXe) dataSnapshot.getValue(NguoiTimXe.class);
-                if (arrNguoiTimXes.size()>0){
+                if (!nguoiTimXe.getMaSV().equals(log.getID())&&arrNguoiTimXes.size()>0){
                     int i=0;
                     for (int j = 0; j < arrNguoiTimXes.size() ; j++) {
                         if (arrNguoiTimXes.get(j).getMaSV().equals(nguoiTimXe.getMaSV())){

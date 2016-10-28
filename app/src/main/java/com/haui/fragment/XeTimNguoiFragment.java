@@ -64,7 +64,7 @@ public class XeTimNguoiFragment extends Fragment {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 XeTimNguoi xeTimNguoi = (XeTimNguoi) dataSnapshot.getValue(XeTimNguoi.class);
-                if (arrXeTimNguois.size()>0){
+                if (!xeTimNguoi.getMaSV().equals(log.getID())&&arrXeTimNguois.size()>0){
                     int i=-1;
                     for (int j = 0; j < arrXeTimNguois.size() ; j++) {
                         if (arrXeTimNguois.get(j).getMaSV().equals(xeTimNguoi.getMaSV())){
