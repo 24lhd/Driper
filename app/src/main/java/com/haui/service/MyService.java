@@ -3,8 +3,6 @@ package com.haui.service;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -22,13 +20,10 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.haui.map.CustemMaps;
 import com.haui.object.NguoiTimXe;
 import com.haui.object.User;
 import com.haui.object.XeTimNguoi;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by Duong on 10/23/2016.
@@ -36,13 +31,13 @@ import java.util.Locale;
 
 public class MyService extends Service implements LocationListener{
     private DatabaseReference database;
-    private  Geocoder geocoder;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
     private String maSV;
+    private CustemMaps custemMaps;
     private LocationManager mLocationManager;
     private com.haui.log.Log log;
     @Override
@@ -50,9 +45,8 @@ public class MyService extends Service implements LocationListener{
         database = FirebaseDatabase.getInstance().getReference();
         Toast.makeText(this, "Đang chạy service", Toast.LENGTH_SHORT).show();
         log=new com.haui.log.Log(this);
-        Log.e("faker update","onStartCommand");
+        custemMaps=new CustemMaps(this);
         mLocationManager= (LocationManager) getSystemService(LOCATION_SERVICE);
-        geocoder = new Geocoder(this, Locale.getDefault());
         checkLogin(log.getID(),log.getPass());
         return START_STICKY;
     }
@@ -65,19 +59,7 @@ public class MyService extends Service implements LocationListener{
         }
     }
     private String getNameByLocation(double lat,double lng){
-        //tìm kiếm vị trí
-        try {
-            List<Address> addresses = geocoder.getFromLocation(lat,lng,1);// getfromlocation trả vể list nên cần tạo 1 list
-            if (addresses.size()==0){
-                return "";
-            }
-            String name = addresses.get(0).getAddressLine(0);
-            name +=" - " +addresses.get(0).getAddressLine(1);
-            name +=" - " +addresses.get(0).getAddressLine(2);
-            return name;
-        } catch (IOException e) {
-            return "";
-        }
+       return custemMaps.getNameByLocation(lat,lng);
     }
     private void checkLogin(final String extra, final String stringExtra) {
         if (isOnline()) {
@@ -111,7 +93,6 @@ public class MyService extends Service implements LocationListener{
         }
     }
     public void upDateDB(final String child,final String item, final String valuse) {
-
         database.child(child).child(maSV).child(item).setValue(valuse, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
