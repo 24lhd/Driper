@@ -112,6 +112,7 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
         //định nghĩa điểm ảnh
         // mỗi maker chỉ hiện thị một điểm ảnh
         LatLng latLng = new LatLng(lat,lng);//tạo kinh vĩ
+
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.icon(BitmapDescriptorFactory.fromResource( hue));

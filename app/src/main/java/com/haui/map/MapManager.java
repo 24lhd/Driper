@@ -1,6 +1,7 @@
 package com.haui.map;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
@@ -13,17 +14,22 @@ import com.haui.object.XeTimNguoi;
  * Created by Duong on 10/16/2016.
  */
 
-public class MapManager extends CustemMaps implements GoogleMap.OnMarkerClickListener {
+public class MapManager extends CustemMaps implements GoogleMap.OnMarkerClickListener,GoogleMap.OnInfoWindowClickListener {
     private NavigationActivity navigationActivity;
     public MapManager(GoogleMap googleMap, Context context) {
         super(googleMap, context);
         navigationActivity= (NavigationActivity) context;
+        googleMap.setOnMarkerClickListener(this);
+        googleMap.setInfoWindowAdapter(new CusteamInForWindow());
     }
 
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        return false;
+
+        Log.e("faker", (String) marker.getTag());
+        Log.e("faker","qua");
+        return true;
     }
 //        mMarker.setPosition(latLng);
 //        PolylineOptions options = new PolylineOptions();
@@ -38,8 +44,10 @@ public class MapManager extends CustemMaps implements GoogleMap.OnMarkerClickLis
             double a=Double.parseDouble(xeTimNguoi.getLocation().getLat());
             double b=Double.parseDouble(xeTimNguoi.getLocation().getLng());
             if (a!=0.0||b!=0.0){
-                drawMarker(a,b,R.drawable.ic_location_driver, xeTimNguoi.getThongDiep()+"\n"+ xeTimNguoi.getMaSV(),
+                Marker marker=drawMarker(a,b,R.drawable.ic_location_driver, xeTimNguoi.getThongDiep()+"\n"+ xeTimNguoi.getMaSV(),
                         xeTimNguoi.getViTri());
+                marker.setTag(xeTimNguoi.getMaSV());
+
             }
         }
     }
@@ -56,4 +64,8 @@ public class MapManager extends CustemMaps implements GoogleMap.OnMarkerClickLis
         }
     }
 
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+    }
 }
