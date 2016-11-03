@@ -10,7 +10,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -36,6 +35,14 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
     private Geocoder geocoder;
     private Activity activity;
     private Location myLocation;
+    private String diemDau;
+    private String diemCuoi;
+    private String driving="driving";
+    private String walking="walking";
+    private String transit="transit";
+    private String en="en";
+    private String vi="vi";
+    private String link="https://maps.googleapis.com/maps/api/directions/json?origin="+diemDau+"&destination="+diemCuoi+"&avoid=tolls|highways|ferries&mode="+driving+"&language="+vi;
     public CustemMaps(GoogleMap googleMap, Context context) {
         this.googleMap = googleMap;
         this.context = context;
@@ -115,6 +122,7 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
 
     public Activity getActivity() {
         return activity;
+
     }
 
     public GoogleMap getGoogleMap() {
@@ -123,11 +131,9 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
     }
 
     public void setMapVeTinh() {
-        Log.e("faker","setMapVeTinh");
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
     }
     public void setMapGiaoThong() {
-        Log.e("faker","setMapGiaoThong");
         googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
     }
 
