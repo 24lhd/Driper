@@ -435,10 +435,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
                     break;
                 case R.id.mn_tai_xe:
-                    createDialogTimNguoi();
+                    createDialogTimNguoi(null);
                     break;
                 case R.id.mn_sinh_vien:
-                  createDialogTimXe();
+                  createDialogTimXe(null);
                     break;
             }
             navigationView.setCheckedItem(contenView);
@@ -449,6 +449,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
         return true;
     }
+
+    public FloatingActionButton getFloatingActionButton() {
+        return floatingActionButton;
+    }
+
     /**
      * khỏi tạo dialog menu
      * @param menu
@@ -521,19 +526,35 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             case R.id.mn_delete_user:
                 myInforFragment.deleteAcc();
                 return true;
-            case R.id.mn_yc_tim_xe:
-                createDialogTimXe();
+            case R.id.mn_xem_thongtin:
+                if (mapManager.getMarkerCick().getTag() instanceof XeTimNguoi){
+                    XeTimNguoi xeTimNguoi= (XeTimNguoi) mapManager.getMarkerCick().getTag();
+                    Intent intent=new Intent(this, ViewUser.class);
+                    intent.putExtra(ViewUser.KEY_ID,xeTimNguoi.getMaSV());
+                    this.startActivity(intent);
+                }else if (mapManager.getMarkerCick().getTag() instanceof NguoiTimXe){
+                    NguoiTimXe nguoiTimXe= (NguoiTimXe) mapManager.getMarkerCick().getTag();
+                    Intent intent=new Intent(this, ViewUser.class);
+                    intent.putExtra(ViewUser.KEY_ID,nguoiTimXe.getMaSV());
+                    this.startActivity(intent);
+                }
                 return true;
-            case R.id.mn_yc_tim_nguoi:
-                createDialogTimNguoi();
+            case R.id.mn_chi_duong:
+                if (mapManager.getMarkerCick().getTag() instanceof XeTimNguoi){
+                    XeTimNguoi xeTimNguoi= (XeTimNguoi) mapManager.getMarkerCick().getTag();
+
+                }else if (mapManager.getMarkerCick().getTag() instanceof NguoiTimXe){
+                    NguoiTimXe nguoiTimXe= (NguoiTimXe) mapManager.getMarkerCick().getTag();
+
+                }
                 return true;
 
         }
         return super.onContextItemSelected(item);
     }
 
-    private void createDialogTimNguoi() {
-        android.util.Log.e("faker","vào");
+    public void createDialogTimNguoi(XeTimNguoi xeTimNguoi) {
+        dialogYeuCau=new Dialog(this,android.R.style.Theme_DeviceDefault_Dialog_Alert);
         View v=getLayoutInflater().inflate(R.layout.dialog_tim_nguoi,null);
         final EditText etLoiNhan= (EditText) v.findViewById(R.id.et_dl_tim_nguoi_loi_nhan);
         final EditText etBSX= (EditText) v.findViewById(R.id.et_dl_tim_nguoi_bsx);
@@ -541,6 +562,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         final AppCompatButton btDang= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_nguoi_dang);
         final TextView textView= (TextView) v.findViewById(R.id.tv_notidl_tim_nguoi);
         final AppCompatButton btHuy= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_nguoi_huy);
+        if (xeTimNguoi instanceof XeTimNguoi){
+            etLoiNhan.setText(xeTimNguoi.getThongDiep());
+            etBSX.setText(xeTimNguoi.getBsx());
+        }
         btDang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -569,7 +594,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         dialogYeuCau.setContentView(v);
         dialogYeuCau.show();
     }
-    private void createDialogTimXe() {
+    public void createDialogTimXe(NguoiTimXe nguoiTimXe) {
+        dialogYeuCau=new Dialog(this,android.R.style.Theme_DeviceDefault_Dialog_Alert);
         View v=getLayoutInflater().inflate(R.layout.dialog_tim_xe,null);
         final EditText etDiemDi= (EditText) v.findViewById(R.id.et_dl_tim_xe_diem_di);
         etDiemDi.setImeOptions(EditorInfo.IME_ACTION_DONE);
@@ -580,6 +606,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         final TextView textView= (TextView) v.findViewById(R.id.tv_notidl_tim_xe);
         final AppCompatButton btDang= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_xe_dang);
         final AppCompatButton btHuy= (AppCompatButton) v.findViewById(R.id.bt_dl_tim_xe_huy);
+        if (nguoiTimXe instanceof  NguoiTimXe){
+            etLoiNhan.setText(nguoiTimXe.getThongDiep());
+            etDiemDen.setText(nguoiTimXe.getDiemDen());
+            etGiaTien.setText(nguoiTimXe.getGiaTien());
+        }
         btHuy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

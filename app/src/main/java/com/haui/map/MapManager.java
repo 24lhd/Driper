@@ -1,7 +1,6 @@
 package com.haui.map;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;
@@ -20,16 +19,17 @@ public class MapManager extends CustemMaps implements GoogleMap.OnMarkerClickLis
         super(googleMap, context);
         navigationActivity= (NavigationActivity) context;
         googleMap.setOnMarkerClickListener(this);
-        googleMap.setInfoWindowAdapter(new CusteamInForWindow());
+        navigationActivity.registerForContextMenu(navigationActivity.getFloatingActionButton());
+        googleMap.setInfoWindowAdapter(new CusteamInForWindow(context));
+        googleMap.setOnInfoWindowClickListener(this);
     }
 
 
     @Override
     public boolean onMarkerClick(Marker marker) {
 
-        Log.e("faker", (String) marker.getTag());
-        Log.e("faker","qua");
-        return true;
+
+        return false;
     }
 //        mMarker.setPosition(latLng);
 //        PolylineOptions options = new PolylineOptions();
@@ -44,28 +44,39 @@ public class MapManager extends CustemMaps implements GoogleMap.OnMarkerClickLis
             double a=Double.parseDouble(xeTimNguoi.getLocation().getLat());
             double b=Double.parseDouble(xeTimNguoi.getLocation().getLng());
             if (a!=0.0||b!=0.0){
-                Marker marker=drawMarker(a,b,R.drawable.ic_location_driver, xeTimNguoi.getThongDiep()+"\n"+ xeTimNguoi.getMaSV(),
-                        xeTimNguoi.getViTri());
-                marker.setTag(xeTimNguoi.getMaSV());
+                drawMarker(a,b,R.drawable.ic_driver, xeTimNguoi.getThongDiep()+"\n"+ xeTimNguoi.getMaSV(),
+                        xeTimNguoi.getViTri()).setTag(xeTimNguoi);
 
             }
         }
     }
+
     public void setHienNguoi() {
         getGoogleMap().clear();
         for (NguoiTimXe nguoiTimXe :navigationActivity.getArrNguoiTimXes()) {
             double a=Double.parseDouble(nguoiTimXe.getLocation().getLat());
             double b=Double.parseDouble(nguoiTimXe.getLocation().getLng());
             if (a!=0.0||b!=0.0){
-                drawMarker(a,b,R.drawable.ic_student, nguoiTimXe.getThongDiep()+"\n"+
-                        nguoiTimXe.getMaSV()+"\n"+ nguoiTimXe.getDiemDen(), nguoiTimXe.getViTri());
+                drawMarker(a,b,R.drawable.ic_user, nguoiTimXe.getThongDiep()+"\n"+
+                        nguoiTimXe.getMaSV()+"\n"+ nguoiTimXe.getDiemDen(), nguoiTimXe.getViTri()).setTag(nguoiTimXe);
+
             }
 
         }
     }
+    private Marker markerCick;
+
+    public Marker getMarkerCick() {
+        return markerCick;
+    }
+
+    public void setMarkerCick(Marker markerCick) {
+        this.markerCick = markerCick;
+    }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-
+        navigationActivity.openContextMenu(navigationActivity.getFloatingActionButton());
+        setMarkerCick(marker);
     }
 }

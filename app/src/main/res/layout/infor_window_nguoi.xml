@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:background="@drawable/shape_infor_window"
+    android:padding="5dp"
+    android:layout_height="wrap_content">
+    <TextView
+        android:layout_width="wrap_content"
+        android:text="Thông điệp:"
+        android:textColor="@color/colorAccent"
+        android:layout_gravity="left"
+        android:id="@+id/tv_infor_wd_nguoi_thong_diep"
+        android:gravity="left"
+        style="@style/TextAppearance.AppCompat.Headline"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Mã sinh viên: "
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/md_blue_500"
+            android:id="@+id/tv_infor_wd_nguoi_msv"
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Vị trí hiện tại: "
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/md_blue_500"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/tv_infor_wd_nguoi_vi_tri"
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Điểm đến: "
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/md_blue_500"
+            android:layout_marginLeft="10dp"
+            android:id="@+id/tv_infor_wd_nguoi_diem_den"
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Giá tiền: "
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/md_blue_500"
+            android:id="@+id/tv_infor_wd_nguoi_gia_tien"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="Lúc: "
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body1"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/md_blue_500"
+            android:id="@+id/tv_infor_wd_nguoi_thoi_gian"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

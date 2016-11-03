@@ -2,10 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group>
         <item
-            android:id="@+id/mn_yc_tim_xe"
-            android:title="Tìm xe" />
+            android:id="@+id/mn_xem_thongtin"
+            android:title="Xem thông tin" />
         <item
-            android:id="@+id/mn_yc_tim_nguoi"
-            android:title="Tìm người" />
+            android:id="@+id/mn_chi_duong"
+            android:title="Chỉ đường tới đây" />
     </group>
 </menu>

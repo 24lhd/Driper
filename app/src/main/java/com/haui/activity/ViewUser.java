@@ -9,7 +9,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -56,7 +57,14 @@ public class ViewUser extends AppCompatActivity implements View.OnClickListener{
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarUser);
         toolbar.setTitle("Thông tin sinh viên");
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.inflateMenu(R.menu.menu_close);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                finish();
+                return false;
+            }
+        });
         progressBar= (ProgressBar) findViewById(R.id.pg_profile);
         floatingActionButton= (FloatingActionButton) findViewById(R.id.fbt_my_infor);
         collapsingToolbar =(CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
@@ -117,14 +125,12 @@ public class ViewUser extends AppCompatActivity implements View.OnClickListener{
             case R.id.fbt_my_infor:
                 callPhone(sdt);
                 break;
-            case R.drawable.ic_x_close:
-
-                finish();
-                break;
         }
     }
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
+    public boolean onPrepareOptionsMenu( Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_close, menu);
+
+        return super.onCreateOptionsMenu(menu);
     }
 }

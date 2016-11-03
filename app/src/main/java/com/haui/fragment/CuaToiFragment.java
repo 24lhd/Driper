@@ -23,7 +23,7 @@ import com.haui.object.XeTimNguoi;
  * Created by Duong on 10/25/2016.
  */
 
-public class CuaToiFragment extends Fragment{
+public class CuaToiFragment extends Fragment implements View.OnClickListener{
     private View view;
     private NavigationActivity navigationActivity;
     private TextView tvThongDiepTimNguoi;
@@ -37,6 +37,9 @@ public class CuaToiFragment extends Fragment{
     private TextView tvGiaTienTimXe;
     private com.haui.log.Log log;
     private CardView card1,card2;
+    private XeTimNguoi xeTimNguoi;
+    private NguoiTimXe nguoiTimXe;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,8 +60,9 @@ public class CuaToiFragment extends Fragment{
         navigationActivity.getDatabase().child("XeTimNguoi").child(log.getID())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot dataSnapshot) {
-                        XeTimNguoi xeTimNguoi =dataSnapshot.getValue(XeTimNguoi.class);
+                         xeTimNguoi =dataSnapshot.getValue(XeTimNguoi.class);
                         if (xeTimNguoi !=null){
+
                             tvThongDiepTimNguoi.setText(xeTimNguoi.getThongDiep());
                             tvMaSVTimNguoi.setText(xeTimNguoi.getMaSV());
                             tvBSXTimNguoi.setText(xeTimNguoi.getBsx());
@@ -80,7 +84,7 @@ public class CuaToiFragment extends Fragment{
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                XeTimNguoi xeTimNguoi = (XeTimNguoi) dataSnapshot.getValue(XeTimNguoi.class);
+                 xeTimNguoi = (XeTimNguoi) dataSnapshot.getValue(XeTimNguoi.class);
                 if (xeTimNguoi.getMaSV().equals(log.getID())){
                     tvThongDiepTimNguoi.setText(xeTimNguoi.getThongDiep());
                     tvMaSVTimNguoi.setText(xeTimNguoi.getMaSV());
@@ -113,11 +117,10 @@ public class CuaToiFragment extends Fragment{
         this.tvDiemDenTimXe = (TextView) view.findViewById(R.id.tv_item_tim_xe_diem_den);
         this.tvViTriTimXe = (TextView) view.findViewById(R.id.tv_item_tim_xe_vi_tri);
         this.tvGiaTienTimXe = (TextView) view.findViewById(R.id.tv_item_tim_xe_gia_tien);
-
         navigationActivity.getDatabase().child("NguoiTimXe").child(log.getID())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override public void onDataChange(DataSnapshot dataSnapshot) {
-                        NguoiTimXe nguoiTimXe =dataSnapshot.getValue(NguoiTimXe.class);
+                         nguoiTimXe =dataSnapshot.getValue(NguoiTimXe.class);
                         if (nguoiTimXe !=null){
                             tvThongDiepTimXe.setText(nguoiTimXe.getThongDiep());
                             tvMaSVTimXe.setText(nguoiTimXe.getMaSV());
@@ -141,7 +144,7 @@ public class CuaToiFragment extends Fragment{
             }
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                NguoiTimXe nguoiTimXe =dataSnapshot.getValue(NguoiTimXe.class);
+                 nguoiTimXe =dataSnapshot.getValue(NguoiTimXe.class);
                 if (nguoiTimXe.getMaSV().equals(log.getID())){
                     tvThongDiepTimXe.setText(nguoiTimXe.getThongDiep());
                     tvMaSVTimXe.setText(nguoiTimXe.getMaSV());
@@ -170,7 +173,20 @@ public class CuaToiFragment extends Fragment{
 
             }
         });
+        card1.setOnClickListener(this);
+        card2.setOnClickListener(this);
     }
 
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.cv_1:
+                navigationActivity.createDialogTimNguoi(xeTimNguoi);
+                break;
+            case R.id.cv_2:
+                navigationActivity.createDialogTimXe(nguoiTimXe);
+                break;
+        }
+    }
 }
