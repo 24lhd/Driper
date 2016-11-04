@@ -548,7 +548,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
                 }
                 return true;
-
         }
         return super.onContextItemSelected(item);
     }

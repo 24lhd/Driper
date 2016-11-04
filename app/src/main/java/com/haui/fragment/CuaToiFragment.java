@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +61,6 @@ public class CuaToiFragment extends Fragment implements View.OnClickListener{
                     @Override public void onDataChange(DataSnapshot dataSnapshot) {
                          xeTimNguoi =dataSnapshot.getValue(XeTimNguoi.class);
                         if (xeTimNguoi !=null){
-
                             tvThongDiepTimNguoi.setText(xeTimNguoi.getThongDiep());
                             tvMaSVTimNguoi.setText(xeTimNguoi.getMaSV());
                             tvBSXTimNguoi.setText(xeTimNguoi.getBsx());
@@ -134,7 +132,6 @@ public class CuaToiFragment extends Fragment implements View.OnClickListener{
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.e("faker","onCancelled");
                     }
                 });
 
