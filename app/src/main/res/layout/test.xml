@@ -4,34 +4,17 @@
     android:layout_marginLeft="@dimen/margin_17dp"
     android:layout_marginRight="@dimen/margin_17dp"
     android:layout_height="wrap_content">
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="wrap_content"
-        android:layout_weight="1"
-        android:layout_marginBottom="@dimen/margin_5dp"
-        android:layout_marginLeft="@dimen/margin_5dp"
-        android:layout_marginRight="@dimen/margin_5dp"
-        android:padding="@dimen/padding_login"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/login_animation"
-        android:layout_height="wrap_content">
-    <EditText
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:background="@color/bg_app"
-        android:id="@+id/et_dl_tim_xe_diem_di"
-        android:hint="@string/hint_dl_tim_xe_diem_di"
-        android:layout_marginBottom="@dimen/margin_5dp"
-        android:imeOptions="actionDone"
-        android:textColorHint="@color/md_green_500"
-        android:textSize="@dimen/text_size_20dp"
-        android:textColor="@color/md_green_500"
-        android:layout_height="wrap_content" />
-    </android.support.design.widget.TextInputLayout>
-    <ImageButton
-        android:layout_width="40dp"
-        android:src="@drawable/ic_my_location_black_48dp"
-        android:layout_gravity="center"
-        android:scaleType="centerInside"
-        style="@style/Widget.AppCompat.ImageButton"
-        android:layout_height="40dp"
-        android:id="@+id/imageView" />
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_height="wrap_content">
+        <fragment
+            android:id="@+id/autocomplete_fragment"
+            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.v7.widget.CardView>
 </LinearLayout>

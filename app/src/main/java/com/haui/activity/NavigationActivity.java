@@ -32,6 +32,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
@@ -101,6 +102,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private FloatingActionButton floatingActionButton;
     private ArrayList<NguoiTimXe> arrNguoiTimXes;
     private ArrayList<XeTimNguoi> arrXeTimNguois;
+    private View viewMapMenu;
+
+    public View getViewMapMenu() {
+        return viewMapMenu;
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -376,19 +383,27 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             super.onBackPressed();
         }
     }
+    @Override
+    public boolean onPrepareOptionsMenu( Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_close, menu);
 
+        return super.onCreateOptionsMenu(menu);
+    }
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (isOnline()) {
             contenView=item.getItemId();
+            toolbar.setVisibility(View.VISIBLE);
             switch (item.getItemId()) {
                 case R.id.mn_nguoi_quanh_day:
+                    toolbar.setVisibility(View.GONE);
                     toolbar.setTitle("Tìm xe");
                     mapManager.setHienNguoi();
                     break;
                 case R.id.mn_xe_om_quanh_day:
+                    toolbar.setVisibility(View.GONE);
                     toolbar.setTitle("Tìm người");
                     mapManager.setHienXe();
                     break;
@@ -410,15 +425,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     finish();
                     break;
                 case R.id.mn_share:
-
                     break;
                 case R.id.mn_dev:
-
                     break;
                 case R.id.mn_home:
                     viewHome();
                     break;
                 case R.id.mn_map:
+                    toolbar.setVisibility(View.GONE);
                     initDialogAndShow("Đang khỏi tạo dữ liệu....");
                     viewFlipper.setDisplayedChild(1);
                     navigationView.getMenu().clear();
@@ -426,15 +440,15 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     setMap();
                     break;
                 case R.id.mn_map_ve_tinh:
+                    toolbar.setVisibility(View.GONE);
                     mapManager.setMapVeTinh();
                     break;
                 case R.id.mn_map_giao_thong:
+                    toolbar.setVisibility(View.GONE);
                     mapManager.setMapGiaoThong();
                     break;
-                case R.id.mn_map_tim_kiem:
-
-                    break;
                 case R.id.mn_tai_xe:
+                    toolbar.setVisibility(View.GONE);
                     createDialogTimNguoi(null);
                     break;
                 case R.id.mn_sinh_vien:
@@ -466,7 +480,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             case R.id.fbt_my_infor:
                 getMenuInflater().inflate(R.menu.menu_select_image,menu);
                 break;
-            case R.id.fab_map_my_location:
+            case R.id.view_menu:
                 getMenuInflater().inflate(R.menu.mn_dang_yeu_cau,menu);
                 break;
         }
@@ -537,19 +551,41 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     Intent intent=new Intent(this, ViewUser.class);
                     intent.putExtra(ViewUser.KEY_ID,nguoiTimXe.getMaSV());
                     this.startActivity(intent);
+                }else{
+                    Snackbar.make(navigationView,""+mapManager.getMarkerCick().getSnippet(),Snackbar.LENGTH_SHORT).show();
                 }
                 return true;
-            case R.id.mn_chi_duong:
-                if (mapManager.getMarkerCick().getTag() instanceof XeTimNguoi){
-                    XeTimNguoi xeTimNguoi= (XeTimNguoi) mapManager.getMarkerCick().getTag();
-
-                }else if (mapManager.getMarkerCick().getTag() instanceof NguoiTimXe){
-                    NguoiTimXe nguoiTimXe= (NguoiTimXe) mapManager.getMarkerCick().getTag();
-
-                }
+            case R.id.mn_chi_duong_di_bo:
+                String walking="walking";
+                chiDuong(walking);
+                return true;
+            case R.id.mn_chi_duong_oto:
+                String driving="driving";
+                chiDuong(driving);
+                return true;
+            case R.id.mn_chi_duong_xe_bus:
+                String transit="transit";
+                chiDuong(transit);
                 return true;
         }
         return super.onContextItemSelected(item);
+    }
+
+    private void chiDuong(String walking) {
+        android.location.Location location=new android.location.Location("a");
+        if (mapManager.getMarkerCick().getTag() instanceof XeTimNguoi){
+            XeTimNguoi xeTimNguoi= (XeTimNguoi) mapManager.getMarkerCick().getTag();
+            location.setLatitude(Double.parseDouble(xeTimNguoi.getLocation().getLat()));
+            location.setLongitude(Double.parseDouble(xeTimNguoi.getLocation().getLng()));
+        }else if (mapManager.getMarkerCick().getTag() instanceof NguoiTimXe){
+            NguoiTimXe nguoiTimXe= (NguoiTimXe) mapManager.getMarkerCick().getTag();
+            location.setLatitude(Double.parseDouble(nguoiTimXe.getLocation().getLat()));
+            location.setLongitude(Double.parseDouble(nguoiTimXe.getLocation().getLng()));
+        }else{
+            location.setLatitude( mapManager.getMarkerCick().getPosition().latitude);
+            location.setLongitude( mapManager.getMarkerCick().getPosition().longitude);
+        }
+        mapManager.drawRoadByLocation(mapManager.getMyLocation(),location,walking,getResources().getColor(R.color.colorPrimary),5);
     }
 
     public void createDialogTimNguoi(XeTimNguoi xeTimNguoi) {
@@ -680,6 +716,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
             floatingActionButton.setOnClickListener(this);
+             viewMapMenu=findViewById(R.id.view_menu);
             mapFragment.getMapAsync(this);
         }else {
             progressDialog.dismiss();

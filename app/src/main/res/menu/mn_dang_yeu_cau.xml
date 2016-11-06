@@ -5,7 +5,13 @@
             android:id="@+id/mn_xem_thongtin"
             android:title="Xem thông tin" />
         <item
-            android:id="@+id/mn_chi_duong"
-            android:title="Chỉ đường tới đây" />
+            android:id="@+id/mn_chi_duong_di_bo"
+            android:title="Đi bộ tới đây" />
+        <item
+            android:id="@+id/mn_chi_duong_oto"
+            android:title="Lái ôtô tới đây" />
+        <item
+            android:id="@+id/mn_chi_duong_xe_bus"
+            android:title="Đi xe bus tới đây" />
     </group>
 </menu>

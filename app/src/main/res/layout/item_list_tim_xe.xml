@@ -30,7 +30,7 @@
                 android:layout_gravity="left"
                 android:id="@+id/tv_item_tim_xe_thong_diep"
                 android:gravity="left"
-                style="@style/TextAppearance.AppCompat.Headline"
+                style="@style/TextAppearance.AppCompat.Small"
                 android:layout_height="match_parent" />
             <LinearLayout
                 android:layout_width="match_parent"
@@ -41,16 +41,16 @@
                     android:text="Mã sinh viên: "
                     android:layout_gravity="center"
                     android:gravity="center"
-                    style="@style/TextAppearance.AppCompat.Body1"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_height="match_parent" />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="2dp"
                     android:textColor="@color/md_blue_500"
                     android:id="@+id/tv_item_tim_xe_msv"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    style="@style/TextAppearance.AppCompat.Body2"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_height="match_parent" />
             </LinearLayout>
             <LinearLayout
@@ -59,19 +59,19 @@
                 android:layout_height="wrap_content">
                 <TextView
                     android:layout_width="wrap_content"
-                    android:text="Vị trí hiện tại: "
+                    android:text="Đang ở: "
                     android:layout_gravity="center"
                     android:gravity="center"
-                    style="@style/TextAppearance.AppCompat.Body1"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_height="match_parent" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:textColor="@color/md_blue_500"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="2dp"
                     android:id="@+id/tv_item_tim_xe_vi_tri"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    style="@style/TextAppearance.AppCompat.Body2"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_height="match_parent" />
             </LinearLayout>
             <LinearLayout
@@ -83,16 +83,16 @@
                     android:text="Điểm đến: "
                     android:layout_gravity="center"
                     android:gravity="center"
-                    style="@style/TextAppearance.AppCompat.Body1"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_height="match_parent" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:textColor="@color/md_blue_500"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="2dp"
                     android:id="@+id/tv_item_tim_xe_diem_den"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    style="@style/TextAppearance.AppCompat.Body2"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_height="match_parent" />
             </LinearLayout>
             <LinearLayout
@@ -104,16 +104,16 @@
                     android:text="Giá tiền: "
                     android:layout_gravity="center"
                     android:gravity="center"
-                    style="@style/TextAppearance.AppCompat.Body1"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_height="match_parent" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:textColor="@color/md_blue_500"
                     android:id="@+id/tv_item_tim_xe_gia_tien"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginLeft="2dp"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    style="@style/TextAppearance.AppCompat.Body2"
+                    style="@style/TextAppearance.AppCompat.Small"
                     android:layout_height="match_parent" />
             </LinearLayout>
         </LinearLayout>

@@ -51,6 +51,18 @@ public class CusteamInForWindow implements GoogleMap.InfoWindowAdapter {
             tvViTri.setText(nguoiTimXe.getViTri());
             tvGiaTien.setText(nguoiTimXe.getGiaTien());
             return view;
+        }else if (marker.getTag() instanceof CustemMaps.ItemStep){
+            view = inflater.inflate(R.layout.infor_window_steps,null);
+            CustemMaps.ItemStep itemStep= (CustemMaps.ItemStep) marker.getTag();
+            TextView tvThongDiep = (TextView) view.findViewById(R.id.tv_infor_wd_step_title);
+            TextView tvKhoangCach= (TextView) view.findViewById(R.id.tv_infor_wd_step_distance);
+            TextView tvThoiGian= (TextView) view.findViewById(R.id.tv_infor_wd_step_time);
+            TextView tvMode= (TextView) view.findViewById(R.id.tv_infor_wd_step_mode);
+            tvThongDiep.setText(itemStep.getHtml_instructions());
+            tvKhoangCach.setText(itemStep.getDistanceTextSteps());
+            tvThoiGian.setText(itemStep.getDurationTextSteps());
+            tvMode.setText(itemStep.getTravel_mode());
+            return view;
         }else{
             return null;
         }

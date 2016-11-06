@@ -7,8 +7,7 @@
     android:layout_height="wrap_content">
     <TextView
         android:layout_width="wrap_content"
-        android:text="Thông điệp:"
-        android:id="@+id/tv_infor_wd_xe_thong_diep"
+        android:id="@+id/tv_infor_wd_step_title"
         android:layout_gravity="left"
         android:textColor="@color/colorAccent"
         android:gravity="left"
@@ -20,7 +19,7 @@
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
-            android:text="Mã sinh viên: "
+            android:text="Đi: "
             android:layout_gravity="center"
             android:gravity="center"
             style="@style/TextAppearance.AppCompat.Small"
@@ -29,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_marginLeft="2dp"
             android:textColor="@color/md_blue_500"
-            android:id="@+id/tv_infor_wd_xe_msv"
+            android:id="@+id/tv_infor_wd_step_distance"
             android:layout_gravity="center"
             android:gravity="center"
             style="@style/TextAppearance.AppCompat.Small"
@@ -41,14 +40,14 @@
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
-            android:text="Biển số xe: "
+            android:text="Thời gian: "
             android:layout_gravity="center"
             android:gravity="center"
             style="@style/TextAppearance.AppCompat.Small"
             android:layout_height="wrap_content" />
         <TextView
             android:layout_width="wrap_content"
-            android:id="@+id/tv_infor_wd_xe_bsx"
+            android:id="@+id/tv_infor_wd_step_time"
             android:layout_marginLeft="2dp"
             android:textColor="@color/md_blue_500"
             android:layout_gravity="center"
@@ -62,16 +61,8 @@
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
-            android:text="Đang ở: "
-            android:layout_gravity="center"
-            android:gravity="center"
-            style="@style/TextAppearance.AppCompat.Small"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:textColor="@color/md_blue_500"
-            android:id="@+id/tv_infor_wd_xe_vi_tri"
-            android:layout_marginLeft="2dp"
+            android:textColor="@color/colorAccent"
+            android:id="@+id/tv_infor_wd_step_mode"
             android:layout_gravity="center"
             android:gravity="center"
             style="@style/TextAppearance.AppCompat.Small"

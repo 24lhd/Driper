@@ -11,6 +11,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.haui.activity.NavigationActivity;
 import com.haui.activity.R;
@@ -21,36 +22,23 @@ import com.haui.object.XeTimNguoi;
  * Created by Duong on 10/16/2016.
  */
 
-public class MapManager extends CustemMaps implements GoogleMap.OnMarkerClickListener,GoogleMap.OnInfoWindowClickListener,PlaceSelectionListener {
+public class MapManager extends CustemMaps implements
+        GoogleMap.OnInfoWindowClickListener,PlaceSelectionListener,GoogleMap.OnMapLongClickListener {
     private NavigationActivity navigationActivity;
     private Marker markerSearch;
+    private Marker makerSelect;
 
     public MapManager(GoogleMap googleMap, Context context) {
         super(googleMap, context);
         navigationActivity= (NavigationActivity) context;
-        googleMap.setOnMarkerClickListener(this);
-        navigationActivity.registerForContextMenu(navigationActivity.getFloatingActionButton());
+        navigationActivity.registerForContextMenu(navigationActivity.getViewMapMenu());
         googleMap.setInfoWindowAdapter(new CusteamInForWindow(context));
         googleMap.setOnInfoWindowClickListener(this);
+        googleMap.setOnMapLongClickListener(this);
         PlaceAutocompleteFragment autocompleteFragment =
                 (PlaceAutocompleteFragment)navigationActivity.getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setOnPlaceSelectedListener(this);
     }
-
-
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-
-
-        return false;
-    }
-//        mMarker.setPosition(latLng);
-//        PolylineOptions options = new PolylineOptions();
-//        options.color(Color.GREEN);;
-//        options.width(10);
-//        options.add(new LatLng(21.0579267,105.73167086));
-//        options.add(new LatLng(21.04677555,105.74839711));
-//        googleMap.addPolyline(options);
     public void setHienXe() {
         getGoogleMap().clear();
         for (XeTimNguoi xeTimNguoi :navigationActivity.getArrXeTimNguois()) {
@@ -78,31 +66,28 @@ public class MapManager extends CustemMaps implements GoogleMap.OnMarkerClickLis
         }
     }
     private Marker markerCick;
-
     public Marker getMarkerCick() {
         return markerCick;
     }
-
     public void setMarkerCick(Marker markerCick) {
         this.markerCick = markerCick;
     }
-
     @Override
     public void onInfoWindowClick(Marker marker) {
-        if (!(marker.getTag() instanceof XeTimNguoi)&&!(marker.getTag() instanceof NguoiTimXe)){
-
-        }else {
-            navigationActivity.openContextMenu(navigationActivity.getFloatingActionButton());
-            setMarkerCick(marker);
-        }
-
+        setMarkerCick(marker);
+        navigationActivity.openContextMenu(navigationActivity.getViewMapMenu());
     }
-
     @Override
     public void onPlaceSelected(Place place) {
         if (place.getLatLng()!=null){
+            if (markerSearch!=null){
+                markerSearch.remove();
+            }
+            if (polylineChiDuong!=null){
+                polylineChiDuong.remove();
+            }
             markerSearch=drawMarker(place.getLatLng().latitude,place.getLatLng().longitude, BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN),place.getName().toString(),place.getAddress().toString());
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(markerSearch.getPosition(), 12);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(markerSearch.getPosition(), 13);
             getGoogleMap().animateCamera(cameraUpdate);
         }
 
@@ -110,6 +95,17 @@ public class MapManager extends CustemMaps implements GoogleMap.OnMarkerClickLis
 
     @Override
     public void onError(Status status) {
+
         Log.e("faker", "onError");
+
+    }
+    @Override
+    public void onMapLongClick(LatLng latLng) {
+        if (makerSelect!=null){
+            makerSelect.remove();
+        }
+        makerSelect=drawMarker(latLng.latitude,latLng.longitude,
+                BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+                ,"Điểm chọn",getNameByLocation(latLng.latitude,latLng.longitude));
     }
 }

@@ -8,8 +8,13 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
+import android.text.Html;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
@@ -17,13 +22,23 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.haui.activity.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -33,19 +48,17 @@ import java.util.Locale;
  */
 
 public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
-    private GoogleMap googleMap;
-    private Context context;
-    private Geocoder geocoder;
-    private Activity activity;
-    private Location myLocation;
-    private String diemDau;
-    private String diemCuoi;
-    private String driving="driving";
-    private String walking="walking";
-    private String transit="transit";
-    private String en="en";
-    private String vi="vi";
-    private String link="https://maps.googleapis.com/maps/api/directions/json?origin="+diemDau+"&destination="+diemCuoi+"&avoid=tolls|highways|ferries&mode="+driving+"&language="+vi;
+    protected GoogleMap googleMap;
+    protected Context context;
+    protected Geocoder geocoder;
+    protected Activity activity;
+    protected Location myLocation;
+    protected String en="en";
+    protected String vi="vi";
+    protected Polyline polylineChiDuong;
+    protected ArrayList<Marker> arrMarkerFlags;
+
+    //    private String link="https://maps.googleapis.com/maps/api/directions/json?origin="+diemDau+"&destination="+diemCuoi+"&avoid=tolls|highways|ferries&mode="+driving+"&language="+vi;
     public CustemMaps(GoogleMap googleMap, Context context) {
         this.googleMap = googleMap;
         this.context = context;
@@ -53,10 +66,11 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
         activity= (Activity) context;
         geocoder = new Geocoder(activity, Locale.getDefault());
         UiSettings uiSettings = googleMap.getUiSettings();
-        uiSettings.setMyLocationButtonEnabled(true);
-        uiSettings.setMapToolbarEnabled(true);
+        uiSettings.setMyLocationButtonEnabled(false); // không sử dụng buttom my location mặc định của máy
+        uiSettings.setMapToolbarEnabled(false); // không sử dụng toolbar hỗ trợ của gg map để bật ứng dụng bản đò
         googleMap.setMyLocationEnabled(true);
         googleMap.setOnMyLocationChangeListener(this);
+
     }
     public CustemMaps(Context context) {
         this.context = context;
@@ -115,7 +129,6 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
         //định nghĩa điểm ảnh
         // mỗi maker chỉ hiện thị một điểm ảnh
         LatLng latLng = new LatLng(lat,lng);//tạo kinh vĩ
-
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.icon(hue);
@@ -146,7 +159,7 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
         LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
         if (myLocation==null){
             myLocation=location;
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 12);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 13);
             googleMap.animateCamera(cameraUpdate);
         }else {
             myLocation=location;
@@ -156,7 +169,7 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
         checkLocationIsEnable();
         if (myLocation!=null){
             LatLng latLng = new LatLng(myLocation.getLatitude(),myLocation.getLongitude());
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 12);
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 13);
             googleMap.animateCamera(cameraUpdate);
         }
     }
@@ -166,15 +179,47 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
     public void drawRoadByAddress(String addressStart,String addressEnd,int color,int width){
 
     }
-    public void drawRoadByLocation(Location locationStart,Location locationEnd,int color,int width){
-
+    public void drawRoadByLocation(Location locationStart, Location locationEnd, String mode, final int color, final int width){
+        Handler handler=new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                GoogleMapAPI googleMapAPI= (GoogleMapAPI) msg.obj;
+                if (googleMapAPI!=null){
+                    drawRoad(googleMapAPI.getItemSteps(),color,width);
+                }
+            }
+        };
+        AsynGetLatLng asynGetLatLng=new AsynGetLatLng(handler,mode);
+        asynGetLatLng.execute(locationStart,locationEnd);
     }
-    public void drawRoad(ArrayList<LatLng> latLngs,int color,int width){
-        PolylineOptions options = new PolylineOptions();
-        options.color(color);;
-        options.width(width);
-        options.addAll(latLngs);
-        googleMap.addPolyline(options);
+    public void drawRoad(ArrayList<ItemStep> itemSteps, int color, int width){
+        ArrayList<LatLng> latLngs=new ArrayList<>();
+        if (arrMarkerFlags!=null){
+            for (Marker marker:arrMarkerFlags) {
+                marker.remove();
+            }
+        }
+        arrMarkerFlags=new ArrayList<>();
+        for (ItemStep itemStep:itemSteps) {
+            latLngs.add(new LatLng(Double.parseDouble(itemStep.getStart_locationLatSteps()),
+                    Double.parseDouble(itemStep.getStart_locationLngSteps())));
+            Marker marker=
+            drawMarker(  Double.parseDouble(itemStep.getStart_locationLatSteps()),
+                    Double.parseDouble(itemStep.getStart_locationLngSteps()),
+                    BitmapDescriptorFactory.fromResource(R.drawable.ic_flag),
+                    itemStep.getHtml_instructions(),
+                    itemStep.getTravel_mode());
+            marker.setTag(itemStep);
+            arrMarkerFlags.add(marker);
+        }
+        if (polylineChiDuong!=null){
+            polylineChiDuong.remove();
+        }
+        PolylineOptions polylineOptions = new PolylineOptions();
+        polylineOptions.color(color);
+        polylineOptions.width(width);
+        polylineOptions.addAll(latLngs);
+         polylineChiDuong=googleMap.addPolyline(polylineOptions);
     }
     public void searchLocationByName(String start, String end) {
         Location locationStart = null,locationEnd = null;
@@ -219,6 +264,10 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
         String end_locationLat;
         String end_locationLng;
         ArrayList<ItemStep> itemSteps;
+
+         public void setItemSteps(ArrayList<ItemStep> itemSteps) {
+             this.itemSteps = itemSteps;
+         }
 
          public ArrayList<ItemStep> getItemSteps() {
              return itemSteps;
@@ -369,5 +418,147 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
 
         }
     }
+     public class AsynGetLatLng extends AsyncTask<Location, Void, String> {
+         private Handler handler;
+         private String mode;
+         public AsynGetLatLng(Handler handler, String mode) {
+             this.handler=handler;
+             this.mode=mode;
+         }
 
+         @Override
+        protected void onPostExecute(String result) {
+             GoogleMapAPI googleMapAPI=null;
+            try {
+                JSONObject json = new JSONObject(result);
+                String status = null;
+                status = json.getString("status");
+            if (status.equals("OK")) {
+                JSONArray object = json.getJSONArray("routes");
+                JSONObject item = object.getJSONObject(0);
+                String copyrights = item.getString("copyrights");
+
+                String summary = item.getString("summary");
+                Log.e("faker", summary);
+                JSONArray legs = item.getJSONArray("legs");
+
+                JSONObject objectLegs = legs.getJSONObject(0);
+
+                JSONObject distance = objectLegs.getJSONObject("distance");
+                String distanceText = distance.getString("text");
+                String distanceValue = distance.getString("value");
+                Log.e("faker", distanceText + " " + distanceValue);
+
+                JSONObject duration = objectLegs.getJSONObject("duration");
+                String durationText = duration.getString("text");
+                String durationValue = duration.getString("value");
+                Log.e("faker", durationText + " " + durationValue);
+
+                String end_address = objectLegs.getString("end_address");
+                String start_address = objectLegs.getString("start_address");
+                Log.e("faker", end_address + " " + start_address);
+
+                JSONObject start_location = objectLegs.getJSONObject("start_location");
+                String start_locationLat = start_location.getString("lat");
+                String start_locationLng = start_location.getString("lng");
+                Log.e("faker", start_locationLat + " " + start_locationLng);
+
+                JSONObject end_location = objectLegs.getJSONObject("end_location");
+                String end_locationLat = end_location.getString("lat");
+                String end_locationLng = end_location.getString("lng");
+                Log.e("faker", end_locationLat + " " + end_locationLng);
+
+                JSONArray steps = objectLegs.getJSONArray("steps");
+
+                ArrayList<ItemStep> arrItemSteps=new ArrayList<>();
+                for (int i = 0; i < steps.length(); i++) {
+                    JSONObject itemSteps=steps.getJSONObject(i);
+                    JSONObject distanceSteps = itemSteps.getJSONObject("distance");
+                    String distanceTextSteps = distanceSteps.getString("text");
+                    String distanceValueSteps = distanceSteps.getString("value");
+                    Log.e("faker", distanceTextSteps + " " + distanceValueSteps);
+
+                    JSONObject durationSteps = itemSteps.getJSONObject("duration");
+                    String durationTextSteps = durationSteps.getString("text");
+                    String durationValueSteps = durationSteps.getString("value");
+                    Log.e("faker", durationTextSteps + " " + durationValueSteps);
+
+                    JSONObject start_locationSteps = itemSteps.getJSONObject("start_location");
+                    String start_locationLatSteps = start_locationSteps.getString("lat");
+                    String start_locationLngSteps = start_locationSteps.getString("lng");
+                    Log.e("faker", start_locationLatSteps + " " + start_locationLngSteps);
+
+                    JSONObject end_locationSteps = itemSteps.getJSONObject("end_location");
+                    String end_locationLatSteps = end_locationSteps.getString("lat");
+                    String end_locationLngSteps = end_locationSteps.getString("lng");
+                    Log.e("faker", end_locationLatSteps + " " + end_locationLngSteps);
+
+                    String html_instructions= Html.fromHtml((String) itemSteps.getString("html_instructions")).toString();
+                    html_instructions=html_instructions.replace("\n"," ");
+                    Log.e("faker", html_instructions);
+
+                    String travel_mode=itemSteps.getString("travel_mode");
+                    Log.e("faker", travel_mode);
+                    arrItemSteps.add(new ItemStep(distanceTextSteps,distanceValueSteps,durationTextSteps,durationValueSteps,
+                            start_locationLatSteps,start_locationLngSteps,end_locationLatSteps,end_locationLngSteps,html_instructions,travel_mode));
+                    }
+                    googleMapAPI=new GoogleMapAPI(status,copyrights,
+                            summary,distanceText,distanceValue,durationText,durationValue,
+                            end_address,start_address,start_locationLat,start_locationLng,end_locationLat,end_locationLng,arrItemSteps);
+                    Message message=new Message();
+                message.obj=googleMapAPI;
+                handler.sendMessage(message);
+                } else {
+
+             }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+//            PolylineOptions options = new PolylineOptions();
+//            options.color(Color.RED);;
+//            options.width(10);
+//            options.addAll(latLngs);
+//            if (poLyLine!=null){
+//                poLyLine.remove();
+//            }
+//            poLyLine = mGoogleMap.addPolyline(options);
+        }
+        @Override
+        protected String doInBackground(Location... params) {
+
+            String diemDau = ""+params[0].getLatitude()+","+params[0].getLongitude();
+            diemDau = diemDau.replace(" ", "+");
+            String diemCuoi = ""+params[1].getLatitude()+","+params[1].getLongitude();
+            diemCuoi = diemCuoi.replace(" ", "+");
+            String vi = "vi";
+            String link = "https://maps.googleapis.com/maps/api/directions/json?origin="
+                    + diemDau + "&destination="
+                    + diemCuoi + "&avoid=tolls|highways|ferries&mode="
+                    + mode + "&language="
+                    + vi;
+            String result = "";
+            try {
+                // Create a URL for the desired page
+//                Log.e("faker","Rẽ \u003cb\u003etrái\u003c/b\u003e tại Công Ty Tnhh Nano An Phát vào \u003cb\u003eNgô Quyền\u003c/b\u003e");
+                URL url = new URL(link);
+                Log.e("faker", link);
+                // Read all the text returned by the server
+                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+                String str = null;
+                while ((str = in.readLine()) != null) {
+                    // str is one line of text; readLine() strips the newline character(s)
+                    result = result + str;
+
+                }
+                in.close();
+                return result;
+
+            } catch (MalformedURLException e) {
+                return null;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
 }

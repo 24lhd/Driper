@@ -5,9 +5,6 @@
             android:id="@+id/mn_home"
             android:icon="@drawable/ic_account_balance_black_48dp"
             android:title="Trang chủ" />
-        <item android:id="@+id/mn_map_tim_kiem"
-            android:icon="@drawable/places_ic_search"
-            android:title="Tìm kiếm" />
         <item
             android:id="@+id/mn_nguoi_quanh_day"
             android:icon="@drawable/ic_motorcycle_black_48dp"
