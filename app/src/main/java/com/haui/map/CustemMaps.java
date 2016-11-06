@@ -16,7 +16,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -111,14 +111,14 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
             dialog.show();
         }
     }
-    public Marker drawMarker(double lat, double lng, int hue, String title, String snippet){
+    public Marker drawMarker(double lat, double lng, BitmapDescriptor hue, String title, String snippet){
         //định nghĩa điểm ảnh
         // mỗi maker chỉ hiện thị một điểm ảnh
         LatLng latLng = new LatLng(lat,lng);//tạo kinh vĩ
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
-        markerOptions.icon(BitmapDescriptorFactory.fromResource( hue));
+        markerOptions.icon(hue);
         markerOptions.title(title);
         markerOptions.snippet(snippet);
         return googleMap.addMarker(markerOptions);
