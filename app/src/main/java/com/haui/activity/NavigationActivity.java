@@ -63,6 +63,7 @@ import com.haui.fragment.NguoiTimXeFragment;
 import com.haui.fragment.NullDataFragment;
 import com.haui.fragment.XeTimNguoiFragment;
 import com.haui.log.Log;
+import com.haui.map.CustemMaps;
 import com.haui.map.MapManager;
 import com.haui.object.Location;
 import com.haui.object.NguoiTimXe;
@@ -551,27 +552,40 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     Intent intent=new Intent(this, ViewUser.class);
                     intent.putExtra(ViewUser.KEY_ID,nguoiTimXe.getMaSV());
                     this.startActivity(intent);
+                }else if (mapManager.getMarkerCick().getTag() instanceof CustemMaps.ItemStep){
+                    CustemMaps.ItemStep itemStep= (CustemMaps.ItemStep) mapManager.getMarkerCick().getTag();
+                    Snackbar.make(navigationView,"Khoảng "+itemStep.getDistanceTextSteps()+" và "+itemStep.getDurationTextSteps(),Snackbar.LENGTH_SHORT).show();
                 }else{
+                    android.util.Log.e("faker","Snackbar");
                     Snackbar.make(navigationView,""+mapManager.getMarkerCick().getSnippet(),Snackbar.LENGTH_SHORT).show();
                 }
                 return true;
             case R.id.mn_chi_duong_di_bo:
                 String walking="walking";
-                chiDuong(walking);
+                chiDuong(walking, true);
                 return true;
             case R.id.mn_chi_duong_oto:
                 String driving="driving";
-                chiDuong(driving);
+                chiDuong(driving, true);
                 return true;
-            case R.id.mn_chi_duong_xe_bus:
-                String transit="transit";
-                chiDuong(transit);
+            case R.id.mn_chi_duong_xoa:
+                mapManager.getMarkerCick().remove();
+//                String transit="transit";
+//                chiDuong(transit);
+                return true;
+            case R.id.mn_chi_duong_oto_toi:
+                driving = "driving";
+                chiDuong(driving,false);
+                return true;
+            case R.id.mn_chi_duong_di_bo_toi:
+                walking = "walking";
+                chiDuong(walking, false);
                 return true;
         }
         return super.onContextItemSelected(item);
     }
 
-    private void chiDuong(String walking) {
+    private void chiDuong(String walking, boolean b) {
         android.location.Location location=new android.location.Location("a");
         if (mapManager.getMarkerCick().getTag() instanceof XeTimNguoi){
             XeTimNguoi xeTimNguoi= (XeTimNguoi) mapManager.getMarkerCick().getTag();
@@ -585,7 +599,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             location.setLatitude( mapManager.getMarkerCick().getPosition().latitude);
             location.setLongitude( mapManager.getMarkerCick().getPosition().longitude);
         }
-        mapManager.drawRoadByLocation(mapManager.getMyLocation(),location,walking,getResources().getColor(R.color.colorPrimary),5);
+        if (b){
+            mapManager.drawRoadByLocation(mapManager.getMyLocation(),
+                    location,walking,getResources().getColor(R.color.colorPrimary),5);
+        }else{
+            mapManager.drawRoadByLocation(location,
+                    mapManager.getMyLocation(),walking,getResources().getColor(R.color.colorPrimary),5);
+        }
     }
 
     public void createDialogTimNguoi(XeTimNguoi xeTimNguoi) {

@@ -343,7 +343,7 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
             return end_locationLng;
         }
     }
-     class ItemStep{
+     public class ItemStep{
         String distanceTextSteps;
         String distanceValueSteps;
         String durationTextSteps;

@@ -4,23 +4,23 @@
         <item
             android:id="@+id/mn_home"
             android:icon="@drawable/ic_account_balance_black_48dp"
-            android:title="Trang chủ" />
+            android:title="Danh sách" />
         <item
             android:id="@+id/mn_nguoi_quanh_day"
             android:icon="@drawable/ic_motorcycle_black_48dp"
-            android:title="Sinh viên quanh đây" />
+            android:title="Hành khách quanh đây" />
         <item
             android:id="@+id/mn_xe_om_quanh_day"
             android:icon="@drawable/police"
-            android:title="Xe ôm quanh đây" />
+            android:title="Tài xế quanh đây" />
         <item
             android:id="@+id/mn_tai_xe"
-            android:icon="@drawable/ic_tim_xe"
-            android:title="Tôi là xe ôm" />
+            android:icon="@drawable/ic_driver"
+            android:title="Tìm hành khách" />
         <item
             android:id="@+id/mn_sinh_vien"
-            android:icon="@drawable/ic_tim_xe"
-            android:title="Tôi muốn di xe" />
+            android:icon="@drawable/ic_student"
+            android:title="Tìm tài xế" />
         <item
             android:id="@+id/mn_map_giao_thong"
             android:icon="@drawable/ic_traffic_black_48dp"
@@ -29,6 +29,38 @@
             android:id="@+id/mn_map_ve_tinh"
             android:icon="@drawable/ic_terrain_black_48dp"
             android:title="Vệ tinh" />
+        <item
+            android:id="@+id/mn_user"
+            android:icon="@drawable/ic_student"
+            android:title="Cá nhân" />
+        <item
+            android:id="@+id/mn_error"
+            android:icon="@drawable/ic_error"
+            android:title="Báo cáo sự cố" />
+        <item
+            android:id="@+id/mn_help"
+            android:icon="@drawable/ic_help"
+            android:title="Trợ giúp" />
+        <item
+            android:id="@+id/mn_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Đăng xuất" />
+        <item
+            android:id="@+id/mn_exit"
+            android:icon="@drawable/ic_exit"
+            android:title="Thoát" />
+        <item android:title="Khác" >
+            <menu>
+                <item
+                    android:id="@+id/mn_dev"
+                    android:icon="@drawable/code"
+                    android:title="Các ứng dụng khác" />
+                <item
+                    android:id="@+id/mn_share"
+                    android:icon="@drawable/ic_menu_share"
+                    android:title="Ứng dụng liên quan" />
+            </menu>
+        </item>
     </group>
 
 </menu>

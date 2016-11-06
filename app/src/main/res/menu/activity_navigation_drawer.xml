@@ -4,11 +4,19 @@
         <item
             android:id="@+id/mn_home"
             android:icon="@drawable/ic_account_balance_black_48dp"
-            android:title="Trang chủ" />
+            android:title="Danh sách" />
         <item
             android:id="@+id/mn_map"
             android:icon="@drawable/ic_map_black_48dp"
             android:title="Bản đồ" />
+        <item
+            android:id="@+id/mn_tai_xe"
+            android:icon="@drawable/ic_driver"
+            android:title="Tìm hành khách" />
+        <item
+            android:id="@+id/mn_sinh_vien"
+            android:icon="@drawable/ic_student"
+            android:title="Tìm tài xế" />
         <item
             android:id="@+id/mn_user"
             android:icon="@drawable/ic_student"

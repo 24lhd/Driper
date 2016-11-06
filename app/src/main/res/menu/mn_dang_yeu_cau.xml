@@ -6,12 +6,18 @@
             android:title="Xem thông tin" />
         <item
             android:id="@+id/mn_chi_duong_di_bo"
-            android:title="Đi bộ tới đây" />
+            android:title="Đi bộ đến đây" />
         <item
             android:id="@+id/mn_chi_duong_oto"
-            android:title="Lái ôtô tới đây" />
+            android:title="Đi ôtô đến đây" />
         <item
-            android:id="@+id/mn_chi_duong_xe_bus"
-            android:title="Đi xe bus tới đây" />
+            android:id="@+id/mn_chi_duong_di_bo_toi"
+            android:title="Đi bộ đến vị trí của tôi" />
+        <item
+            android:id="@+id/mn_chi_duong_oto_toi"
+            android:title="Lái ôtô đến vị trí của tôi" />
+        <item
+            android:id="@+id/mn_chi_duong_xoa"
+            android:title="Xóa" />
     </group>
 </menu>
