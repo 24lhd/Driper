@@ -248,7 +248,7 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
             Toast.makeText(context,"Vị trí  thoả mã",Toast.LENGTH_LONG).show();
         }
     }
-     class GoogleMapAPI{
+    public class GoogleMapAPI{
         String status;
          String place_id="place_id:";
         String copyrights;

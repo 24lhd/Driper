@@ -1,7 +1,6 @@
 package com.haui.map;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
@@ -38,7 +37,19 @@ public class MapManager extends CustemMaps implements
         PlaceAutocompleteFragment autocompleteFragment =
                 (PlaceAutocompleteFragment)navigationActivity.getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setOnPlaceSelectedListener(this);
+        autocompleteFragment.setHint("Tìm kiếm");
+        createSlidePanel();
+
     }
+    private void createSlidePanel() {
+        navigationActivity.getSlidingUpPanelLayout().setAnchorPoint(navigationActivity.getCardViewHeard().getHeight());
+//        navigationActivity.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+//        navigationActivity.getSlidingUpPanelLayout().setAnchorPoint(0.4f);
+//        navigationActivity.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
+        android.util.Log.e("faker",""+navigationActivity.getCardViewHeard().getHeight());
+    }
+
+
     public void setHienXe() {
         getGoogleMap().clear();
         for (XeTimNguoi xeTimNguoi :navigationActivity.getArrXeTimNguois()) {
@@ -51,7 +62,6 @@ public class MapManager extends CustemMaps implements
             }
         }
     }
-
     public void setHienNguoi() {
         getGoogleMap().clear();
         for (NguoiTimXe nguoiTimXe :navigationActivity.getArrNguoiTimXes()) {
@@ -77,6 +87,7 @@ public class MapManager extends CustemMaps implements
         setMarkerCick(marker);
         navigationActivity.openContextMenu(navigationActivity.getViewMapMenu());
     }
+
     @Override
     public void onPlaceSelected(Place place) {
         if (place.getLatLng()!=null){
@@ -95,9 +106,6 @@ public class MapManager extends CustemMaps implements
 
     @Override
     public void onError(Status status) {
-
-        Log.e("faker", "onError");
-
     }
     @Override
     public void onMapLongClick(LatLng latLng) {

@@ -30,6 +30,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -70,6 +71,7 @@ import com.haui.object.NguoiTimXe;
 import com.haui.object.User;
 import com.haui.object.XeTimNguoi;
 import com.haui.service.MyService;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 
@@ -104,6 +106,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private ArrayList<NguoiTimXe> arrNguoiTimXes;
     private ArrayList<XeTimNguoi> arrXeTimNguois;
     private View viewMapMenu;
+    private SlidingUpPanelLayout slidingUpPanelLayout;
+    private CardView cardViewHeard;
+
+    public CardView getCardViewHeard() {
+        return cardViewHeard;
+    }
 
     public View getViewMapMenu() {
         return viewMapMenu;
@@ -380,9 +388,18 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        if (slidingUpPanelLayout != null &&
+                (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED)) {
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }else if (slidingUpPanelLayout != null &&
+                (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED ||
+                        slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }else{
             super.onBackPressed();
         }
+
     }
     @Override
     public boolean onPrepareOptionsMenu( Menu menu) {
@@ -562,11 +579,11 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 return true;
             case R.id.mn_chi_duong_di_bo:
                 String walking="walking";
-                chiDuong(walking, true);
+                chiDuong(walking);
                 return true;
             case R.id.mn_chi_duong_oto:
                 String driving="driving";
-                chiDuong(driving, true);
+                chiDuong(driving);
                 return true;
             case R.id.mn_chi_duong_xoa:
                 mapManager.getMarkerCick().remove();
@@ -575,17 +592,17 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 return true;
             case R.id.mn_chi_duong_oto_toi:
                 driving = "driving";
-                chiDuong(driving,false);
+                chiDuong(driving);
                 return true;
             case R.id.mn_chi_duong_di_bo_toi:
                 walking = "walking";
-                chiDuong(walking, false);
+                chiDuong(walking);
                 return true;
         }
         return super.onContextItemSelected(item);
     }
 
-    private void chiDuong(String walking, boolean b) {
+    private void chiDuong(String walking) {
         android.location.Location location=new android.location.Location("a");
         if (mapManager.getMarkerCick().getTag() instanceof XeTimNguoi){
             XeTimNguoi xeTimNguoi= (XeTimNguoi) mapManager.getMarkerCick().getTag();
@@ -599,13 +616,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             location.setLatitude( mapManager.getMarkerCick().getPosition().latitude);
             location.setLongitude( mapManager.getMarkerCick().getPosition().longitude);
         }
-        if (b){
             mapManager.drawRoadByLocation(mapManager.getMyLocation(),
-                    location,walking,getResources().getColor(R.color.colorPrimary),5);
-        }else{
-            mapManager.drawRoadByLocation(location,
-                    mapManager.getMyLocation(),walking,getResources().getColor(R.color.colorPrimary),5);
-        }
+                    location, walking, getResources().getColor(R.color.colorPrimary), 5);
+        setGoogleMapAPIToPanel();
+    }
+
+    private void setGoogleMapAPIToPanel() {
+//        getSlidingUpPanelLayout().setAnchorPoint(getCardViewHeard().getHeight());
+        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
     }
 
     public void createDialogTimNguoi(XeTimNguoi xeTimNguoi) {
@@ -726,6 +744,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 .setAction("Action", null).show();
     }
 
+    public SlidingUpPanelLayout getSlidingUpPanelLayout() {
+        return slidingUpPanelLayout;
+    }
     /**
      * khởi tạo bản đồ
      */
@@ -734,6 +755,16 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         if (mapManager==null){
             dialogYeuCau=new Dialog(this,android.R.style.Theme_DeviceDefault_Dialog_Alert);
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+            slidingUpPanelLayout.setAnchorPoint(0.4f);
+            cardViewHeard= (CardView) findViewById(R.id.card_head_steps);
+            slidingUpPanelLayout.setPanelHeight(cardViewHeard.getHeight());
+            slidingUpPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                }
+            });
             floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
             floatingActionButton.setOnClickListener(this);
              viewMapMenu=findViewById(R.id.view_menu);

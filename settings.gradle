@@ -1,1 +1,1 @@
-include ':app', ':WrappingLayout'
+include ':app', ':WrappingLayout', ':SlidingUpPanel'
