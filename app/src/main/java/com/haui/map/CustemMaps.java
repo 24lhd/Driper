@@ -14,6 +14,7 @@ import android.os.Message;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
+import android.text.Spanned;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -85,8 +86,12 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
                 return "";
             }
             String name = addresses.get(0).getAddressLine(0);
-            name +=" - " +addresses.get(0).getAddressLine(1);
-            name +=" - " +addresses.get(0).getAddressLine(2);
+            if (addresses.get(0).getAddressLine(1) instanceof String){
+                name +=" - " +addresses.get(0).getAddressLine(1);
+            }
+            if (addresses.get(0).getAddressLine(2) instanceof String){
+                name +=" - " +addresses.get(0).getAddressLine(2);
+            }
             return name;
         } catch (IOException e) {
             return "";
@@ -169,29 +174,27 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
         checkLocationIsEnable();
         if (myLocation!=null){
             LatLng latLng = new LatLng(myLocation.getLatitude(),myLocation.getLongitude());
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 13);
-            googleMap.animateCamera(cameraUpdate);
+            mapMoveTo(latLng,13);
+
         }
     }
+    public void mapMoveTo(LatLng latLng, int i) {
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, i);
+        googleMap.animateCamera(cameraUpdate);
+    }
+
     public Location getMyLocation() {
         return myLocation;
     }
     public void drawRoadByAddress(String addressStart,String addressEnd,int color,int width){
 
     }
-    public void drawRoadByLocation(Location locationStart, Location locationEnd, String mode, final int color, final int width){
-        Handler handler=new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                GoogleMapAPI googleMapAPI= (GoogleMapAPI) msg.obj;
-                if (googleMapAPI!=null){
-                    drawRoad(googleMapAPI.getItemSteps(),color,width);
-                }
-            }
-        };
+    public void parserGoogleMapAPI(Location locationStart, Location locationEnd, String mode,Handler handler){
         AsynGetLatLng asynGetLatLng=new AsynGetLatLng(handler,mode);
         asynGetLatLng.execute(locationStart,locationEnd);
     }
+
+
     public void drawRoad(ArrayList<ItemStep> itemSteps, int color, int width){
         ArrayList<LatLng> latLngs=new ArrayList<>();
         if (arrMarkerFlags!=null){
@@ -249,6 +252,13 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
         }
     }
     public class GoogleMapAPI{
+        @Override
+        public String toString() {
+            return "GoogleMapAPI{" +
+                    "start_address='" + start_address + '\'' +
+                    '}';
+        }
+
         String status;
          String place_id="place_id:";
         String copyrights;
@@ -355,7 +365,20 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
         String html_instructions;
         String travel_mode;
 
-        public String getDistanceTextSteps() {
+         public Spanned getString() {
+             return Html.fromHtml("<strong>"
+                     +getHtml_instructions()
+                     +"</strong><br>Đi: " +
+                     "<em>"+
+                     getDistanceTextSteps()
+                     +"</em><br> Thời gian đi: <em>"+
+                     getDurationTextSteps()+"</em></font> " +
+                     " <i>"+
+                     getTravel_mode()
+                     +"</i>");
+         }
+
+         public String getDistanceTextSteps() {
             return distanceTextSteps;
         }
 
@@ -439,7 +462,7 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
                 String copyrights = item.getString("copyrights");
 
                 String summary = item.getString("summary");
-                Log.e("faker", summary);
+//                Log.e("faker", summary);
                 JSONArray legs = item.getJSONArray("legs");
 
                 JSONObject objectLegs = legs.getJSONObject(0);
@@ -447,26 +470,26 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
                 JSONObject distance = objectLegs.getJSONObject("distance");
                 String distanceText = distance.getString("text");
                 String distanceValue = distance.getString("value");
-                Log.e("faker", distanceText + " " + distanceValue);
+//                Log.e("faker", distanceText + " " + distanceValue);
 
                 JSONObject duration = objectLegs.getJSONObject("duration");
                 String durationText = duration.getString("text");
                 String durationValue = duration.getString("value");
-                Log.e("faker", durationText + " " + durationValue);
+//                Log.e("faker", durationText + " " + durationValue);
 
                 String end_address = objectLegs.getString("end_address");
                 String start_address = objectLegs.getString("start_address");
-                Log.e("faker", end_address + " " + start_address);
+//                Log.e("faker", end_address + " " + start_address);
 
                 JSONObject start_location = objectLegs.getJSONObject("start_location");
                 String start_locationLat = start_location.getString("lat");
                 String start_locationLng = start_location.getString("lng");
-                Log.e("faker", start_locationLat + " " + start_locationLng);
+//                Log.e("faker", start_locationLat + " " + start_locationLng);
 
                 JSONObject end_location = objectLegs.getJSONObject("end_location");
                 String end_locationLat = end_location.getString("lat");
                 String end_locationLng = end_location.getString("lng");
-                Log.e("faker", end_locationLat + " " + end_locationLng);
+//                Log.e("faker", end_locationLat + " " + end_locationLng);
 
                 JSONArray steps = objectLegs.getJSONArray("steps");
 
@@ -476,29 +499,29 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
                     JSONObject distanceSteps = itemSteps.getJSONObject("distance");
                     String distanceTextSteps = distanceSteps.getString("text");
                     String distanceValueSteps = distanceSteps.getString("value");
-                    Log.e("faker", distanceTextSteps + " " + distanceValueSteps);
+//                    Log.e("faker", distanceTextSteps + " " + distanceValueSteps);
 
                     JSONObject durationSteps = itemSteps.getJSONObject("duration");
                     String durationTextSteps = durationSteps.getString("text");
                     String durationValueSteps = durationSteps.getString("value");
-                    Log.e("faker", durationTextSteps + " " + durationValueSteps);
+//                    Log.e("faker", durationTextSteps + " " + durationValueSteps);
 
                     JSONObject start_locationSteps = itemSteps.getJSONObject("start_location");
                     String start_locationLatSteps = start_locationSteps.getString("lat");
                     String start_locationLngSteps = start_locationSteps.getString("lng");
-                    Log.e("faker", start_locationLatSteps + " " + start_locationLngSteps);
+//                    Log.e("faker", start_locationLatSteps + " " + start_locationLngSteps);
 
                     JSONObject end_locationSteps = itemSteps.getJSONObject("end_location");
                     String end_locationLatSteps = end_locationSteps.getString("lat");
                     String end_locationLngSteps = end_locationSteps.getString("lng");
-                    Log.e("faker", end_locationLatSteps + " " + end_locationLngSteps);
+//                    Log.e("faker", end_locationLatSteps + " " + end_locationLngSteps);
 
                     String html_instructions= Html.fromHtml((String) itemSteps.getString("html_instructions")).toString();
                     html_instructions=html_instructions.replace("\n"," ");
-                    Log.e("faker", html_instructions);
+//                    Log.e("faker", html_instructions);
 
                     String travel_mode=itemSteps.getString("travel_mode");
-                    Log.e("faker", travel_mode);
+//                    Log.e("faker", travel_mode);
                     arrItemSteps.add(new ItemStep(distanceTextSteps,distanceValueSteps,durationTextSteps,durationValueSteps,
                             start_locationLatSteps,start_locationLngSteps,end_locationLatSteps,end_locationLngSteps,html_instructions,travel_mode));
                     }
@@ -506,11 +529,12 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
                             summary,distanceText,distanceValue,durationText,durationValue,
                             end_address,start_address,start_locationLat,start_locationLng,end_locationLat,end_locationLng,arrItemSteps);
                     Message message=new Message();
-                message.obj=googleMapAPI;
-                handler.sendMessage(message);
+                    message.obj=googleMapAPI;
+                    handler.sendMessage(message);
                 } else {
-
+                handler.sendEmptyMessage(0);
              }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }

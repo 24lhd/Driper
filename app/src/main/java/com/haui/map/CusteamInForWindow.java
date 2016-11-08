@@ -1,6 +1,7 @@
 package com.haui.map;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -29,39 +30,41 @@ public class CusteamInForWindow implements GoogleMap.InfoWindowAdapter {
             view = inflater.inflate(R.layout.infor_window_xe,null);
             XeTimNguoi xeTimNguoi= (XeTimNguoi) marker.getTag();
             TextView tvThongDiep = (TextView) view.findViewById(R.id.tv_infor_wd_xe_thong_diep);
-            TextView tvMaSV= (TextView) view.findViewById(R.id.tv_infor_wd_xe_msv);
-            TextView tvBSX= (TextView) view.findViewById(R.id.tv_infor_wd_xe_bsx);
-            TextView tvViTri = (TextView) view.findViewById(R.id.tv_infor_wd_xe_vi_tri);
-            tvThongDiep.setText(xeTimNguoi.getThongDiep());
-            tvMaSV.setText(xeTimNguoi.getMaSV());
-            tvBSX.setText(xeTimNguoi.getBsx());
-            tvViTri.setText(xeTimNguoi.getViTri());
+            tvThongDiep.setText(
+                    Html.fromHtml("<font color=\"#00886A\"><strong>"+xeTimNguoi.getThongDiep() +"</strong></font><br>" +
+                    "<small>" +
+                    "Mã sinh viên:<font color=\"#FF4081\"><em>"+ xeTimNguoi.getMaSV() +"</em></font><br>"+
+                    "Điểm đến: </font><font color=\"#FF4081\"><em>"+ xeTimNguoi.getBsx() +"</em></font><br>" +
+                    "Vị trí: <font color=\"#FF4081\"><em>"+xeTimNguoi.getViTri()+"</em></font><br>"+
+                     "Cập nhật vị trí lúc: <font color=\"#FF4081\"><em>"+xeTimNguoi.getViTri()+"</em></font>"));
             return view;
         }else if (marker.getTag() instanceof NguoiTimXe){
             view = inflater.inflate(R.layout.infor_window_nguoi,null);
             NguoiTimXe nguoiTimXe= (NguoiTimXe) marker.getTag();
             TextView tvThongDiep = (TextView) view.findViewById(R.id.tv_infor_wd_nguoi_thong_diep);
-            TextView tvMaSV = (TextView) view.findViewById(R.id.tv_infor_wd_nguoi_msv);
-            TextView tvDiemDen = (TextView) view.findViewById(R.id.tv_infor_wd_nguoi_diem_den);
-            TextView tvViTri = (TextView) view.findViewById(R.id.tv_infor_wd_nguoi_vi_tri);
-            TextView tvGiaTien = (TextView) view.findViewById(R.id.tv_infor_wd_nguoi_gia_tien);
-            tvThongDiep.setText(nguoiTimXe.getThongDiep());
-            tvMaSV.setText(nguoiTimXe.getMaSV());
-            tvDiemDen.setText(nguoiTimXe.getDiemDen());
-            tvViTri.setText(nguoiTimXe.getViTri());
-            tvGiaTien.setText(nguoiTimXe.getGiaTien());
+            tvThongDiep.setText(Html.fromHtml(
+                    "<font color=\"#00886A\"><strong>"+nguoiTimXe.getThongDiep() +"</strong></font><br>" +
+                    "<small>" +
+                     "Mã sinh viên:<font color=\"#FF4081\"><em>"+ nguoiTimXe.getMaSV() +"</em></font><br>"+
+                     "Điểm đến: </font><font color=\"#FF4081\"><em>"+ nguoiTimXe.getDiemDen() +"</em></font><br>" +
+                      "Giá Tiền: <font color=\"#FF4081\"><em>"+nguoiTimXe.getGiaTien()+"</em></font><br>" +
+                       "Vị Trí: <font color=\"#FF4081\"><em>"+ nguoiTimXe.getViTri()+"</em></font><br>" +
+                       "Cập nhật vị trí lúc: <font color=\"#FF4081\"><em>"+"</em></font>"));
             return view;
         }else if (marker.getTag() instanceof CustemMaps.ItemStep){
             view = inflater.inflate(R.layout.infor_window_steps,null);
             CustemMaps.ItemStep itemStep= (CustemMaps.ItemStep) marker.getTag();
             TextView tvThongDiep = (TextView) view.findViewById(R.id.tv_infor_wd_step_title);
-            TextView tvKhoangCach= (TextView) view.findViewById(R.id.tv_infor_wd_step_distance);
-            TextView tvThoiGian= (TextView) view.findViewById(R.id.tv_infor_wd_step_time);
-            TextView tvMode= (TextView) view.findViewById(R.id.tv_infor_wd_step_mode);
-            tvThongDiep.setText(itemStep.getHtml_instructions());
-            tvKhoangCach.setText(itemStep.getDistanceTextSteps());
-            tvThoiGian.setText(itemStep.getDurationTextSteps());
-            tvMode.setText(itemStep.getTravel_mode());
+            tvThongDiep.setText(Html.fromHtml("<font color=\"#00886A\"><strong>"
+                    +itemStep.getHtml_instructions()
+                    +"</font></strong><br><small>Đi: " +
+                    "<font color=\"#FF4081\"><em>"+
+                    itemStep.getDistanceTextSteps()
+                    +"</em></font><br>Thời gian: <font color=\"#FF4081\"><em>"+
+                    itemStep.getDurationTextSteps()+"</em></font><br>" +
+                    " <font color=\"#FF4081\"><i>"+
+                    itemStep.getTravel_mode()
+                    +"</i></font>"));
             return view;
         }else{
             return null;

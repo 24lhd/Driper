@@ -22,7 +22,7 @@ import com.haui.object.XeTimNguoi;
  */
 
 public class MapManager extends CustemMaps implements
-        GoogleMap.OnInfoWindowClickListener,PlaceSelectionListener,GoogleMap.OnMapLongClickListener {
+        GoogleMap.OnInfoWindowClickListener,PlaceSelectionListener,GoogleMap.OnMapLongClickListener,GoogleMap.OnMarkerClickListener {
     private NavigationActivity navigationActivity;
     private Marker markerSearch;
     private Marker makerSelect;
@@ -34,19 +34,21 @@ public class MapManager extends CustemMaps implements
         googleMap.setInfoWindowAdapter(new CusteamInForWindow(context));
         googleMap.setOnInfoWindowClickListener(this);
         googleMap.setOnMapLongClickListener(this);
+        googleMap.setOnMarkerClickListener(this);
         PlaceAutocompleteFragment autocompleteFragment =
                 (PlaceAutocompleteFragment)navigationActivity.getFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setOnPlaceSelectedListener(this);
+
         autocompleteFragment.setHint("Tìm kiếm");
         createSlidePanel();
 
     }
     private void createSlidePanel() {
-        navigationActivity.getSlidingUpPanelLayout().setAnchorPoint(navigationActivity.getCardViewHeard().getHeight());
+//        navigationActivity.getSlidingUpPanelLayout().setAnchorPoint(navigationActivity.getCardViewHeard().getHeight());
 //        navigationActivity.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
 //        navigationActivity.getSlidingUpPanelLayout().setAnchorPoint(0.4f);
-//        navigationActivity.getSlidingUpPanelLayout().setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
-        android.util.Log.e("faker",""+navigationActivity.getCardViewHeard().getHeight());
+
+//        android.util.Log.e("faker",""+navigationActivity.getCardViewHeard().getHeight());
     }
 
 
@@ -76,6 +78,17 @@ public class MapManager extends CustemMaps implements
         }
     }
     private Marker markerCick;
+
+    public void setMarkerFlag(Marker markerFlag) {
+        this.markerFlag = markerFlag;
+    }
+
+    public Marker getMarkerFlag() {
+
+        return markerFlag;
+    }
+
+    private Marker markerFlag;
     public Marker getMarkerCick() {
         return markerCick;
     }
@@ -106,7 +119,9 @@ public class MapManager extends CustemMaps implements
 
     @Override
     public void onError(Status status) {
+
     }
+
     @Override
     public void onMapLongClick(LatLng latLng) {
         if (makerSelect!=null){
@@ -115,5 +130,11 @@ public class MapManager extends CustemMaps implements
         makerSelect=drawMarker(latLng.latitude,latLng.longitude,
                 BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
                 ,"Điểm chọn",getNameByLocation(latLng.latitude,latLng.longitude));
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        setMarkerCick(marker);
+        return false;
     }
 }

@@ -14,9 +14,10 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
@@ -30,15 +31,22 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatButton;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +56,8 @@ import com.bumptech.glide.Glide;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -76,6 +86,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import java.util.ArrayList;
 
 import static android.support.design.widget.Snackbar.make;
+import static com.haui.activity.R.id.map;
 
 public class NavigationActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         OnMapReadyCallback,
@@ -102,16 +113,17 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private XeTimNguoiFragment xeTimNguoiFragment;
     private NguoiTimXeFragment nguoiTimXeFragment;
     private FragmentTransaction fragmentTransaction;
-    private FloatingActionButton floatingActionButton;
+    private ImageButton floatingActionButton;
     private ArrayList<NguoiTimXe> arrNguoiTimXes;
     private ArrayList<XeTimNguoi> arrXeTimNguois;
     private View viewMapMenu;
     private SlidingUpPanelLayout slidingUpPanelLayout;
-    private CardView cardViewHeard;
-
-    public CardView getCardViewHeard() {
-        return cardViewHeard;
-    }
+    private CustemMaps.GoogleMapAPI googleMapAPI;
+    private ListView listSteps;
+    private TextView tvCopyright;
+    private TextView tvDiaChi;
+    private LinearLayout layoutSlide;
+    private ViewGroup.LayoutParams params;
 
     public View getViewMapMenu() {
         return viewMapMenu;
@@ -201,7 +213,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         }
     }
     private void showSnackbar() {
-        final Snackbar snackbar = Snackbar.make(navigationView, "Vui lòng bật kết nối internet!", Snackbar.LENGTH_SHORT);
+        final Snackbar snackbar = make(navigationView, "Vui lòng bật kết nối internet!", Snackbar.LENGTH_SHORT);
         snackbar.setActionTextColor(getResources().getColor(R.color.colorPrimaryDark));
         snackbar.setAction("Bật wifi", new View.OnClickListener() {
             @Override
@@ -286,7 +298,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     }
                 });
     }
-
     /**
      * cập nhật lại thông tin người dùng
      * @param item là tên node (đường dẫn cha)
@@ -308,9 +319,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             }
         });
     }
-
-
-
     /**
      * kiểm tra online và bật activity đăng nhập
      *  yêu cầu kết quả trả về với mã yêu cầu két quả trả về 1001
@@ -323,7 +331,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             setViewOffLine();
         }
     }
-
     /**
      * kiểm tra trạng thai on hay offline của máy
      * @return true nếu đang online và false nếu đang offline
@@ -389,12 +396,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
-        if (slidingUpPanelLayout != null &&
-                (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED)) {
+        if (slidingUpPanelLayout != null && (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED)) {
+
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        }else if (slidingUpPanelLayout != null &&
-                (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED ||
-                        slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
+        }else if (slidingUpPanelLayout != null && (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED)) {
             slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
         }else{
             super.onBackPressed();
@@ -452,7 +457,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 case R.id.mn_map:
                     toolbar.setVisibility(View.GONE);
                     initDialogAndShow("Đang khỏi tạo dữ liệu....");
-                    viewFlipper.setDisplayedChild(1);
                     navigationView.getMenu().clear();
                     navigationView.inflateMenu(R.menu.menu_map);
                     setMap();
@@ -481,11 +485,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
 
         return true;
     }
-
-    public FloatingActionButton getFloatingActionButton() {
-        return floatingActionButton;
-    }
-
     /**
      * khỏi tạo dialog menu
      * @param menu
@@ -571,10 +570,10 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     this.startActivity(intent);
                 }else if (mapManager.getMarkerCick().getTag() instanceof CustemMaps.ItemStep){
                     CustemMaps.ItemStep itemStep= (CustemMaps.ItemStep) mapManager.getMarkerCick().getTag();
-                    Snackbar.make(navigationView,"Khoảng "+itemStep.getDistanceTextSteps()+" và "+itemStep.getDurationTextSteps(),Snackbar.LENGTH_SHORT).show();
+                    make(navigationView,"Khoảng "+itemStep.getDistanceTextSteps()+" và "+itemStep.getDurationTextSteps(),Snackbar.LENGTH_SHORT).show();
                 }else{
                     android.util.Log.e("faker","Snackbar");
-                    Snackbar.make(navigationView,""+mapManager.getMarkerCick().getSnippet(),Snackbar.LENGTH_SHORT).show();
+                    make(navigationView,""+mapManager.getMarkerCick().getSnippet(),Snackbar.LENGTH_SHORT).show();
                 }
                 return true;
             case R.id.mn_chi_duong_di_bo:
@@ -585,24 +584,13 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 String driving="driving";
                 chiDuong(driving);
                 return true;
-            case R.id.mn_chi_duong_xoa:
-                mapManager.getMarkerCick().remove();
-//                String transit="transit";
-//                chiDuong(transit);
-                return true;
-            case R.id.mn_chi_duong_oto_toi:
-                driving = "driving";
-                chiDuong(driving);
-                return true;
-            case R.id.mn_chi_duong_di_bo_toi:
-                walking = "walking";
-                chiDuong(walking);
-                return true;
         }
         return super.onContextItemSelected(item);
     }
 
-    private void chiDuong(String walking) {
+    private void chiDuong(String mode) {
+
+        initDialogAndShow("Đang tìm đường đi...");
         android.location.Location location=new android.location.Location("a");
         if (mapManager.getMarkerCick().getTag() instanceof XeTimNguoi){
             XeTimNguoi xeTimNguoi= (XeTimNguoi) mapManager.getMarkerCick().getTag();
@@ -616,16 +604,63 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             location.setLatitude( mapManager.getMarkerCick().getPosition().latitude);
             location.setLongitude( mapManager.getMarkerCick().getPosition().longitude);
         }
-            mapManager.drawRoadByLocation(mapManager.getMyLocation(),
-                    location, walking, getResources().getColor(R.color.colorPrimary), 5);
-        setGoogleMapAPIToPanel();
+        Handler handler=new Handler(){
+            @Override
+            public void handleMessage(Message msg) {
+                googleMapAPI= (CustemMaps.GoogleMapAPI) msg.obj;
+                if (googleMapAPI!=null){
+                    mapManager.drawRoad(googleMapAPI.getItemSteps(), getResources().getColor(R.color.colorPrimary), 5);
+                    setGoogleMapAPIToPanel(googleMapAPI);
+                }else if (msg.what==0){
+                    progressDialog.dismiss();
+                    Toast.makeText(NavigationActivity.this,"Không tìm thấy đường đi",Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+        mapManager.parserGoogleMapAPI(mapManager.getMyLocation(),location,mode,handler);
     }
-
-    private void setGoogleMapAPIToPanel() {
-//        getSlidingUpPanelLayout().setAnchorPoint(getCardViewHeard().getHeight());
-        slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+    private void setGoogleMapAPIToPanel(final CustemMaps.GoogleMapAPI googleMapAPI) {
+        ArrayList<Spanned> strings = new ArrayList<>();
+        for (CustemMaps.ItemStep itemStep : googleMapAPI.getItemSteps()) {
+            strings.add(itemStep.getString());
+            ArrayAdapter<Spanned> arrayAdapter = new ArrayAdapter<Spanned>(this, R.layout.card_layout, strings);
+            listSteps.setAdapter(arrayAdapter);
+            listSteps.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    CustemMaps.ItemStep itemStepFlag=googleMapAPI.getItemSteps().get(position);
+                    LatLng latLng = new LatLng(Double.parseDouble(itemStepFlag.getStart_locationLatSteps().trim()),
+                            Double.parseDouble(itemStepFlag.getStart_locationLngSteps().trim()));
+                    if (mapManager.getMarkerFlag()!=null){
+                        mapManager.getMarkerFlag().remove();
+                    }
+                    mapManager.getMarkerCick().hideInfoWindow();
+                    mapManager.setMarkerFlag(mapManager.drawMarker(Double.parseDouble(itemStepFlag.getStart_locationLatSteps().trim()),
+                            Double.parseDouble(itemStepFlag.getStart_locationLngSteps().trim()),
+                                    BitmapDescriptorFactory.fromResource(R.drawable.ic_flag_select),
+                                    itemStepFlag.getHtml_instructions(),
+                                    itemStepFlag.getTravel_mode()));
+                    mapManager.mapMoveTo(latLng, 16);
+                    mapManager.getMarkerFlag().hideInfoWindow();
+                    slidingUpPanelLayout.setPanelHeight(tvDiaChi.getHeight()+tvCopyright.getHeight()+10);
+                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                }
+            });
+            tvCopyright.setText(googleMapAPI.getCopyrights());
+            tvDiaChi.setText(Html.fromHtml("<font color=\"#00886A\"><strong>" + googleMapAPI.getStart_address() + "</strong></font><br>" +
+                    "<i>đi đến</i>" +
+                    "<br><font color=\"#00886A\"><strong>" + googleMapAPI.getStart_address() + "</strong></font><br>" +
+                    "Đi khoảng: <font color=\"#FF4081\"><em>" + googleMapAPI.getDistanceText() + "</em></font>" + " mất: <font color=\"#FF4081\"><em>" + googleMapAPI.getDurationText() + "</em></font><br>" +
+                    "Đường đi chính: <font color=\"#FF4081\"><em>" + googleMapAPI.getSummary() + "</em></font>"
+            ));
+            progressDialog.dismiss();
+            params.height = ((slidingUpPanelLayout.getHeight()*4)/5);
+            layoutSlide.setLayoutParams(params);
+            slidingUpPanelLayout.setAnchorPoint(1f);
+            slidingUpPanelLayout.setPanelHeight(tvDiaChi.getHeight()+tvCopyright.getHeight()+10);
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+        }
     }
-
     public void createDialogTimNguoi(XeTimNguoi xeTimNguoi) {
         dialogYeuCau=new Dialog(this,android.R.style.Theme_DeviceDefault_Dialog_Alert);
         View v=getLayoutInflater().inflate(R.layout.dialog_tim_nguoi,null);
@@ -715,11 +750,8 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         dialogYeuCau.setContentView(v);
         dialogYeuCau.show();
     }
-
-
     /**
      * khởi tạo fragment offline
-     *
      */
     private void setViewOffLine() {
          viewFlipper = (ViewFlipper) findViewById(R.id.viewFliper);
@@ -743,10 +775,6 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         make(getCurrentFocus(), "mn_share", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
-
-    public SlidingUpPanelLayout getSlidingUpPanelLayout() {
-        return slidingUpPanelLayout;
-    }
     /**
      * khởi tạo bản đồ
      */
@@ -754,18 +782,23 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         viewFlipper.setDisplayedChild(1);
         if (mapManager==null){
             dialogYeuCau=new Dialog(this,android.R.style.Theme_DeviceDefault_Dialog_Alert);
-            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
+            floatingActionButton= (ImageButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
+            listSteps= (ListView) findViewById(R.id.list_steps);
+            tvCopyright = (TextView) findViewById(R.id.copy_right);
+            tvDiaChi = (TextView) findViewById(R.id.tv_header_slide_diadiem);
             slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-            slidingUpPanelLayout.setAnchorPoint(0.4f);
-            cardViewHeard= (CardView) findViewById(R.id.card_head_steps);
-            slidingUpPanelLayout.setPanelHeight(cardViewHeard.getHeight());
+            layoutSlide = (LinearLayout) findViewById(R.id.dragView);
+             params = layoutSlide.getLayoutParams();
+            layoutSlide.setLayoutParams(params);
             slidingUpPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    slidingUpPanelLayout.setPanelHeight(tvDiaChi.getHeight()+tvCopyright.getHeight()+10);
                     slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 }
             });
-            floatingActionButton= (FloatingActionButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
+            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             floatingActionButton.setOnClickListener(this);
              viewMapMenu=findViewById(R.id.view_menu);
             mapFragment.getMapAsync(this);
