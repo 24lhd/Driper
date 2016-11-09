@@ -1,16 +1,26 @@
-<com.sothree.slidinguppanel.SlidingUpPanelLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/sliding_layout2"
+    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="bottom"
-    sothree:umanoPanelHeight="10dp"
-    sothree:umanoShadowHeight="4dp"
-    sothree:umanoParallaxOffset="100dp"
-    sothree:umanoDragView="@+id/dragView"
-    sothree:umanoOverlay="true">
-    <!-- MAIN CONTENT -->
-    <!-- SLIDING LAYOUT -->
-</com.sothree.slidinguppanel.SlidingUpPanelLayout>
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="#607D8B">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignWithParentIfMissing="true">
+        <com.itsronald.widget.ViewPagerIndicator
+            android:id="@+id/view_pager_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:gravity="center_vertical"/>
+    </android.support.v4.view.ViewPager>
+
+</RelativeLayout>

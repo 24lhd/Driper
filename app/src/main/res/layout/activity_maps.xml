@@ -6,6 +6,7 @@
     android:id="@+id/sliding_layout"
     android:gravity="bottom"
     sothree:umanoPanelHeight="0dp"
+    sothree:umanoOverlay="true"
     sothree:umanoDragView="@+id/dragView">
     <RelativeLayout
         android:layout_width="match_parent"

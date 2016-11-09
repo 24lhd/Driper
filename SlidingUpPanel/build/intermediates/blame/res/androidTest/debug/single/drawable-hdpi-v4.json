@@ -4,12 +4,12 @@
         "source": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.4.0\\res\\drawable-hdpi-v4\\abc_btn_switch_to_on_mtrl_00012.9.png"
     },
     {
-        "merged": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\abc_switch_track_mtrl_alpha.9.png",
-        "source": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.4.0\\res\\drawable-hdpi-v4\\abc_switch_track_mtrl_alpha.9.png"
-    },
-    {
         "merged": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\abc_ic_ab_back_mtrl_am_alpha.png",
         "source": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.4.0\\res\\drawable-hdpi-v4\\abc_ic_ab_back_mtrl_am_alpha.png"
+    },
+    {
+        "merged": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\abc_switch_track_mtrl_alpha.9.png",
+        "source": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.4.0\\res\\drawable-hdpi-v4\\abc_switch_track_mtrl_alpha.9.png"
     },
     {
         "merged": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\res\\merged\\androidTest\\debug\\drawable-hdpi-v4\\abc_ic_menu_cut_mtrl_alpha.png",

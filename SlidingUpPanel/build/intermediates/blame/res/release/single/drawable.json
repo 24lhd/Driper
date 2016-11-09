@@ -36,12 +36,12 @@
         "source": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.4.0\\res\\drawable\\abc_seekbar_thumb_material.xml"
     },
     {
-        "merged": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ratingbar_full_material.xml",
-        "source": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.4.0\\res\\drawable\\abc_ratingbar_full_material.xml"
-    },
-    {
         "merged": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\res\\merged\\release\\drawable\\above_shadow.xml",
         "source": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\src\\main\\res\\drawable\\above_shadow.xml"
+    },
+    {
+        "merged": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\res\\merged\\release\\drawable\\abc_ratingbar_full_material.xml",
+        "source": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\exploded-aar\\com.android.support\\appcompat-v7\\23.4.0\\res\\drawable\\abc_ratingbar_full_material.xml"
     },
     {
         "merged": "H:\\hoctap\\XeOmCongNghiep\\SlidingUpPanel\\build\\intermediates\\res\\merged\\release\\drawable\\abc_spinner_textfield_background_material.xml",
