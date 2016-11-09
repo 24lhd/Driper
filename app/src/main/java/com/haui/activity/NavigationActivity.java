@@ -38,7 +38,6 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -48,6 +47,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -117,13 +117,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     private ArrayList<NguoiTimXe> arrNguoiTimXes;
     private ArrayList<XeTimNguoi> arrXeTimNguois;
     private View viewMapMenu;
-    private SlidingUpPanelLayout slidingUpPanelLayout;
+    private SlidingUpPanelLayout slidingUpPanel;
     private CustemMaps.GoogleMapAPI googleMapAPI;
     private ListView listSteps;
     private TextView tvCopyright;
     private TextView tvDiaChi;
-    private LinearLayout layoutSlide;
-    private ViewGroup.LayoutParams params;
+    private SlidingUpPanelLayout.LayoutParams layoutParams;
+    private RelativeLayout relativeLayoutPanel;
+    private LinearLayout linearPanel;
 
     public View getViewMapMenu() {
         return viewMapMenu;
@@ -396,11 +397,14 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         }
-        if (slidingUpPanelLayout != null && (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED)) {
-
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
-        }else if (slidingUpPanelLayout != null && (slidingUpPanelLayout.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED)) {
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        if (slidingUpPanel != null && (slidingUpPanel.getPanelState() == SlidingUpPanelLayout.PanelState.ANCHORED)) {
+            slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }else if (slidingUpPanel != null && (slidingUpPanel.getPanelState() == SlidingUpPanelLayout.PanelState.COLLAPSED)) {
+            slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
+        }else if (slidingUpPanel != null && (slidingUpPanel.getPanelState() == SlidingUpPanelLayout.PanelState.EXPANDED)) {
+            slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+        }else if (slidingUpPanel != null && (slidingUpPanel.getPanelState() == SlidingUpPanelLayout.PanelState.HIDDEN)) {
+            super.onBackPressed();
         }else{
             super.onBackPressed();
         }
@@ -617,6 +621,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                 }
             }
         };
+
         mapManager.parserGoogleMapAPI(mapManager.getMyLocation(),location,mode,handler);
     }
     private void setGoogleMapAPIToPanel(final CustemMaps.GoogleMapAPI googleMapAPI) {
@@ -642,8 +647,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                                     itemStepFlag.getTravel_mode()));
                     mapManager.mapMoveTo(latLng, 16);
                     mapManager.getMarkerFlag().hideInfoWindow();
-                    slidingUpPanelLayout.setPanelHeight(tvDiaChi.getHeight()+tvCopyright.getHeight()+10);
-                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                    slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
                 }
             });
             tvCopyright.setText(googleMapAPI.getCopyrights());
@@ -654,11 +658,27 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
                     "Đường đi chính: <font color=\"#FF4081\"><em>" + googleMapAPI.getSummary() + "</em></font>"
             ));
             progressDialog.dismiss();
-            params.height = ((slidingUpPanelLayout.getHeight()*4)/5);
-            layoutSlide.setLayoutParams(params);
-            slidingUpPanelLayout.setAnchorPoint(1f);
-            slidingUpPanelLayout.setPanelHeight(tvDiaChi.getHeight()+tvCopyright.getHeight()+10);
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            layoutParams= (SlidingUpPanelLayout.LayoutParams) linearPanel.getLayoutParams();
+            layoutParams.height=(slidingUpPanel.getHeight()*7/10);
+            linearPanel.setLayoutParams(layoutParams);
+            slidingUpPanel.setPanelHeight(tvDiaChi.getHeight()+tvCopyright.getHeight()+10);
+            slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            slidingUpPanel.setFadeOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+                }
+            });
+            slidingUpPanel.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+                @Override
+                public void onPanelSlide(View panel, float slideOffset) {
+                }
+                @Override
+                public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                    slidingUpPanel.setPanelHeight(tvDiaChi.getHeight()+tvCopyright.getHeight()+10);
+                }
+            });
+
         }
     }
     public void createDialogTimNguoi(XeTimNguoi xeTimNguoi) {
@@ -787,20 +807,12 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             listSteps= (ListView) findViewById(R.id.list_steps);
             tvCopyright = (TextView) findViewById(R.id.copy_right);
             tvDiaChi = (TextView) findViewById(R.id.tv_header_slide_diadiem);
-            slidingUpPanelLayout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-            layoutSlide = (LinearLayout) findViewById(R.id.dragView);
-             params = layoutSlide.getLayoutParams();
-            layoutSlide.setLayoutParams(params);
-            slidingUpPanelLayout.setFadeOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    slidingUpPanelLayout.setPanelHeight(tvDiaChi.getHeight()+tvCopyright.getHeight()+10);
-                    slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
-                }
-            });
-            slidingUpPanelLayout.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             floatingActionButton.setOnClickListener(this);
              viewMapMenu=findViewById(R.id.view_menu);
+             relativeLayoutPanel= (RelativeLayout) findViewById(R.id.view_anthour);
+            linearPanel= (LinearLayout) findViewById(R.id.dragView);
+            slidingUpPanel = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+            slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             mapFragment.getMapAsync(this);
         }else {
             progressDialog.dismiss();
