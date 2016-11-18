@@ -800,7 +800,9 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
      */
     private void setMap() {
         viewFlipper.setDisplayedChild(1);
+
         if (mapManager==null){
+
             dialogYeuCau=new Dialog(this,android.R.style.Theme_DeviceDefault_Dialog_Alert);
             final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
             floatingActionButton= (ImageButton) findViewById(R.id.fab_map_my_location); // FAB vị trí hiện tại
@@ -815,6 +817,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
             slidingUpPanel.setPanelState(SlidingUpPanelLayout.PanelState.HIDDEN);
             mapFragment.getMapAsync(this);
         }else {
+            mapManager.checkLocationIsEnable();
             progressDialog.dismiss();
         }
     }
@@ -822,7 +825,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mapManager= new MapManager(googleMap,this);
-
+        mapManager.checkLocationIsEnable();
         progressDialog.dismiss();
     }
 
@@ -870,6 +873,7 @@ public class NavigationActivity extends AppCompatActivity implements NavigationV
     }
     private void viewHome() {
         if (isOnline()){
+
             navigationView.getMenu().clear();
             navigationView.inflateMenu(R.menu.activity_navigation_drawer);
             viewFlipper.setDisplayedChild(2);

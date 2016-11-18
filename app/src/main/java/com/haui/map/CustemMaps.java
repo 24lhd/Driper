@@ -2,7 +2,6 @@ package com.haui.map;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -12,7 +11,6 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.text.Spanned;
 import android.util.Log;
@@ -97,7 +95,7 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
             return "";
         }
     }
-    private void checkLocationIsEnable() {
+    public void checkLocationIsEnable() {
         LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
         boolean gps_enabled = false;
         boolean network_enabled = false;
@@ -110,24 +108,26 @@ public class CustemMaps implements GoogleMap.OnMyLocationChangeListener{
 
         if(!gps_enabled && !network_enabled) {
             // notify user
-            final AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-            dialog.setMessage(context.getResources().getString(R.string.gps_network_not_enabled));
-            dialog.setPositiveButton(context.getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+
+//            final AlertDialog.Builder dialog = new AlertDialog.Builder(context,R.style.AppTheme);
+//            dialog.setMessage(context.getResources().getString(R.string.gps_network_not_enabled));
+//            dialog.setPositiveButton(context.getResources().getString(R.string.open_location_settings), new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
                     Intent myIntent = new Intent( Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    myIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(myIntent);
                     //get gps
-                }
-            });
-            dialog.setNegativeButton(context.getString(R.string.Cancel), new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-
-                    activity.finish();
-                }
-            });
-            dialog.show();
+//                }
+//            });
+//            dialog.setNegativeButton(context.getString(R.string.Cancel), new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+//
+//                    activity.finish();
+//                }
+//            });
+//            dialog.show();
         }
     }
     public Marker drawMarker(double lat, double lng, BitmapDescriptor hue, String title, String snippet){

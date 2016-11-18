@@ -3,6 +3,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_marginLeft="@dimen/margin_17dp"
+    android:background="@drawable/shadow_view"
     android:layout_marginRight="@dimen/margin_17dp"
     android:layout_height="fill_parent">
     <android.support.design.widget.TextInputLayout
