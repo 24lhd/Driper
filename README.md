@@ -1,8 +1,7 @@
 # Driper
-Màn hình đăng ký
 [![Android Arsenal Floating-Navigation-View](https://youtu.be/qbS1mapIyso)
 
-
+[![Android Arsenal Floating-Navigation-View](https://img.shields.io/badge/Android%20Arsenal-Floating--Navigation--View-green.svg?style=true)](https://android-arsenal.com/details/1/4134)
 ## Installation
 In my 'build.gradle'
 
