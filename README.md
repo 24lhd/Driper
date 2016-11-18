@@ -1,16 +1,10 @@
 # Driper
 Màn hình đăng ký
 
-![alt tag](https://github.com/LeHongDuong/XeOmCongNghiep/blob/master/dangky.png )
+![video demo](https://youtu.be/qbS1mapIyso)
 
-Màn hình đăng nhập
-
-
-Màn hình lấy lại mật khẩu
-
-
-Màn hình đăng ký
-
+## Installation
+In my 'build.gradle'
 
 ```groovy
 dependencies {
