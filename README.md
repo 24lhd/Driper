@@ -1,7 +1,7 @@
 # Driper
 Màn hình đăng ký
+[![Android Arsenal Floating-Navigation-View](https://youtu.be/qbS1mapIyso)
 
-![video demo](https://youtu.be/qbS1mapIyso)
 
 ## Installation
 In my 'build.gradle'
